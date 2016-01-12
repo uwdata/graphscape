@@ -1,10 +1,10 @@
-var utils = require('./utils');
-var fs = require('fs');
-var models = require('./models');
-var comparator = require('./comparator');
+// var utils = require('./utils');
+// var fs = require('fs');
+// var models = require('./models');
+// var comparator = require('./comparator');
 
-var sqlite3 = require("sqlite3").verbose();
-var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
+// var sqlite3 = require("sqlite3").verbose();
+// var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
 
 
 
@@ -314,11 +314,11 @@ function dbInit(dbPath, tables){
 }
 
 
-module.exports = {
-  generatingState: generatingState,
-  generatingEdges: generatingEdges,
-  enumAndCompNeighboredTriplets: enumAndCompNeighboredTriplets,
-  dbInit : dbInit
+// module.exports = {
+//   generatingState: generatingState,
+//   generatingEdges: generatingEdges,
+//   enumAndCompNeighboredTriplets: enumAndCompNeighboredTriplets,
+//   dbInit : dbInit
 
-};
+// };
 

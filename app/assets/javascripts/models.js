@@ -130,11 +130,11 @@ function Spec (marktype, channels, mapping, fields, channelProperties) {
 
 }
 
-module.exports = {
-  Spec: Spec,
-  Mapping: Mapping,
-  fieldsAll: fieldsAll,
-  channelsAll: channelsAll,
-  marktypesAll: marktypesAll,
-  channelPropertiesAll: channelPropertiesAll,
-};
+// module.exports = {
+//   Spec: Spec,
+//   Mapping: Mapping,
+//   fieldsAll: fieldsAll,
+//   channelsAll: channelsAll,
+//   marktypesAll: marktypesAll,
+//   channelPropertiesAll: channelPropertiesAll,
+// };

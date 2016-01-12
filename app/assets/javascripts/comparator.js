@@ -1,4 +1,4 @@
-var utils = require('./utils');
+// var utils = require('./utils');
 // //To apply GNMD later, we have to collect quardraples
 function enumerateSpecPairs(specs){
   var specPairs = [];
@@ -315,14 +315,14 @@ function diffPropPoint (spec1, spec2){
 
 
 
-module.exports = {
-  runTripletComparating: runTripletComparating,
-  runTripletComparatingDB: runTripletComparatingDB,
-  diffVarPoint: diffVarPoint,
-  diffChannelPoint: diffChannelPoint,
-  diffMappingPoint: diffMappingPoint,
-  specCompare: specCompare
-};
+// module.exports = {
+//   runTripletComparating: runTripletComparating,
+//   runTripletComparatingDB: runTripletComparatingDB,
+//   diffVarPoint: diffVarPoint,
+//   diffChannelPoint: diffChannelPoint,
+//   diffMappingPoint: diffMappingPoint,
+//   specCompare: specCompare
+// };
 
 
 
