@@ -1,0 +1,140 @@
+// This is a manifest file that'll be compiled into application.js, which will include all the files
+// listed below.
+//
+// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
+// or any plugin's vendor/assets/javascripts directory can be referenced here using a relative path.
+//
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// compiled file.
+//
+// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
+// about supported directives.
+//
+//= require jquery
+//= require jquery_ujs
+//= require turbolinks
+//= require bootstrap-sprockets
+//= require_tree ./ace/
+//= require_tree .
+
+function isEmpty( el ){
+    return !$.trim(el.html())
+}
+
+$(document).on('ready page:load', function () {
+
+  function draw(selector, spec){
+    vg.parse.spec(spec, function(chart) {
+      chart({el: selector}).update();
+    });
+  }
+
+  if( $('#triplet').length !== 0 ){
+    var ref = ($('#triplet').data('ref-json'));
+    var left = ($('#triplet').data('left-json'));
+    var right = ($('#triplet').data('right-json'));
+    var comparedResult = Number($('#triplet').data('compared-result'));
+    var reason = ($('#triplet').data('reason'));
+
+
+    var specRef = new Spec(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
+    var specLeft = new Spec(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
+    var specRight = new Spec(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
+
+    var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
+    draw("#vis-reference", vgSpecRef);
+
+    var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
+    draw("#vis-left", vgSpecLeft);
+
+    var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
+    draw("#vis-right", vgSpecRight);
+
+
+    $( document ).on("keyup",function( event ) {
+      //37 left
+      //39 right
+      if (event.which === 37) {
+        $('#human_answer_answer_left').attr("checked","checked");
+        $('#new_human_answer').submit();
+      }
+      else if (event.which === 39) {
+        $('#human_answer_answer_right').attr("checked","checked");
+        $('#new_human_answer').submit();
+      }
+
+    });
+
+  }
+
+
+
+  var triplets = $('.triplet');
+  if (!isEmpty(triplets)) {
+    for (var i = 0; i < triplets.length; i++) {
+      var ref = ($(triplets[i]).data('ref-json'));
+      var left = ($(triplets[i]).data('left-json'));
+      var right = ($(triplets[i]).data('right-json'));
+
+      var specRef = new Spec(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
+      var specLeft = new Spec(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
+      var specRight = new Spec(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
+
+      var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
+      draw("#vis-ref" + i, vgSpecRef);
+
+      var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
+      draw("#vis-left" + i, vgSpecLeft);
+
+      var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
+      draw("#vis-right" + i, vgSpecRight);
+
+    }
+  }
+
+  var specs  = $('.specs');
+  if (!isEmpty(specs)) {
+    for (var i = 0; i < specs.length; i++) {
+      var spec_json = $(specs[i]).data('json');
+
+      var spec = new Spec(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
+
+      var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
+      draw("#vis" + i, vgSpecRef);
+
+    }
+  }
+
+  var JQspec  = $('#spec');
+  if (!isEmpty(JQspec)) {
+
+    var spec_json = JQspec.data('json');
+    var spec = new Spec(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
+    var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
+    draw("#vis", vgSpecRef);
+
+    $( document ).on("keyup",function( event ) {
+      //37 left
+      //38 up
+      //39 right
+      if (event.which === 37) {
+        $('#human_filter_answer_never').attr("checked","checked");
+        $('#new_human_filter').submit();
+      }
+      else if (event.which === 38) {
+        $('#human_filter_answer_idk').attr("checked","checked");
+        $('#new_human_filter').submit();
+      }
+      else if (event.which === 39) {
+        $('#human_filter_answer_good').attr("checked","checked");
+        $('#new_human_filter').submit();
+      }
+
+    });
+
+  }
+
+
+
+
+});

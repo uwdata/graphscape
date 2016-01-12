@@ -1,0 +1,43 @@
+<div id="specs" data-specs="<%= @specs.to_json %>"></div>
+<div id="rule-making"></div>
+<div id="query-vis" style="position: fixed; bottom: 10px; right: 10px; background-color: white; z-index: 1;">
+</div>
+
+<div class="row">
+  <div class="col-xs-8 col-md-8">
+    <h3 id="reference-ID">ref_id : 0</h3>
+    <div id="ref-vis">
+    </div>
+  </div>
+  <div class="col-xs-4 col-md-4">
+    <h3>JSON structure</h3>
+    <div id="spec-json" style="height: 150px; overflow:hidden;" >
+      <div id="spec-editor" class="editor">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-8 col-md-8">
+    <h3>Specs</h3>
+    <div id="interactive-table-div">
+      <table id="interactive-table"class="table table-hover">
+
+
+      </table>
+    </div>
+  </div>
+  <div class="col-xs-4 col-md-4">
+    <h3>Rule <button id="runBtn" class="btn btn-primary btn-xs">Run</button> </h3>
+    <div id="rules-form" style="height: 640px; overflow:hidden;">
+      <div id="compare-editor" class="editor">function compare(ref,left,right){
+  return 1;
+}
+</div>
+    </div>
+  </div>
+
+
+
+
+</div>

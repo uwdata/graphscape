@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ref_id: 1
+  left_id: 1
+  right_id: 1
+  compared_result: 1
+  reason: MyString
+
+two:
+  ref_id: 1
+  left_id: 1
+  right_id: 1
+  compared_result: 1
+  reason: MyString

@@ -1,0 +1,30 @@
+<div class="vis-container">
+  <span class="user-choice">User</span> <span class="machine-choice">machine</span>
+
+  <% @wrong_answers.each_with_index do | wrong_answer, index | %>
+    <div class="choice-container triplet"
+      data-ref-json = "<%= wrong_answer.triplet.ref.json %>"
+      data-left-json = "<%= wrong_answer.triplet.left.json %>"
+      data-right-json = "<%= wrong_answer.triplet.right.json %>"
+      data-id="<%= index %>"></div>
+
+    <div class="choice" id="vis-left<%= index %>">
+      <h4 class="<%= choice_class(wrong_answer, "left") %>">
+        Left
+      </h4>
+    </div>
+
+    <div class="choice" id="vis-ref<%= index %>">
+      <h4 class="<%= choice_class(wrong_answer, "ref")%>">Ref</h4>
+    </div>
+
+    <div class="choice" id="vis-right<%= index %>">
+      <h4 class="<%= choice_class(wrong_answer, "right") %>">
+        Right
+      </h4>
+    </div>
+
+
+
+  <% end %>
+</div>

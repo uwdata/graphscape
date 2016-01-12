@@ -1,0 +1,37 @@
+<div id="triplet"
+    data-ref-json = "<%= @triplet.ref.json %>"
+    data-left-json = "<%= @triplet.left.json %>"
+    data-right-json = "<%= @triplet.right.json %>"
+    data-compared-result = "<%= @triplet.compared_result %>"
+    data-reason = "<%= @triplet.reason %>" ></div>
+
+<div class="vis-container">
+  <div id="vis-reference">Reference:</div>
+  <h3>Which one of belows is easier to understand?</h3></br>
+  <%= form_for @human_answer do |f| %>
+  <%= f.hidden_field :triplet_id, value: @triplet.id %>
+
+  <div class="choices-container">
+
+    <div class="choice">
+
+      <label>
+        <div id="vis-left"  ></div>
+        <%= f.radio_button :answer, "left", :required => "required" do %>
+        <%end%>
+      </label>
+    </div>
+
+
+    <div class="choice">
+      <label>
+        <div id="vis-right" ></div>
+        <%= f.radio_button :answer, "right", :required =>"required" %>
+      </label>
+    </div>
+  </div>
+  <div>
+    <%= f.submit %>
+  </div>
+  <% end %>
+</div>

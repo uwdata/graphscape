@@ -1,0 +1,43 @@
+// Place all the styles related to the home controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.vis-container{
+  text-align: center;
+}
+.choices-container{
+  width: 100%;
+  display: inline;
+}
+.choice{
+  text-align: center;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 10px;
+  border: 1px solid #ddd;
+}
+
+.user-choice{
+  color: Red;
+}
+
+.machine-choice{
+  color: blue;
+}
+
+td{
+  white-space: pre;
+}
+
+.editor {
+  margin: 50px 0 0 0;
+  position: absolute !important;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.spec-id-col{
+  cursor: pointer;
+  color: blue;
+}

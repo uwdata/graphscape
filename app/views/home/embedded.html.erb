@@ -1,0 +1,26 @@
+<style type="text/css">
+  svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+  }
+</style>
+<div id="spec-coordinates" data-spec-coordinates="<%= @spec_coordinates.to_json %>"></div>
+<div id="specs" data-specs="<%= @specs.to_json %>"></div>
+
+
+<div class="row">
+  <div class="col-xs-8 col-md-8">
+    <h3>color : # of variables</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-8 col-md-8">
+    <div id="vis-map">
+    </div>
+  </div>
+  <div class="col-xs-4 col-md-4">
+    <div id="vis">
+    </div>
+  </div>
+</div>
