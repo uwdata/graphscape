@@ -18,7 +18,7 @@
 //= require_tree .
 
 function isEmpty( el ){
-    return !$.trim(el.html())
+    return $.trim(el.html())
 }
 
 $(document).on('ready page:load', function () {

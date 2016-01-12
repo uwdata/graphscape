@@ -60,8 +60,10 @@ $(document).on('ready page:load', function () {
     draw('#ref-vis', specs[refSpecID] );
 
     $('.vis-table-row').on('mouseover',function(){
-      draw('#query-vis', specs[$(this).data('id')] );
-      editor2.getSession().setValue(JSON.stringify(specs[$(this).data('id')], null, '\t'));
+      var id = parseInt($(this).data('id'));
+      draw('#query-vis', specs[id] );
+      editor2.getSession().setValue(JSON.stringify(specs[id], null, '\t'));
+      $('#reportBtn').data('id', id);
     });
 
     $('.spec-id-col').on('click',function(){
@@ -216,7 +218,14 @@ $(document).on('ready page:load', function () {
       fillTable(specs,refSpecID, specSimilarities);
     })
 
+    $('#reportBtn').on('click', function(){
+      if (confirm('Did you copy your code?')) {
+        window.location = "/human_filters/"+ $(this).data('id');
+      } else {
+          // Do nothing!
+      }
 
+    });
 
     setReferenceSpec(0);
 
