@@ -192,7 +192,7 @@ function generatingState( models, options){
 
           if(checkConstraint(marktype, channels, mapping, propertiesSets[l])){
             // console.log('pushing!');
-            var spec = new models.Spec(marktype, channels, mapping, fields, propertiesSets[l]);
+            var spec = new models.vegaLiteFeature(marktype, channels, mapping, fields, propertiesSets[l]);
             results.push(spec);
 
             if (options) {

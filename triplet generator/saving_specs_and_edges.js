@@ -23,7 +23,7 @@ var tables = [
               }
             ];
 
-var db = enumerater.dbInit("./result14_small/vlspecs.sqlite3",tables);
+var db = enumerater.dbInit("./results/temp/vlspecs.sqlite3",tables);
 
 
 var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );
@@ -39,8 +39,8 @@ console.log("The number of edges[row] : " + edges.length );
 console.log("The number of edges : " + edgesN );
 
 
-fs.writeFileSync('./result14_small/specs.json',JSON.stringify(specs));
-fs.writeFileSync('./result14_small/edges.json',JSON.stringify(edges));
+fs.writeFileSync('./results/temp/specs.json',JSON.stringify(specs));
+fs.writeFileSync('./results/temp/edges.json',JSON.stringify(edges));
 console.log("Saved!");
 
 // var specs = JSON.parse(fs.readFileSync('./result12/specs.json','utf8'));

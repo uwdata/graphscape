@@ -25,6 +25,7 @@ fieldsAll.push(new Field('nominal','Origin',3));
 
 function Mapping(channels, fields){
   var that = this;
+  this.channels = channels;
   this.ch2f = {};
   this.f2ch = {};
 
@@ -37,26 +38,52 @@ function Mapping(channels, fields){
     that.f2ch[fields[i].fieldName] = channels[i];
   };
 
-  this.info = function(){
+  that.info = function(){
     var info="";
-    for (var i = 0; i < channelsAll.length; i++) {
-      var field = that.ch2f[channelsAll[i]];
+    for (var i = 0; i < that.channels.length; i++) {
+      var field = that.ch2f[that.channels[i]];
       if (field === "")
-        info = info + channelsAll[i] + " : " + "" + "&#09;";
+        info = info + that.channels[i] + " : " + "" + "&#09;";
       else
-        info = info + channelsAll[i] + " : " + field.fieldName + "&#09;";
-
+        info = info + that.channels[i] + " : " + field.fieldName + "&#09;";
     };
     return info;
   }
 }
 
-function Spec (marktype, channels, mapping, fields, channelProperties) {
+function vegaLiteFeature (marktype, channels, mapping, fields, channelProperties) {
+  var that = this;
   this.marktype = marktype;
+
   this.channels = channels;
   this.mapping = mapping;
   this.fields = fields;
   this.channelProperties = channelProperties;
+
+  this.display = function(column){
+    var info="";
+
+    if (column==="mapping") {
+      for (var i = 0; i < that.channels.length; i++) {
+        var field = that.mapping.ch2f[that.channels[i]];
+          info += that.channels[i] + " : " + field.fieldName + "\n";
+      };
+    }
+    else if (column === "fields") {
+      for (var i = 0; i < that.fields.length; i++) {
+        info += that.fields[i].fieldName + " : " + that.fields[i].fieldType + "\n";
+      }
+    }
+    else if (column === "channelProperties") {
+      for (var i = 0; i < that.channelProperties.length; i++) {
+        info += that.channelProperties[i].channel + " : " + that.channelProperties[i].property + "\n";
+      }
+    }
+    else
+      info = JSON.stringify(that[column]);
+
+    return info;
+  }
 
   var that = this;
   this.info = function(){
@@ -104,7 +131,7 @@ function Spec (marktype, channels, mapping, fields, channelProperties) {
 }
 
 module.exports = {
-  Spec: Spec,
+  vegaLiteFeature: vegaLiteFeature,
   Mapping: Mapping,
   fieldsAll: fieldsAll,
   channelsAll: channelsAll,
