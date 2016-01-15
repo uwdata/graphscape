@@ -44,4 +44,7 @@ bower.json
 
 # Ignore results of triplet generator
 triplet generator/results
+triplet generator/node_modules
+triplet generator/bower_components
+
 
