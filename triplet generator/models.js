@@ -130,8 +130,52 @@ function vegaLiteFeature (marktype, channels, mapping, fields, channelProperties
 
 }
 
+
+function vl2vlf (vl) {
+
+  var channelsAll = ['x','y','shape','color','size','row','column'];
+  var chPropAll = ['scale', 'aggregate'];
+  var marktype = vl.mark;
+  var mapping;
+  var fields = [];
+  var channels =[];
+  var channelProperties = [];
+
+  //convert 'encoding' to 'fields' and channelProperties'
+  for (var i = 0; i < channelsAll.length; i++) {
+    var channel = channelsAll[i];
+    if (vl.encoding[channel] !== undefined) {
+
+      channels.push(channel);
+
+      //check field
+      fields.push(new Field(vl.encoding[channel].type,vl.encoding[channel].field,0));
+
+      //check properties
+      for (var j = 0; j < chPropAll.length; j++) {
+        var property = chPropAll[j];
+
+        if (vl.encoding[channel][property] !== undefined ) {
+          channelProperties.push({  "channel": channel,
+                                    "property": property,
+                                    "value": vl.encoding[channel][property] });
+        }
+
+      }
+
+    }
+  }
+
+  //convert to mapping
+  mapping = new Mapping(channels, fields)
+
+  return new vegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
+}
+
+
 module.exports = {
   vegaLiteFeature: vegaLiteFeature,
+  vl2vlf: vl2vlf,
   Mapping: Mapping,
   fieldsAll: fieldsAll,
   channelsAll: channelsAll,
