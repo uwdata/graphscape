@@ -328,9 +328,9 @@ function enumAndCompNeighboredTriplets(specs, edges, options, start, end){
             + options.tables[0].columns[2] + ", "
             + options.tables[0].columns[3] + ", "
             + options.tables[0].columns[4] + ", "
-            + options.tables[0].columns[5] + ") VALUES( "+ i
-            + "," + neighbors[j]
-            + ", "+ neighbors[k]
+            + options.tables[0].columns[5] + ") VALUES( "+ (i+1)
+            + "," + (neighbors[j]+1)
+            + ", "+ (neighbors[k]+1)
             + ", " + comparedResult.result
             + ", '" + JSON.stringify(comparedResult.reason) +"'"
             + " )"
