@@ -1,11 +1,16 @@
-
 var utils = require('./utils');
 var models = require('./models');
 var enumerater = require('./enumerater');
 var comparator = require('./comparator');
 var fs = require('fs');
+var cp = require('./bower_components/viscompass/compass');
+var dl = require('./bower_components/datalib/datalib');
+var genScales = require('./bower_components/viscompass/src/gen/scales').default;
+var channel_1 = require('./bower_components/vega-lite/src/channel');
+var mark_1 = require('./bower_components/vega-lite/src/mark');
 
-// var cars = JSON.parse(fs.readFileSync('./data/cars.json','utf8'));
+
+
 
 
 var tables = [
@@ -22,12 +27,14 @@ var tables = [
                 type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER" ]
               }
             ];
+var filePath = "./results/compass_small/";
+var db = enumerater.dbInit(filePath + "vlspace_compass_small.sqlite3",tables);
 
-var db = enumerater.dbInit("./results/temp/vlspecs.sqlite3",tables);
 
-
-var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );
+// var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );
+var specs = enumerater.generateVLFWithCompass( './data/cars.json', {db: db, tables: [tables[1]] } );
 console.log("The number of specs : " + specs.length );
+
 
 var edges = enumerater.generatingEdges(specs, {db: db, tables: [tables[2]] } );
 // var edges = enumerater.generatingEdges(specs );
@@ -39,8 +46,8 @@ console.log("The number of edges[row] : " + edges.length );
 console.log("The number of edges : " + edgesN );
 
 
-fs.writeFileSync('./results/temp/specs.json',JSON.stringify(specs));
-fs.writeFileSync('./results/temp/edges.json',JSON.stringify(edges));
+fs.writeFileSync(filePath + 'specs.json',JSON.stringify(specs));
+fs.writeFileSync(filePath + 'edges.json',JSON.stringify(edges));
 console.log("Saved!");
 
 // var specs = JSON.parse(fs.readFileSync('./result12/specs.json','utf8'));

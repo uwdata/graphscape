@@ -157,13 +157,19 @@ function rule1 (specL1, specL2, specR1, specR2) {
 
 function diffVarPoint(spec1, spec2){
   var point = 0;
+  var spec1Fields = spec1.fields.map(function(field){
+    return field.fieldName;
+  });
+  var spec2Fields = spec2.fields.map(function(field){
+    return field.fieldName;
+  })
 
-  var totalFields = utils.unique(spec1.fields.concat(spec2.fields));
+  var totalFields = utils.unique(spec1Fields.concat(spec2Fields));
 
   for (var i = 0; i < totalFields.length; i++) {
     // count # of the diff channels,
     var field = totalFields[i];
-    if (spec1.fields.indexOf(field) < 0 || spec2.fields.indexOf(field) < 0 ) {
+    if (spec1Fields.indexOf(field) < 0 || spec2Fields.indexOf(field) < 0 ) {
       point += 1.0;
     }
     // else if (spec1.mapping.f2ch[field.fieldName] !== spec2.mapping.f2ch[field.fieldName]) {
@@ -300,10 +306,17 @@ function rule5 (specL1, specL2, specR1, specR2) {
 
 function diffPropPoint (spec1, spec2){
   var diffPoint = 0;
-  var union = utils.unique(spec1.channelProperties.concat(spec2.channelProperties));
+  var spec1Props = spec1.channelProperties.map(function(prop){
+    return JSON.stringify(prop);
+  });
+  var spec2Props = spec2.channelProperties.map(function(prop){
+    return JSON.stringify(prop);
+  })
+
+  var union = utils.unique(spec1Props.concat(spec2Props));
 
   for (var i = 0; i < union.length; i++) {
-    if(spec1.channelProperties.indexOf(union[i]) < 0 || spec2.channelProperties.indexOf(union[i]) < 0){
+    if(spec1Props.indexOf(union[i]) < 0 || spec2Props.indexOf(union[i]) < 0){
         diffPoint += 1;
     }
   };

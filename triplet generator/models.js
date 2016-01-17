@@ -1,6 +1,7 @@
 
 var fieldsAll = [];
-var marktypesAll = ['bar','point','line','area'];
+// var marktypesAll = ['bar','point','line','area'];
+var marktypesAll = ['point'];
 var channelsAll = ['x','y','shape','color','size','row','column'];
 var aggregateAll = ['mean'];
 
@@ -134,7 +135,7 @@ function vegaLiteFeature (marktype, channels, mapping, fields, channelProperties
 function vl2vlf (vl) {
 
   var channelsAll = ['x','y','shape','color','size','row','column'];
-  var chPropAll = ['scale', 'aggregate'];
+  var chPropAll = ['scale', 'aggregate', 'bin'];
   var marktype = vl.mark;
   var mapping;
   var fields = [];

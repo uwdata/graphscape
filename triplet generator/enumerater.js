@@ -3,11 +3,66 @@ var fs = require('fs');
 var models = require('./models');
 var comparator = require('./comparator');
 
+
+
 var sqlite3 = require("sqlite3").verbose();
 var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
 
 
+function generateVLFWithCompass(dataPath, options ){
+  var cp = require('./bower_components/viscompass/compass');
+  var dl = require('./bower_components/datalib/datalib');
+  var genScales = require('./bower_components/viscompass/src/gen/scales').default;
+  var channel_1 = require('./bower_components/vega-lite/src/channel');
+  var mark_1 = require('./bower_components/vega-lite/src/mark');
 
+  var data = JSON.parse(fs.readFileSync(dataPath,'utf8'));
+  var fieldDefs = models.fieldsAll.map(function(field){
+    return {'field': field.fieldName, 'type': field.fieldType }
+  });
+
+  // fieldDefs = List of fieldDef object {field:..., type: ...}
+  const stats = dl.summary(data).reduce(function(s, profile) {
+    s[profile.field] = profile;
+    return s;
+  }, {
+    '*': {
+      max: data.length,
+      min: 0
+    }
+  });
+
+  var fieldSets = cp.gen.projections(fieldDefs, stats, {
+    maxAdditionalVariables: 3
+  })
+    .reduce(function(fieldSets, fieldSet) {
+      return cp.gen.aggregates(fieldSets, fieldSet, stats, {
+      });
+    }, [])
+    .reduce(function(fieldSets, fieldSet) {
+      return genScales(fieldSets, fieldSet, {rescaleQuantitative: [undefined, 'log']});
+    }, [])
+    .reduce(function(fieldSets, fieldSet) {
+      return cp.gen.specs(fieldSets, fieldSet, stats, {
+        markList: models.marktypesAll,
+        channelList: models.channelsAll
+      });
+    }, []);
+
+
+  return fieldSets.map(function(spec){
+    var vlf = models.vl2vlf(spec[0]);
+    if (options) {
+      options.db.serialize(function(){
+        var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] + ") VALUES( ? )");
+        stmt.run(JSON.stringify(vlf));
+        stmt.finalize();
+      });
+    }
+
+    return vlf;
+  });
+}
 
 function generatePropertiesSets(propertiesAll){
   var totalProps = propertiesAll.length;
@@ -225,6 +280,10 @@ function generatingEdges(specs, options){
       var diffChPoint = comparator.diffChannelPoint(specs[i],specs[j]);
       var diffMpPoint = comparator.diffMappingPoint(specs[i],specs[j]);
 
+      console.log("------");
+      console.log(diffVarPoint);
+      console.log(diffChPoint);
+      console.log(diffMpPoint);
 
       if( diffVarPoint <= 1.0 && diffChPoint <= 1.0 && diffMpPoint <= 1.0){
 
@@ -250,11 +309,14 @@ function enumAndCompNeighboredTriplets(specs, edges, options, start, end){
   var specTrplets = [];
   var buffer = '';
 
+  start = ( typeof(start) !== 'number' ? start : 0 );
+  end = ( typeof(end) !== 'number' ? end : specs.length );
   console.log('Enumerating neighbored triplets...');
+  console.log('start : ' + start + ', end : ' + end);
 
   options.db.serialize(function(){
     options.db.run('BEGIN');
-    console.log(start, end);
+
     for (var i = start; i < end; i++) {
 
       var neighbors = edges[i];
@@ -318,6 +380,7 @@ module.exports = {
   generatingState: generatingState,
   generatingEdges: generatingEdges,
   enumAndCompNeighboredTriplets: enumAndCompNeighboredTriplets,
+  generateVLFWithCompass : generateVLFWithCompass,
   dbInit : dbInit
 
 };

@@ -20,13 +20,13 @@ var tables = [
             ];
 
 
+var filePath = "./results/compass_small/";
+var db = enumerater.dbInit(filePath + "vlspace_compass_small.sqlite3",tables);
 
-var db = enumerater.dbInit("./results/temp/vlspecs.sqlite3",tables);
-
-var specs = JSON.parse(fs.readFileSync('./results/temp/specs.json','utf8'));
+var specs = JSON.parse(fs.readFileSync(filePath + 'specs.json','utf8'));
 console.log("The number of specs : " + specs.length );
 
-var edges = JSON.parse(fs.readFileSync('./results/temp/edges.json','utf8'));
+var edges = JSON.parse(fs.readFileSync(filePath + 'edges.json','utf8'));
 var edgesN = 0;
 for (var i = 0; i < edges.length; i++) {
   edgesN += edges[i].length;
