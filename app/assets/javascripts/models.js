@@ -1,6 +1,7 @@
 
 var fieldsAll = [];
-var marktypesAll = ['bar','point','line','area'];
+// var marktypesAll = ['bar','point','line','area'];
+var marktypesAll = ['point'];
 var channelsAll = ['x','y','shape','color','size','row','column'];
 var aggregateAll = ['mean'];
 
@@ -25,18 +26,14 @@ fieldsAll.push(new Field('nominal','Origin',3));
 
 function Mapping(channels, fields){
   var that = this;
-  this.channels = channels;
+  // this.channels = channels;
   this.ch2f = {};
   this.f2ch = {};
 
-  for (var i = 0; i < channelsAll.length; i++) {
-    var index = channels.indexOf(channelsAll[i]);
-    that.ch2f[channelsAll[i]] = ( index >=0 ) ? fields[index]: "";
-  };
-
-  for (var i = 0; i < fields.length; i++) {
+  for (var i = 0; i < channels.length; i++) {
+    that.ch2f[channels[i]] = fields[i];
     that.f2ch[fields[i].fieldName] = channels[i];
-  };
+  }
 
   that.info = function(){
     var info="";
@@ -51,7 +48,7 @@ function Mapping(channels, fields){
   }
 }
 
-function Spec (marktype, channels, mapping, fields, channelProperties) {
+function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties) {
   var that = this;
   this.marktype = marktype;
 
@@ -130,8 +127,52 @@ function Spec (marktype, channels, mapping, fields, channelProperties) {
 
 }
 
+
+function vl2vlf (vl) {
+
+  var channelsAll = ['x','y','shape','color','size','row','column'];
+  var chPropAll = ['scale', 'aggregate', 'bin'];
+  var marktype = vl.mark;
+  var mapping;
+  var fields = [];
+  var channels =[];
+  var channelProperties = [];
+
+  //convert 'encoding' to 'fields' and channelProperties'
+  for (var i = 0; i < channelsAll.length; i++) {
+    var channel = channelsAll[i];
+    if (vl.encoding[channel] !== undefined) {
+
+      channels.push(channel);
+
+      //check field
+      fields.push(new Field(vl.encoding[channel].type,vl.encoding[channel].field,0));
+
+      //check properties
+      for (var j = 0; j < chPropAll.length; j++) {
+        var property = chPropAll[j];
+
+        if (vl.encoding[channel][property] !== undefined ) {
+          channelProperties.push({  "channel": channel,
+                                    "property": property,
+                                    "value": vl.encoding[channel][property] });
+        }
+
+      }
+
+    }
+  }
+
+  //convert to mapping
+  mapping = new Mapping(channels, fields)
+
+  return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
+}
+
+
 // module.exports = {
-//   Spec: Spec,
+//   VegaLiteFeature: VegaLiteFeature,
+//   vl2vlf: vl2vlf,
 //   Mapping: Mapping,
 //   fieldsAll: fieldsAll,
 //   channelsAll: channelsAll,

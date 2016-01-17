@@ -132,7 +132,7 @@ $(document).on('ready page:load', function () {
 
     for (var i = 0; i < specRaws.length; i++) {
       specRaw = JSON.parse(specRaws[i].json);
-      specs.push(new Spec(specRaw.marktype, specRaw.channels, specRaw.mapping, specRaw.fields, specRaw.channelProperties ));
+      specs.push(new VegaLiteFeature(specRaw.marktype, specRaw.channels, specRaw.mapping, specRaw.fields, specRaw.channelProperties ));
     };
 
 
@@ -206,7 +206,7 @@ $(document).on('ready page:load', function () {
 
     for (var i = 0; i < specRaws.length; i++) {
       specRaw = JSON.parse(specRaws[i].json);
-      spec = new Spec(specRaw.marktype, specRaw.channels, specRaw.mapping, specRaw.fields, specRaw.channelProperties );
+      spec = new VegaLiteFeature(specRaw.marktype, specRaw.channels, specRaw.mapping, specRaw.fields, specRaw.channelProperties );
       spec.id = i;
       specs.push(spec);
 

@@ -26,18 +26,14 @@ fieldsAll.push(new Field('nominal','Origin',3));
 
 function Mapping(channels, fields){
   var that = this;
-  this.channels = channels;
+  // this.channels = channels;
   this.ch2f = {};
   this.f2ch = {};
 
-  for (var i = 0; i < channelsAll.length; i++) {
-    var index = channels.indexOf(channelsAll[i]);
-    that.ch2f[channelsAll[i]] = ( index >=0 ) ? fields[index]: "";
-  };
-
-  for (var i = 0; i < fields.length; i++) {
+  for (var i = 0; i < channels.length; i++) {
+    that.ch2f[channels[i]] = fields[i];
     that.f2ch[fields[i].fieldName] = channels[i];
-  };
+  }
 
   that.info = function(){
     var info="";
@@ -52,7 +48,7 @@ function Mapping(channels, fields){
   }
 }
 
-function vegaLiteFeature (marktype, channels, mapping, fields, channelProperties) {
+function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties) {
   var that = this;
   this.marktype = marktype;
 
@@ -170,12 +166,12 @@ function vl2vlf (vl) {
   //convert to mapping
   mapping = new Mapping(channels, fields)
 
-  return new vegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
+  return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
 
 module.exports = {
-  vegaLiteFeature: vegaLiteFeature,
+  VegaLiteFeature: VegaLiteFeature,
   vl2vlf: vl2vlf,
   Mapping: Mapping,
   fieldsAll: fieldsAll,

@@ -18,7 +18,7 @@
 //= require_tree .
 
 function isEmpty( el ){
-    return $.trim(el.html())
+    return el.length === 0;
 }
 
 $(document).on('ready page:load', function () {
@@ -37,9 +37,9 @@ $(document).on('ready page:load', function () {
     var reason = ($('#triplet').data('reason'));
 
 
-    var specRef = new Spec(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
-    var specLeft = new Spec(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
-    var specRight = new Spec(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
+    var specRef = new VegaLiteFeature(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
+    var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
+    var specRight = new VegaLiteFeature(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
 
     var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
     draw("#vis-reference", vgSpecRef);
@@ -76,9 +76,9 @@ $(document).on('ready page:load', function () {
       var left = ($(triplets[i]).data('left-json'));
       var right = ($(triplets[i]).data('right-json'));
 
-      var specRef = new Spec(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
-      var specLeft = new Spec(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
-      var specRight = new Spec(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
+      var specRef = new VegaLiteFeature(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
+      var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
+      var specRight = new VegaLiteFeature(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
 
       var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
       draw("#vis-ref" + i, vgSpecRef);
@@ -97,7 +97,7 @@ $(document).on('ready page:load', function () {
     for (var i = 0; i < specs.length; i++) {
       var spec_json = $(specs[i]).data('json');
 
-      var spec = new Spec(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
+      var spec = new VegaLiteFeature(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
 
       var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
       draw("#vis" + i, vgSpecRef);
@@ -109,7 +109,7 @@ $(document).on('ready page:load', function () {
   if (!isEmpty(JQspec)) {
 
     var spec_json = JQspec.data('json');
-    var spec = new Spec(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
+    var spec = new VegaLiteFeature(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
     var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
     draw("#vis", vgSpecRef);
 

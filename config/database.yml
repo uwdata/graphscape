@@ -11,7 +11,8 @@ default: &default
 
 development:
   <<: *default
-  database: db/vlspecs_gnmds_k.sqlite3
+  database: db/vlspace_compass_small.sqlite3
+  # database: db/vlspecs_gnmds_k.sqlite3
   # database: db/vlspecs_medium_gnmds_k.sqlite3
 
 # Warning: The database defined as "test" will be erased and

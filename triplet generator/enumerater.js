@@ -247,7 +247,7 @@ function generatingState( models, options){
 
           if(checkConstraint(marktype, channels, mapping, propertiesSets[l])){
             // console.log('pushing!');
-            var spec = new models.vegaLiteFeature(marktype, channels, mapping, fields, propertiesSets[l]);
+            var spec = new models.VegaLiteFeature(marktype, channels, mapping, fields, propertiesSets[l]);
             results.push(spec);
 
             if (options) {
@@ -292,7 +292,7 @@ function generatingEdges(specs, options){
         if (options) {
           options.db.serialize(function(){
             var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] +", "+ options.tables[0].columns[2] + ") VALUES( ?, ? )");
-            stmt.run(i,j);
+            stmt.run(i+1,j+1);
 
             stmt.finalize();
           });

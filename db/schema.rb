@@ -32,9 +32,6 @@ ActiveRecord::Schema.define(version: 20160104231002) do
     t.datetime "updated_at", null: false
   end
 
-# Could not dump table "spec_coordinates" because of following NoMethodError
-#   undefined method `[]' for nil:NilClass
-
   create_table "specs", force: :cascade do |t|
     t.text "json"
   end
