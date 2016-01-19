@@ -6,7 +6,8 @@ class HumanAnswersController < ApplicationController
 
   end
   def create
-    @human_answer = HumanAnswer.new(human_answer_params);
+    @human_answer = HumanAnswer.new(human_answer_params)
+    @human_answer.user = @current_user
     if @human_answer.save
       redirect_to root_path()
     else

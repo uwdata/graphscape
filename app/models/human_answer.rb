@@ -1,5 +1,6 @@
 class HumanAnswer < ActiveRecord::Base
   belongs_to :triplet
+  belongs_to :user
 
   def wrong?
     if answer=="left" && triplet.compared_result== 1

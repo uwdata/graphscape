@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'making_rule' => 'home#making_rule'
   resources :human_answers
   resources :human_filters
+  resources :users
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

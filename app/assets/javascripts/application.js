@@ -35,7 +35,7 @@ $(document).on('ready page:load', function () {
     var right = ($('#triplet').data('right-json'));
     var comparedResult = Number($('#triplet').data('compared-result'));
     var reason = ($('#triplet').data('reason'));
-
+    var toggled = true;
 
     var specRef = new VegaLiteFeature(ref.marktype, ref.channels, ref.mapping, ref.fields, ref.channelProperties);
     var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
@@ -54,13 +54,21 @@ $(document).on('ready page:load', function () {
     $( document ).on("keyup",function( event ) {
       //37 left
       //39 right
-      if (event.which === 37) {
-        $('#human_answer_answer_left').attr("checked","checked");
-        $('#new_human_answer').submit();
+
+      if (event.which === 37 && toggled)  {
+        $('#human_answer_answer_left').prop("checked", true);
+        $('#human_answer_answer_right').prop("checked", false);
       }
-      else if (event.which === 39) {
-        $('#human_answer_answer_right').attr("checked","checked");
-        $('#new_human_answer').submit();
+      else if (event.which === 39 && toggled) {
+        $('#human_answer_answer_right').prop("checked",true);
+        $('#human_answer_answer_left').prop("checked", false);
+      }
+      else if (event.which === 32){
+        if ( $('#human_answer_answer_right').prop("checked") || $('#human_answer_answer_left').prop("checked") ) {
+          $('#new_human_answer').submit();
+        }
+        else
+          alert("Choice first");
       }
 
     });
@@ -118,22 +126,51 @@ $(document).on('ready page:load', function () {
       //38 up
       //39 right
       if (event.which === 37) {
-        $('#human_filter_answer_never').attr("checked","checked");
-        $('#new_human_filter').submit();
+        $('#human_filter_answer_never').prop("checked", true);
+        $('#human_filter_answer_idk').prop("checked", false);
+        $('#human_filter_answer_good').prop("checked", false);
       }
       else if (event.which === 38) {
-        $('#human_filter_answer_idk').attr("checked","checked");
-        $('#new_human_filter').submit();
+        $('#human_filter_answer_idk').prop("checked", true);
+        $('#human_filter_answer_never').prop("checked", false);
+        $('#human_filter_answer_good').prop("checked", false);
       }
       else if (event.which === 39) {
-        $('#human_filter_answer_good').attr("checked","checked");
-        $('#new_human_filter').submit();
+        $('#human_filter_answer_good').prop("checked", true);
+        $('#human_filter_answer_idk').prop("checked", false);
+        $('#human_filter_answer_never').prop("checked", false);
       }
+      else if (event.which === 32)
+      {
+        if ( $('#human_filter_answer_good').prop("checked")
+            || $('#human_filter_answer_idk').prop("checked")
+            || $('#human_filter_answer_never').prop("checked") )
+          $('#new_human_filter').submit();
+        else
+          alert("Choice first");
+      }
+
+
 
     });
 
   }
 
+  var userForm = $('#update-user-name');
+  if(!isEmpty(userForm)){
+    userForm.on('click', function(){
+      var userID = parseInt($('#user-id').data('user-id'));
+      var userName = $('#user-name').val();
+      $.ajax({
+        method: "PATCH",
+        url: '/users/' + userID,
+        data: { "user": { "name": userName } }
+      }).done(function(data){
+        console.log(data);
+        //No more lines in this scene
+      });
+    })
+  }
 
 
 

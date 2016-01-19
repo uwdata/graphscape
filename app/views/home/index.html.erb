@@ -5,9 +5,11 @@
     data-compared-result = "<%= @triplet.compared_result %>"
     data-reason = "<%= @triplet.reason %>" ></div>
 
+
+
 <div class="vis-container">
-  <div id="vis-reference">Reference:</div>
-  <h3>Which one of belows is easier to understand?</h3></br>
+  <div id="vis-reference"></div>
+  <h3>Which one of belows is more similar to the upper one?"</h3></br>
   <%= form_for @human_answer do |f| %>
   <%= f.hidden_field :triplet_id, value: @triplet.id %>
 
@@ -31,7 +33,7 @@
     </div>
   </div>
   <div>
-    <%= f.submit %>
+    <%= f.submit "Next", class: "btn btn-primary" %>
   </div>
   <% end %>
 </div>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160104231002) do
+ActiveRecord::Schema.define(version: 20160119012828) do
 
   create_table "edges", force: :cascade do |t|
     t.integer "source_id"
@@ -21,16 +21,21 @@ ActiveRecord::Schema.define(version: 20160104231002) do
   create_table "human_answers", force: :cascade do |t|
     t.string   "answer"
     t.integer  "triplet_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "user_id",    default: 0
   end
 
   create_table "human_filters", force: :cascade do |t|
     t.string   "answer"
     t.integer  "spec_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "user_id",    default: 0
   end
+
+# Could not dump table "spec_coordinates" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
 
   create_table "specs", force: :cascade do |t|
     t.text "json"
@@ -42,6 +47,12 @@ ActiveRecord::Schema.define(version: 20160104231002) do
     t.integer "right_id"
     t.text    "compared_result"
     t.text    "reason"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
