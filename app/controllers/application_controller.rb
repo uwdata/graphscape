@@ -15,6 +15,8 @@ class ApplicationController < ActionController::Base
         cookies.permanent.signed[:user_id] = User.create().id
         session[:user_id] = cookies.permanent.signed[:user_id]
       end
+
+      current_user
     end
   end
 
