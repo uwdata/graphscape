@@ -219,7 +219,7 @@ $(document).on('ready page:load', function () {
     })
 
     $('#reportBtn').on('click', function(){
-      if (confirm('Did you copy your code?')) {
+      if (confirm("Save your code. It will jump to report page without remembering your code.")) {
         window.location = "/human_filters/"+ $(this).data('id');
       } else {
           // Do nothing!
