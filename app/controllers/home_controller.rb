@@ -19,6 +19,7 @@ class HomeController < ApplicationController
 
   def making_rule
     @specs = Spec.all
+    @rule  = Rule.find_by_id(params[:id]) || Rule.new();
 
   end
 end

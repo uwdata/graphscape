@@ -5,10 +5,11 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'home#index'
   get 'embedded' => 'home#embedded'
-  get 'making_rule' => 'home#making_rule'
+  get 'making_rule/(:id)', to: 'home#making_rule', as: 'making_rule'
   resources :human_answers
   resources :human_filters
   resources :users
+  resources :rules
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

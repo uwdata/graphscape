@@ -84,9 +84,9 @@ $(document).on('ready page:load', function () {
       eval(comparingCode);
     } catch (e) {
       if (e instanceof SyntaxError) {
-        alert(e.message);
+        alert("SyntaxError\n" + e.message);
       } else {
-        throw( e );
+        alert(e.message);
       }
     }
 
@@ -199,6 +199,11 @@ $(document).on('ready page:load', function () {
     editor.getSession().setMode("ace/mode/javascript");
     editor.getSession().setTabSize(2);
 
+    if ( $('#rule_script').val() !== "" ) {
+      editor.getSession().setValue($('#rule_script').val());
+    };
+
+
     editor2 = ace.edit("spec-editor");
     editor2.setTheme("ace/theme/clouds");
     editor2.getSession().setMode("ace/mode/json");
@@ -218,6 +223,14 @@ $(document).on('ready page:load', function () {
       fillTable(specs,refSpecID, specSimilarities);
     })
 
+    $('#saveBtn').on('click',function(){
+      var userScript = editor.getSession().getValue();
+      $('#rule_script').val(userScript);
+      $('#rule_name').val('untitled');
+      $('#new_rule').submit();
+
+    })
+
     $('#reportBtn').on('click', function(){
       if (confirm("Save your code. It will jump to report page without remembering your code.")) {
         window.location = "/human_filters/"+ $(this).data('id');
@@ -227,7 +240,8 @@ $(document).on('ready page:load', function () {
 
     });
 
-    setReferenceSpec(0);
+    fillTable(specs, 0);
+    $('#reference-ID').html("ref_id : " + 0);
 
   };
 

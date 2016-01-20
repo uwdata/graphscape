@@ -30,7 +30,17 @@
     </div>
   </div>
   <div class="col-xs-4 col-md-4">
-    <h3>Rule <button id="runBtn" class="btn btn-primary btn-xs">Run</button> </h3>
+    <%= form_for @rule, html: { style: "display: hidden;"} do |f| %>
+      <%= f.hidden_field :script %>
+      <%= f.hidden_field :name %>
+    <% end %>
+    <h3>Rule
+
+      <button id="runBtn" class="btn btn-primary btn-xs">Run</button>
+      <button id="saveBtn" class="btn btn-primary btn-xs">Save</button>
+    </h3>
+
+
     <div id="rules-form" style="height: 640px; overflow:hidden;">
       <div id="compare-editor" class="editor">function compare(ref,left,right){
   return 1;
