@@ -80,18 +80,23 @@ $(document).on('ready page:load', function () {
       specSimilarities.push({specID: 0, similarity: 0});
     };
 
+
+
+
     try {
       eval(comparingCode);
     } catch (e) {
       if (e instanceof SyntaxError) {
         alert("SyntaxError\n" + e.message);
-      } else {
-        alert(e.message);
       }
+      else
+        console.log(e);
     }
 
 
     //try to compare all kinds of triplets with fixed reference.
+    var hasRuntimeError = false;
+    var userCodeError = "";
     for (var i = 0; i < specs.length; i++) {
       specSimilarities[i].specID = i;
 
@@ -103,7 +108,16 @@ $(document).on('ready page:load', function () {
           continue;
         }
 
-        compareResult = compare(specs[refSpecID], specs[i], specs[j]);
+        compareResult = 0;
+
+        try {
+          compareResult = compare(specs[refSpecID], specs[i], specs[j]);
+        } catch (e) {
+          hasRuntimeError =  true;
+          userCodeError = e;
+          console.log(e.message);
+        }
+
         if (compareResult === 1)
           specSimilarities[j].similarity += 1;
         else if (compareResult === -1)
@@ -114,6 +128,8 @@ $(document).on('ready page:load', function () {
     specSimilarities.sort(function(a,b) {
       return b.similarity - a.similarity;
     })
+    if (hasRuntimeError)
+      alert(userCodeError.message);
 
     return specSimilarities;
   }
