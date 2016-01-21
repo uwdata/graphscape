@@ -210,6 +210,7 @@ $(document).on('ready page:load', function () {
     var spec;
     var compare;
 
+
     editor = ace.edit("compare-editor");
     editor.setTheme("ace/theme/clouds");
     editor.getSession().setMode("ace/mode/javascript");
@@ -258,6 +259,8 @@ $(document).on('ready page:load', function () {
 
     });
 
+    //default
+    refSpecID = 0;
     fillTable(specs, 0);
     $('#reference-ID').html("ref_id : " + 0);
 
