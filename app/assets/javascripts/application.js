@@ -20,14 +20,15 @@
 function isEmpty( el ){
     return el.length === 0;
 }
+function draw(selector, spec){
+  var vgSpec = vl.compile(spec.vegalite(visData)).spec;
+  vg.parse.spec(vgSpec, function(chart) {
+    chart({el: selector}).update();
+  });
+}
 
 $(document).on('ready page:load', function () {
 
-  function draw(selector, spec){
-    vg.parse.spec(spec, function(chart) {
-      chart({el: selector}).update();
-    });
-  }
 
   if( $('#triplet').length !== 0 ){
     var ref = ($('#triplet').data('ref-json'));
@@ -41,14 +42,10 @@ $(document).on('ready page:load', function () {
     var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
     var specRight = new VegaLiteFeature(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
 
-    var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
-    draw("#vis-reference", vgSpecRef);
 
-    var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
-    draw("#vis-left", vgSpecLeft);
-
-    var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
-    draw("#vis-right", vgSpecRight);
+    draw("#vis-reference", specRef);
+    draw("#vis-left", specLeft);
+    draw("#vis-right", specRight);
 
 
     $( document ).on("keyup",function( event ) {
@@ -88,14 +85,14 @@ $(document).on('ready page:load', function () {
       var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
       var specRight = new VegaLiteFeature(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
 
-      var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
-      draw("#vis-ref" + i, vgSpecRef);
+      // var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
+      draw("#vis-ref" + i, specRef);
 
-      var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
-      draw("#vis-left" + i, vgSpecLeft);
+      // var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
+      draw("#vis-left" + i, specLeft);
 
-      var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
-      draw("#vis-right" + i, vgSpecRight);
+      // var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
+      draw("#vis-right" + i, specRight);
 
     }
   }
@@ -107,8 +104,8 @@ $(document).on('ready page:load', function () {
 
       var spec = new VegaLiteFeature(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
 
-      var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
-      draw("#vis" + i, vgSpecRef);
+
+      draw("#vis" + i, spec);
 
     }
   }
@@ -118,8 +115,8 @@ $(document).on('ready page:load', function () {
 
     var spec_json = JQspec.data('json');
     var spec = new VegaLiteFeature(spec_json.marktype, spec_json.channels, spec_json.mapping, spec_json.fields, spec_json.channelProperties);
-    var vgSpecRef = vl.compile(spec.vegalite(visData)).spec;
-    draw("#vis", vgSpecRef);
+
+    draw("#vis", spec);
 
     $( document ).on("keyup",function( event ) {
       //37 left

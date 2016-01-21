@@ -10,6 +10,7 @@
       <td><%= rule.name %></td>
       <td><%= rule.updated_at %></td>
       <td style="display: inline-flex;">
+        <%= link_to "Compare with Humans'", compare_with_human_answers_rule_path(rule), class: "btn btn-default btn-xs " %>
         <%= link_to "Load", making_rule_path(rule), class: "btn btn-primary btn-xs " %>
         <%= link_to "Edit", edit_rule_path(rule), class: "btn btn-warning btn-xs " %>
         <%= link_to "Delete", rule_path(rule), method: "DELETE", class: "btn btn-danger btn-xs" %>

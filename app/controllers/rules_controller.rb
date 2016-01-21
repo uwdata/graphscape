@@ -14,9 +14,15 @@ class RulesController < ApplicationController
       flash[:error] = 'Failed to save the rule.'
       redirect_to making_rule_path()
     end
-
-
   end
+
+  def compare_with_human_answers
+    @human_answers = HumanAnswer.all
+    @rule = Rule.find(params[:id])
+    @specs = Spec.all
+  end
+
+
   def edit
     @rule = Rule.find(params[:id])
 

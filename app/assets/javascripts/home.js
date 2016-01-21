@@ -4,12 +4,7 @@ var editor2;
 $(document).on('ready page:load', function () {
   var refSpecID ;
 
-  function draw(selector, spec){
-    var vgSpec = vl.compile(spec.vegalite(visData)).spec;
-    vg.parse.spec(vgSpec, function(chart) {
-      chart({el: selector}).update();
-    });
-  }
+
   function fillTableRow(columns, type, spec, similarity, option){
     var result = "";
     if (type === "th") {
