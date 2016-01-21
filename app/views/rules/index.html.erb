@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="table-responsive">
+    <%= link_to "Go to make new rule", making_rule_path(), class: "btn btn-primary btn-xs " %>
+    <table class="table">
+    <tr><th>Author</th><th>Title</th><th>Last Updated</th><th></th></tr>
+    <% @rules.each do |rule| %>
+    <tr>
+      <td><%= rule.user.name %></td>
+      <td><%= rule.name %></td>
+      <td><%= rule.updated_at %></td>
+      <td style="display: inline-flex;">
+        <%= link_to "Load", making_rule_path(rule), class: "btn btn-primary btn-xs " %>
+        <%= link_to "Edit", edit_rule_path(rule), class: "btn btn-warning btn-xs " %>
+        <%= link_to "Delete", rule_path(rule), method: "DELETE", class: "btn btn-danger btn-xs" %>
+
+      </td>
+    </tr>
+    <% end %>
+    </table>
+  </div>
+  </div>
+</div>

@@ -11,6 +11,24 @@
 </head>
 <body>
   <div class="container">
+
+    <% flash.each do |type, message| %>
+    <div class="alert  alert-<%= flash_class(type) %> alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+      <div class="box-inner">
+        <span class="alert-market">
+          <i class="fa <%=flash_icon(type)%>"></i>
+        </span>
+        <strong><%= type %></strong>
+        <%= raw(message) %>
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <% end %>
+
     <div style="margin: 10px;">
       <div class="row">
         <label class="col-xs-5 control-label" style="text-align:right; margin-top: 3pt;">Name : </label>

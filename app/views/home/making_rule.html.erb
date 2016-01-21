@@ -21,7 +21,7 @@
 </div>
 <div class="row">
   <div class="col-xs-8 col-md-8">
-    <h3>Specs</h3>
+    <h3>Specs</h3> 
     <div id="interactive-table-div">
       <table id="interactive-table"class="table table-hover">
 
@@ -34,11 +34,13 @@
       <%= f.hidden_field :script %>
       <%= f.hidden_field :name %>
     <% end %>
-    <h3>Rule
+    <h3>Rule </h3>
+    <%= @rule.name %>
+    <button id="runBtn" class="btn btn-danger btn-xs">Run</button>
+    <button id="saveBtn" class="btn btn-success btn-xs">Save</button>
+    <%= link_to "Load", rules_path(), class: "btn btn-primary btn-xs" %>
 
-      <button id="runBtn" class="btn btn-primary btn-xs">Run</button>
-      <button id="saveBtn" class="btn btn-primary btn-xs">Save</button>
-    </h3>
+
 
 
     <div id="rules-form" style="height: 640px; overflow:hidden;">

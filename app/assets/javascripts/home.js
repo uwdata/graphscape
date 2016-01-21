@@ -243,7 +243,9 @@ $(document).on('ready page:load', function () {
       var userScript = editor.getSession().getValue();
       $('#rule_script').val(userScript);
       $('#rule_name').val('untitled');
-      $('#new_rule').submit();
+
+      $('form').submit();
+
 
     })
 
