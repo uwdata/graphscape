@@ -20,8 +20,8 @@ var tables = [
             ];
 
 
-var filePath = "./results/compass_small/";
-var db = enumerater.dbInit(filePath + "vlspace_compass_small.sqlite3",tables);
+var filePath = "./results/compass_v4/";
+var db = enumerater.dbInit(filePath + "compass_v4.sqlite3",tables,true);
 
 var specs = JSON.parse(fs.readFileSync(filePath + 'specs.json','utf8'));
 console.log("The number of specs : " + specs.length );
@@ -35,7 +35,7 @@ console.log("The number of edges : " + edgesN );
 
 
 
-enumerater.enumAndCompNeighboredTriplets(specs, edges, {db: db, tables: [tables[0]] }, Number(process.argv[3]), Number(process.argv[4]));
+enumerater.enumAndCompNeighboredTriplets(specs, edges, {db: db, tables: [tables[0]] }, process.argv[3], process.argv[4]);
 db.close();
 
 

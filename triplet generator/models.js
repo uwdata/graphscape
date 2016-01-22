@@ -1,7 +1,7 @@
 
 var fieldsAll = [];
-// var marktypesAll = ['bar','point','line','area'];
-var marktypesAll = ['point'];
+var marktypesAll = ['bar','point','line','area'];
+// var marktypesAll = ['point'];
 var channelsAll = ['x','y','shape','color','size','row','column'];
 var aggregateAll = ['mean'];
 
@@ -19,10 +19,10 @@ function Field(fieldType, fieldName, cardinality){
   this.cardinality = (cardinality===undefined) ? 0 : cardinality;
 }
 fieldsAll.push(new Field('quantitative','Acceleration'));
-// fieldsAll.push(new Field('quantitative','Horsepower'));
+fieldsAll.push(new Field('quantitative','Horsepower'));
 // fieldsAll.push(new Field('quantitative','Displacement'));
 fieldsAll.push(new Field('nominal','Origin',3));
-// fieldsAll.push(new Field('nominal','Cylinders',6));
+fieldsAll.push(new Field('nominal','Cylinders',6));
 
 function Mapping(channels, fields){
   var that = this;

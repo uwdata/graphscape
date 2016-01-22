@@ -51,7 +51,7 @@ function generateVLFWithCompass(dataPath, options ){
 
 
   return fieldSets.map(function(spec){
-    var vlf = models.vl2vlf(spec[0]);
+    var vlf = models.vl2vlf(spec);
     if (options) {
       options.db.serialize(function(){
         var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] + ") VALUES( ? )");
@@ -280,10 +280,6 @@ function generatingEdges(specs, options){
       var diffChPoint = comparator.diffChannelPoint(specs[i],specs[j]);
       var diffMpPoint = comparator.diffMappingPoint(specs[i],specs[j]);
 
-      console.log("------");
-      console.log(diffVarPoint);
-      console.log(diffChPoint);
-      console.log(diffMpPoint);
 
       if( diffVarPoint <= 1.0 && diffChPoint <= 1.0 && diffMpPoint <= 1.0){
 
@@ -308,9 +304,9 @@ function generatingEdges(specs, options){
 function enumAndCompNeighboredTriplets(specs, edges, options, start, end){
   var specTrplets = [];
   var buffer = '';
-
-  start = ( typeof(start) !== 'number' ? start : 0 );
-  end = ( typeof(end) !== 'number' ? end : specs.length );
+  console.log('start : ' + start + ', end : ' + end);
+  start = ( start !== undefined ? parseInt(start) : 0 );
+  end = ( end !== undefined ? parseInt(end) : specs.length );
   console.log('Enumerating neighbored triplets...');
   console.log('start : ' + start + ', end : ' + end);
 
@@ -350,28 +346,32 @@ function enumAndCompNeighboredTriplets(specs, edges, options, start, end){
 }
 
 
-function dbInit(dbPath, tables){
+function dbInit(dbPath, tables, skip){
   // var db = new sqlite3.Database(dbPath)
   var db = new TransactionDatabase(
     new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE)
   );
+  if(!skip){
+    db.serialize(function(){
+      for (var i = 0; i < tables.length; i++) {
 
-  db.serialize(function(){
-    for (var i = 0; i < tables.length; i++) {
+        db.run("DROP TABLE " + tables[i].name, function(err){
+          if ( err ){
+            console.log(err);
+          }
+        });
 
-      db.run("DROP TABLE " + tables[i].name, function(err){
-        if ( err ){
-          console.log(err);
-        }
-      });
+      var createTableSQL = "CREATE TABLE " + tables[i].name + " (";
+      for (var j = 0; j < tables[i].columns.length; j++) {
+        createTableSQL += tables[i].columns[j] + " " + tables[i].type[j] + ( j== tables[i].columns.length - 1 ? "\n" : ", \n" );
+      };
+      db.run(createTableSQL +" )" );
+      };
+    });
+  }
+  else
+    console.log("Skipped creating tables.")
 
-    var createTableSQL = "CREATE TABLE " + tables[i].name + " (";
-    for (var j = 0; j < tables[i].columns.length; j++) {
-      createTableSQL += tables[i].columns[j] + " " + tables[i].type[j] + ( j== tables[i].columns.length - 1 ? "\n" : ", \n" );
-    };
-    db.run(createTableSQL +" )" );
-    };
-  });
   return db;
 }
 

@@ -27,8 +27,8 @@ var tables = [
                 type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER" ]
               }
             ];
-var filePath = "./results/compass_small/";
-var db = enumerater.dbInit(filePath + "vlspace_compass_small.sqlite3",tables);
+var filePath = "./results/compass_v4/";
+var db = enumerater.dbInit(filePath + "compass_v4.sqlite3",tables);
 
 
 // var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );

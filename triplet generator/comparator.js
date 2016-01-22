@@ -130,9 +130,9 @@ function specCompare(specL1, specL2, specR1, specR2) {
   };
 
   if(totalDistanceL < totalDistanceR)
-    comparedResult = 1;
-  else if (totalDistanceL > totalDistanceR )
     comparedResult = -1;
+  else if (totalDistanceL > totalDistanceR )
+    comparedResult = 1;
   else
     comparedResult = 0;
 
