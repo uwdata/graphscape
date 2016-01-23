@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120013859) do
+ActiveRecord::Schema.define(version: 20160123052201) do
 
   create_table "edges", force: :cascade do |t|
     t.integer "source_id"
@@ -38,8 +38,9 @@ ActiveRecord::Schema.define(version: 20160120013859) do
     t.string   "user_id"
     t.string   "name"
     t.text     "script"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.float    "score",      default: 0.0
   end
 
 # Could not dump table "spec_coordinates" because of following NoMethodError

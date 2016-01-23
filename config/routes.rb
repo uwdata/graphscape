@@ -5,13 +5,17 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'home#index'
   get 'embedded' => 'home#embedded'
-  get 'making_rule/(:id)', to: 'home#making_rule', as: 'making_rule'
+
   resources :human_answers
   resources :human_filters
   resources :users
   resources :rules do
     member do
       get 'compare_with_human_answers'
+      post 'update_score'
+    end
+    collection do
+      get 'making/(:id)', to: 'rules#making', as: 'making'
     end
   end
 

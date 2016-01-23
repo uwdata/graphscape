@@ -17,11 +17,5 @@ class HomeController < ApplicationController
 
   end
 
-  def making_rule
-    @specs = Spec.all
-    @rule  = Rule.find_by_id(params[:id]) || Rule.new();
-    session[:return_to] = making_rule_path(@rule).to_s
 
-
-  end
 end

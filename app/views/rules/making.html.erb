@@ -1,4 +1,6 @@
 <div id="specs" data-specs="<%= @specs.to_json %>"></div>
+<div id="human-answers" data-human-answers="<%= @human_answers.to_json(include: :triplet) %>"></div>
+
 
 <div id="rule-making"></div>
 <div id="query-vis" style="position: fixed; bottom: 10px; right: 10px; background-color: white; z-index: 10;">
@@ -21,7 +23,7 @@
 </div>
 <div class="row">
   <div class="col-xs-8 col-md-8">
-    <h3>Specs</h3> 
+    <h3>Specs <span class="pull-right" id="score">Score : <mark><b><%= @rule.score %>%</b></mark></span></h3>
     <div id="interactive-table-div">
       <table id="interactive-table"class="table table-hover">
 
@@ -33,6 +35,7 @@
     <%= form_for @rule, html: { style: "display: hidden;"} do |f| %>
       <%= f.hidden_field :script %>
       <%= f.hidden_field :name %>
+      <%= f.hidden_field :score %>
     <% end %>
     <h3>Rule </h3>
     <%= @rule.name %>
