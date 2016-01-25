@@ -10,6 +10,7 @@
 
 </head>
 <body>
+  <%= render partial: "layouts/nav" %>
   <div class="container">
 
     <% flash.each do |type, message| %>
@@ -29,21 +30,10 @@
     </div>
     <% end %>
 
-    <div style="margin: 10px;">
-      <div class="row">
-        <label class="col-xs-5 control-label" style="text-align:right; margin-top: 3pt;">Name : </label>
-        <div class="col-xs-2">
-          <div class="hidden" id="user-id" data-user-id="<%= @current_user.id %>" ></div>
-          <input id="user-name" type="text" value="<%= @current_user.name || @current_user.id %>" class= "form-control input-sm" >
-        </div>
-        <div class="col-xs-5">
-          <input id="update-user-name" type="button" class= "btn btn-default btn-sm" value="Update Name"></input>
-        </div>
-      </div>
-    </div>
+
     <%= yield %>
+
+
   </div>
-
-
 </body>
 </html>
