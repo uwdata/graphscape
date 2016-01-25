@@ -3,7 +3,7 @@ class HomeController < ApplicationController
     # offset = rand(1323440)
     # offset = rand(24952)
     offset = rand(388)
-    @triplet = Triplet.find(offset);
+    @triplet = Triplet.find_by_id(offset) || Triplet.find_by_id_in_csv(offset);
     # @triplet = Triplet.order("RANDOM()").first
 
     @human_answer = HumanAnswer.new()

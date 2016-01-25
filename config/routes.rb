@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       post 'update_score'
     end
     collection do
+      get 'csv_testing'
       get 'making/(:id)', to: 'rules#making', as: 'making'
     end
   end
