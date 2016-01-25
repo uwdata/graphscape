@@ -9,7 +9,7 @@ var xScaleLog = { "channel": 'x', "property": "scale", "value": {"type":"log"} }
 var yScaleLog = { "channel": 'y', "property": "scale", "value": {"type":"log"} };
 var xAggregateMean = { "channel": 'x', "property": "aggregate", "value": "mean" };
 var yAggregateMean = { "channel": 'y', "property": "aggregate", "value": "mean" };
-
+var propertiesAll = ["scale", "aggregate", "bin"];
 var channelPropertiesAll = [xScaleLog, xAggregateMean, yAggregateMean, yScaleLog];
 
 
@@ -123,6 +123,36 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
     };
 
     return vlSpec;
+  }
+
+  this.flat = function (){
+    var result ={};
+    result["mark"] = that.marktype;
+
+    for (var i = 0; i < channelsAll.length; i++) {
+
+      result[channelsAll[i]] = 0;
+      result[channelsAll[i] + "_Q"] = 0;
+      result[channelsAll[i] + "_N"] = 0;
+
+      var field = that.mapping.ch2f[channelsAll[i]];
+      if ( that.channels.indexOf(channelsAll[i]) >= 0 ){
+        result[channelsAll[i]] = 1;
+        result[channelsAll[i] + "_Q"] = ( field.fieldType === "quantitative" ) ? 1 : 0;
+        result[channelsAll[i] + "_N"] = ( field.fieldType === "nominal" ) ? 1 : 0;
+      }
+
+      for (var j = 0; j < propertiesAll.length; j++) {
+        result[channelsAll[i] + "_" + propertiesAll[j]] = 0;
+
+        for (var k = 0; k < that.channelProperties.length; k++) {
+          if (that.channelProperties[k]["channel"] === channelsAll[i] && that.channelProperties[k]["property"] === propertiesAll[j] )
+            result[channelsAll[i] + "_" + propertiesAll[j]] = JSON.stringify(that.channelProperties[k]["value"]);
+        };
+      };
+    };
+
+    return result
   }
 
 }
