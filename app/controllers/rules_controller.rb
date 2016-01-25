@@ -1,11 +1,8 @@
 class RulesController < ApplicationController
 
-  def csv_testing
-    @csv_test = Triplet.csv_load
-  end
   def index
     @rules = Rule.all
-    @human_answers = HumanAnswer.all
+    @human_answers = HumanAnswer.all_with_csv_triplets
     @specs = Spec.all
     session[:return_to] = "rules_path"
   end
@@ -13,7 +10,7 @@ class RulesController < ApplicationController
   def making
     @specs = Spec.all
     @rule  = Rule.find_by_id(params[:id]) || Rule.new();
-    @human_answers = HumanAnswer.all
+    @human_answers = HumanAnswer.all_with_csv_triplets
     session[:return_to] = "making_with_rule_path"
 
   end
@@ -33,7 +30,8 @@ class RulesController < ApplicationController
   end
 
   def compare_with_human_answers
-    @human_answers = HumanAnswer.all
+
+    @human_answers = HumanAnswer.all_with_csv_triplets
     @rule = Rule.find(params[:id])
     @specs = Spec.all
   end
