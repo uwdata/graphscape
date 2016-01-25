@@ -1,4 +1,8 @@
 class RulesController < ApplicationController
+
+  def csv_testing
+    @csv_test = Triplet.csv_load
+  end
   def index
     @rules = Rule.all
     @human_answers = HumanAnswer.all
