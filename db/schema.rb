@@ -11,11 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160123052201) do
+ActiveRecord::Schema.define(version: 20160126211753) do
 
   create_table "edges", force: :cascade do |t|
     t.integer "source_id"
     t.integer "target_id"
+  end
+
+  create_table "embedments", force: :cascade do |t|
+    t.string   "title"
+    t.string   "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "human_answers", force: :cascade do |t|

@@ -1,0 +1,16 @@
+<h3><%= @embedment.title %></h3>
+
+<%= form_for @embedment, html: {class: "form-horizontal"} do |f| %>
+  <%= render partial: "form", locals: {f: f} %>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <%= f.submit "Save", class: "btn btn-success"  %>
+      <%= link_to "Back", embedment_path(@embedment), class: "btn btn-info" %>
+    </div>
+  </div>
+<% end %>
+
+
+
+

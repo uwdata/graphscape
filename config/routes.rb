@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :human_answers
   resources :human_filters
   resources :users
+  resources :embedments
   resources :rules do
     member do
       get 'compare_with_human_answers'

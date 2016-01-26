@@ -2,7 +2,8 @@ class HomeController < ApplicationController
   def index
     # offset = rand(1323440)
     # offset = rand(24952)
-    offset = rand(388)
+    # offset = rand(388)
+    offset = rand(Triplet.all.count || Triplet.all_in_csv.count)+1
     @triplet = Triplet.find_by_id(offset) || Triplet.find_by_id_in_csv(offset);
     # @triplet = Triplet.order("RANDOM()").first
 

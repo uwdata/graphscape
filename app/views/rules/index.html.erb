@@ -4,9 +4,10 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="table-responsive">
-    <%= link_to "Go to make new rule", making_rules_path(), class: "btn btn-primary btn-xs " %>
-    <button id="refresh-score" class="btn btn-default btn-xs ">Refresh Score</button>
-
+    <div class="vlr-btn-container">
+      <%= link_to "Go to make new rule", making_rules_path(), class: "btn btn-primary " %>
+      <button id="refresh-score" class="btn btn-default">Refresh Score</button>
+    </div>
     <table class="table">
     <tr><th>Author</th><th>Title</th><th>Last Updated</th><th>Score</th><th></th></tr>
     <% @rules.order(score: :desc).each do |rule| %>
