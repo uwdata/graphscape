@@ -1,7 +1,7 @@
 
 var fieldsAll = [];
-var marktypesAll = ['bar','point','line','area'];
-// var marktypesAll = ['point'];
+// var marktypesAll = ['bar','point','line','area'];
+var marktypesAll = ['point'];
 var channelsAll = ['x','y','shape','color','size','row','column'];
 var aggregateAll = ['mean'];
 
@@ -19,10 +19,10 @@ function Field(fieldType, fieldName, cardinality){
   this.cardinality = (cardinality===undefined) ? 0 : cardinality;
 }
 fieldsAll.push(new Field('quantitative','Acceleration'));
-fieldsAll.push(new Field('quantitative','Horsepower'));
+// fieldsAll.push(new Field('quantitative','Horsepower'));
 // fieldsAll.push(new Field('quantitative','Displacement'));
 fieldsAll.push(new Field('nominal','Origin',3));
-fieldsAll.push(new Field('nominal','Cylinders',6));
+// fieldsAll.push(new Field('nominal','Cylinders',6));
 
 function Mapping(channels, fields){
   var that = this;
@@ -127,32 +127,48 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
 
   this.flat = function (){
     var result ={};
+    var columns = [];
+    var values =[];
+
     result["mark"] = that.marktype;
+    columns.push("mark");
+    values.push(result["mark"]);
 
     for (var i = 0; i < channelsAll.length; i++) {
 
-      result[channelsAll[i]] = 0;
-      result[channelsAll[i] + "_Q"] = 0;
-      result[channelsAll[i] + "_N"] = 0;
+      result[channelsAll[i]] = "x";
+      result[channelsAll[i] + "_Q"] = "x";
+      result[channelsAll[i] + "_N"] = "x";
 
       var field = that.mapping.ch2f[channelsAll[i]];
       if ( that.channels.indexOf(channelsAll[i]) >= 0 ){
-        result[channelsAll[i]] = 1;
-        result[channelsAll[i] + "_Q"] = ( field.fieldType === "quantitative" ) ? 1 : 0;
-        result[channelsAll[i] + "_N"] = ( field.fieldType === "nominal" ) ? 1 : 0;
+        result[channelsAll[i]] = "o";
+        result[channelsAll[i] + "_Q"] = ( field.fieldType === "quantitative" ) ? "o" : "x";
+        result[channelsAll[i] + "_N"] = ( field.fieldType === "nominal" ) ? "o" : "x";
       }
 
+      columns.push(channelsAll[i]);
+      values.push(result[channelsAll[i]]);
+      columns.push(channelsAll[i] + "_Q");
+      values.push(result[channelsAll[i] + "_Q"]);
+      columns.push(channelsAll[i] + "_N");
+      values.push(result[channelsAll[i] + "_N"]);
+
+
       for (var j = 0; j < propertiesAll.length; j++) {
-        result[channelsAll[i] + "_" + propertiesAll[j]] = 0;
+        result[channelsAll[i] + "_" + propertiesAll[j]] = "x";
 
         for (var k = 0; k < that.channelProperties.length; k++) {
           if (that.channelProperties[k]["channel"] === channelsAll[i] && that.channelProperties[k]["property"] === propertiesAll[j] )
             result[channelsAll[i] + "_" + propertiesAll[j]] = JSON.stringify(that.channelProperties[k]["value"]);
-        };
-      };
-    };
+        }
 
-    return result
+        columns.push(channelsAll[i] + "_" + propertiesAll[j]);
+        values.push(result[channelsAll[i] + "_" + propertiesAll[j]]);
+      }
+    }
+
+    return {"result": result, "columns": columns, "values": values}
   }
 
 }
