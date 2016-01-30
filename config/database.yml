@@ -12,10 +12,11 @@ default: &default
 development:
   <<: *default
   # database: db/vlspace_compass_small_human_answered_3.sqlite3
-  database: db/vlspace_compass_small_dt_extended.sqlite3
+  # database: db/vlspace_compass_small_dt_extended.sqlite3
   # database: db/vlspace_compass_small.sqlite3
   # database: db/vlspecs_gnmds_k.sqlite3
   # database: db/vlspecs_medium_gnmds_k.sqlite3
+  database: db/compass_v4_compact.sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

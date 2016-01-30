@@ -32,26 +32,39 @@ function generateVLFWithCompass(dataPath, options ){
     }
   });
 
-  var fieldSets = cp.gen.projections(fieldDefs, stats, {
-    maxAdditionalVariables: 3
-  })
+  var fieldSets = cp.gen.projections(fieldDefs, stats, options.projections)
     .reduce(function(fieldSets, fieldSet) {
-      return cp.gen.aggregates(fieldSets, fieldSet, stats, {
-      });
+      return cp.gen.aggregates(fieldSets, fieldSet, stats, {});
     }, [])
     .reduce(function(fieldSets, fieldSet) {
-      return genScales(fieldSets, fieldSet, {rescaleQuantitative: [undefined, 'log']});
+      return genScales(fieldSets, fieldSet, options.scales);
     }, [])
     .reduce(function(fieldSets, fieldSet) {
-      return cp.gen.specs(fieldSets, fieldSet, stats, {
-        markList: models.marktypesAll,
-        channelList: models.channelsAll
-      });
+      return cp.gen.specs(fieldSets, fieldSet, stats, options.compassSpecs);
     }, []);
 
 
-  return fieldSets.map(function(spec){
-    var vlf = models.vl2vlf(spec);
+
+  var vlfs = fieldSets.map(function(spec){
+    return models.vl2vlf(spec);
+  });
+
+  //exclude the redundant vlf
+  vlfs = vlfs.reduce(function(prevVlfs, curVlf){
+    for (var i = 0; i < prevVlfs.length; i++) {
+      if(prevVlfs[i].abstEqual(curVlf)){
+        return prevVlfs
+      }
+
+    };
+
+    prevVlfs.push(curVlf);
+    return prevVlfs;
+  },[]);
+
+  vlfs = models.remap(vlfs);
+
+  return vlfs.map(function(vlf){
     if (options) {
       options.db.serialize(function(){
         var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] + ") VALUES( ? )");
@@ -59,7 +72,6 @@ function generateVLFWithCompass(dataPath, options ){
         stmt.finalize();
       });
     }
-
     return vlf;
   });
 }
@@ -279,6 +291,10 @@ function generatingEdges(specs, options){
       var diffVarPoint = comparator.diffVarPoint(specs[i],specs[j]);
       var diffChPoint = comparator.diffChannelPoint(specs[i],specs[j]);
       var diffMpPoint = comparator.diffMappingPoint(specs[i],specs[j]);
+
+      // if (i >= 260) {
+      //   console.log(diffVarPoint + ',' + diffChPoint +',' + diffMpPoint);
+      // };
 
 
       if( diffVarPoint <= 1.0 && diffChPoint <= 1.0 && diffMpPoint <= 1.0){

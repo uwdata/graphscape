@@ -12,9 +12,10 @@ class HomeController < ApplicationController
 
   end
 
-  def embedded
-    @spec_coordinates = SpecCoordinate.all
+  def specs
+
     @specs = Spec.all
+    @edges = Edge.all
 
   end
 

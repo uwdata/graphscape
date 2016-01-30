@@ -50,9 +50,6 @@ ActiveRecord::Schema.define(version: 20160126211753) do
     t.float    "score",      default: 0.0
   end
 
-# Could not dump table "spec_coordinates" because of following NoMethodError
-#   undefined method `[]' for nil:NilClass
-
   create_table "specs", force: :cascade do |t|
     t.text "json"
   end

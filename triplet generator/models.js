@@ -1,7 +1,7 @@
 
 var fieldsAll = [];
-// var marktypesAll = ['bar','point','line','area'];
-var marktypesAll = ['point'];
+var marktypesAll = ['bar','point','line','area'];
+// var marktypesAll = ['point'];
 var channelsAll = ['x','y','shape','color','size','row','column'];
 var aggregateAll = ['mean'];
 
@@ -19,10 +19,18 @@ function Field(fieldType, fieldName, cardinality){
   this.cardinality = (cardinality===undefined) ? 0 : cardinality;
 }
 fieldsAll.push(new Field('quantitative','Acceleration'));
-// fieldsAll.push(new Field('quantitative','Horsepower'));
+fieldsAll.push(new Field('quantitative','Horsepower'));
 // fieldsAll.push(new Field('quantitative','Displacement'));
 fieldsAll.push(new Field('nominal','Origin',3));
-// fieldsAll.push(new Field('nominal','Cylinders',6));
+fieldsAll.push(new Field('nominal','Cylinders',6));
+
+var QFieldsAll = fieldsAll.filter(function( field ){
+  return field.fieldType === "quantitative"
+});
+
+var NFieldsAll = fieldsAll.filter(function( field ){
+  return field.fieldType === "nominal"
+});
 
 function Mapping(channels, fields){
   var that = this;
@@ -171,6 +179,15 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
     return {"result": result, "columns": columns, "values": values}
   }
 
+  this.abstEqual = function(anotherVlf){
+    if (JSON.stringify(anotherVlf.flat().values) === JSON.stringify(this.flat().values)){
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
 }
 
 
@@ -215,6 +232,32 @@ function vl2vlf (vl) {
   return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
+function remap(vlfs){
+  return vlfs.map(function(vlf){
+    var newFields = [];
+    var q = 0;
+    var n = 0;
+    for (var i = 0; i < vlf.fields.length; i++) {
+      if ( vlf.fields[i].fieldName !== "*" ) {
+        if ( vlf.fields[i].fieldType === 'quantitative' ){
+          newFields.push(QFieldsAll[q]);
+          q += 1;
+        }
+        if ( vlf.fields[i].fieldType ==='nominal'){
+          newFields.push(NFieldsAll[n]);
+          n += 1;
+        }
+      }
+      else{
+        newFields.push(vlf.fields[i]);
+      }
+    }
+    vlf.fields = newFields;
+    vlf.mapping = new Mapping(vlf.channels, vlf.fields);
+    return vlf
+  });
+}
+
 
 module.exports = {
   VegaLiteFeature: VegaLiteFeature,
@@ -224,4 +267,5 @@ module.exports = {
   channelsAll: channelsAll,
   marktypesAll: marktypesAll,
   channelPropertiesAll: channelPropertiesAll,
+  remap: remap
 };

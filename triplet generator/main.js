@@ -20,8 +20,8 @@ var tables = [
             ];
 
 
-var filePath = "./results/compass_small/";
-var db = enumerater.dbInit(filePath + "vlspace_compass_small.sqlite3",tables,true);
+var filePath = "./results/compass_v4_compact/";
+var db = enumerater.dbInit(filePath + "compass_v4_compact.sqlite3",tables);
 
 var specs = JSON.parse(fs.readFileSync(filePath + 'specs.json','utf8'));
 console.log("The number of specs : " + specs.length );

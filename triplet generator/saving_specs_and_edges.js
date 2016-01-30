@@ -14,10 +14,10 @@ var mark_1 = require('./bower_components/vega-lite/src/mark');
 
 
 var tables = [
-              { name: "triplets",
-                columns: ["id", "ref_id", "left_id", "right_id", "compared_result", "reason"],
-                type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER", "INTEGER", "TEXT", "TEXT"]
-              },
+              // { name: "triplets",
+              //   columns: ["id", "ref_id", "left_id", "right_id", "compared_result", "reason"],
+              //   type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER", "INTEGER", "TEXT", "TEXT"]
+              // },
               { name: "specs",
                 columns: ["id", "json"],
                 type: ["INTEGER PRIMARY KEY", "TEXT" ]
@@ -27,16 +27,24 @@ var tables = [
                 type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER" ]
               }
             ];
-var filePath = "./results/compass_v4/";
-var db = enumerater.dbInit(filePath + "compass_v4.sqlite3",tables);
+var filePath = "./results/compass_v4_compact/";
+var db = enumerater.dbInit(filePath + "compass_v4_compact.sqlite3",tables);
 
 
 // var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );
-var specs = enumerater.generateVLFWithCompass( './data/cars.json', {db: db, tables: [tables[1]] } );
+var specs = enumerater.generateVLFWithCompass( './data/cars.json', {db: db,
+  tables: [tables[0]],
+  projections: { maxAdditionalVariables: 4 },
+  scales: {rescaleQuantitative: [undefined, 'log']},
+  compassSpecs: {
+        markList: models.marktypesAll,
+        channelList: models.channelsAll
+      }
+  } );
 console.log("The number of specs : " + specs.length );
 
 
-var edges = enumerater.generatingEdges(specs, {db: db, tables: [tables[2]] } );
+var edges = enumerater.generatingEdges(specs, {db: db, tables: [tables[1]] } );
 // var edges = enumerater.generatingEdges(specs );
 var edgesN = 0;
 for (var i = 0; i < edges.length; i++) {
