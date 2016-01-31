@@ -8,14 +8,16 @@ class HumanFiltersController < ApplicationController
   end
 
   def show
-    @spec = Spec.find(params[:id])
+    @spec = Spec.find_by_id(params[:id])
     @human_filter = HumanFilter.new
   end
 
   def create
     @human_filter = HumanFilter.new(human_filter_params);
     if @human_filter.save
-      @spec = Spec.less_filtered_one
+      offset = rand(Spec.count) + 1
+      @spec = Spec.find_by_id(offset);
+
       redirect_to human_filter_path(@spec)
     else
       raise '!';

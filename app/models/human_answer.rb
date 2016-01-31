@@ -13,13 +13,17 @@ class HumanAnswer < ActiveRecord::Base
   end
 
   def self.all_with_csv_triplets
-    human_answers = all
-    if Triplet.all.count == 0
-      human_answers = all.map do |human_answer|
-        human_answer.triplet = Triplet.find_by_id_in_csv(human_answer.triplet_id);
-        human_answer
+
+
+    human_answers = all.map do |human_answer|
+
+      if( !human_answer.triplet )
+        human_answer.triplet = Triplet.find_by_id_in_csv(human_answer.triplet_id)
       end
+
+      human_answer
     end
+
 
     human_answers
 

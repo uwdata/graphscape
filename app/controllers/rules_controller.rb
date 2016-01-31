@@ -3,6 +3,7 @@ class RulesController < ApplicationController
   def index
     @rules = Rule.all
     @human_answers = HumanAnswer.all_with_csv_triplets
+
     @specs = Spec.all
     session[:return_to] = "rules_path"
   end
