@@ -84,8 +84,12 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
         info += that.channelProperties[i].channel + " : " + that.channelProperties[i].property + "\n";
       }
     }
+    else if (column ==="channels") {
+      info  = that[column].join("\n");
+    }
     else
       info = JSON.stringify(that[column]);
+
 
     return info;
   }
