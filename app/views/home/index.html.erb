@@ -9,7 +9,7 @@
 
 <div class="vis-container">
   <div id="vis-reference"></div>
-  <h3>Which one of belows is more similar to the upper one?"</h3></br>
+  <h3> Which one of belows is easier to understand after reading the upper one?</h3></br>
   <%= form_for @human_answer do |f| %>
   <%= f.hidden_field :triplet_id, value: @triplet.id %>
 
@@ -32,8 +32,9 @@
       </label>
     </div>
   </div>
-  <div>
-    <%= f.submit "Next", class: "btn btn-primary" %>
+  <div style="margin: 20px 0;">
+    <%= f.submit "Next", class: "btn btn-primary" %><br>
+    You've answered <span class="badge"><%= current_user.human_answers.count %></span> triplets.
   </div>
   <% end %>
 </div>
