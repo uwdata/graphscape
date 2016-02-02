@@ -6,7 +6,7 @@ class HomeController < ApplicationController
     offset = rand(ENV["TRIPLET_COUNT"].to_i) + 1
     # offset = 89335
     p offset
-    @triplet = Triplet.find_by_id_in_csv(offset);
+    @triplet = Triplet.find_by_id(offset) || Triplet.find_by_id_in_csv(offset)
     # @triplet = Triplet.order("RANDOM()").first
 
     @human_answer = HumanAnswer.new()
