@@ -65,7 +65,7 @@ function generateVLFWithCompass(dataPath, options ){
   vlfs = models.remap(vlfs);
 
   return vlfs.map(function(vlf){
-    if (options) {
+    if (options.db) {
       options.db.serialize(function(){
         var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] + ") VALUES( ? )");
         stmt.run(JSON.stringify(vlf));
