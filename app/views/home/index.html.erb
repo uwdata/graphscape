@@ -36,8 +36,12 @@
   </div>
   <div style="margin: 20px 0;">
     <%= f.submit "Next", class: "btn btn-primary" %><br>
-    You've answered <span class="badge"><%= current_user.human_answers.count %></span> triplets.<br/>
-
+    <% if @user_covered >= @daily_goal %>
+      Thank you! You've done all your assignments today! <span class="badge"><%= @user_covered %>/<%= @daily_goal %></span> <br/>
+    <% else %>
+      You've answered <span class="badge"><%= @user_covered %>/<%= @daily_goal %></span> triplets today.<br/>
+    <% end %>
+    Now we have <span class="badge"><%= @total - @covered %></span> uncovered triplets.<br/>
   <% end %>
   </div>
 </div>
