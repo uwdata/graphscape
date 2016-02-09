@@ -6,7 +6,7 @@ class HomeController < ApplicationController
     @offset = rand(ENV["TRIPLET_COUNT"].to_i) + 1
     # offset = 89335
     @user_covered = current_user.human_answers.where("created_at >= ?", (Time.now-24.hours)).where("answer <> ?", "hard").count
-    @daily_goal = 2
+    @daily_goal = ENV["DAILY_GOAL"].to_i
 
     @total = ENV["TRIPLET_COUNT"].to_i
     @covered = HumanAnswer.where("answer <> ?", "hard").pluck(:triplet_id).uniq.count
