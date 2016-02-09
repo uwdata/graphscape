@@ -55,19 +55,30 @@ $(document).on('ready page:load', function () {
       if (event.which === 37 && toggled)  {
         $('#human_answer_answer_left').prop("checked", true);
         $('#human_answer_answer_right').prop("checked", false);
+        $('#human_answer_answer_hard').prop("checked", false);
       }
       else if (event.which === 39 && toggled) {
         $('#human_answer_answer_right').prop("checked",true);
         $('#human_answer_answer_left').prop("checked", false);
+        $('#human_answer_answer_hard').prop("checked", false);
+      }
+      else if (event.which === 40 && toggled) {
+        $('#human_answer_answer_right').prop("checked",false);
+        $('#human_answer_answer_left').prop("checked", false);
+        $('#human_answer_answer_hard').prop("checked", true);
       }
       else if (event.which === 32){
-        if ( $('#human_answer_answer_right').prop("checked") || $('#human_answer_answer_left').prop("checked") ) {
+        if ( $('#human_answer_answer_right').prop("checked") || $('#human_answer_answer_left').prop("checked") || $('#human_answer_answer_hard').prop("checked") ) {
           $('#new_human_answer').submit();
         }
         else
           alert("Choice first");
       }
 
+    });
+
+    $('#hard-to-answer').on('click',function(){
+      location.reload();
     });
 
   }

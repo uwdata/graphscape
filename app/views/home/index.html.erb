@@ -10,7 +10,7 @@
 <div class="vis-container">
   <div id="vis-reference"></div>
   <h3> <%= prompt %>
-    <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg">Hard?</button></br>
+    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".bs-example-modal-lg">help</button></br>
   </h3>
   <%= form_for @human_answer do |f| %>
   <%= f.hidden_field :triplet_id, value: @triplet.id %>
@@ -34,8 +34,13 @@
       </label>
     </div>
   </div>
+  <br/>
+  <label>
+    Hard to answer
+    <%= f.radio_button :answer, "hard", :required =>"required" %>
+  </label>
   <div style="margin: 20px 0;">
-    <%= f.submit "Next", class: "btn btn-primary" %><br>
+    <%= f.submit "Submit", class: "btn btn-primary" %><br/>
     <% if @user_covered >= @daily_goal %>
       Thank you! You've done all your assignments today! <span class="badge"><%= @user_covered %>/<%= @daily_goal %></span> <br/>
     <% else %>
@@ -76,7 +81,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        If you still need some helps : yhkim01@cs.washington.edu.
+        If you still need some helps : yhkim01 at cs.washington.edu
       </div>
     </div>
   </div>
