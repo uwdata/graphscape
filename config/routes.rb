@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :human_filters
   resources :users
   resources :embedments
-  resources :rules do
+  resources :rules, except: [:show] do
     member do
       get 'compare_with_human_answers'
       post 'update_score'
