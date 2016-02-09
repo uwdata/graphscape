@@ -6,11 +6,12 @@
     data-compared-result = "<%= @triplet.compared_result %>"
     data-reason = "<%= @triplet.reason %>" ></div>
 
-
-
+<% prompt = "Which one of belows is closer to understand after reading the upper one?" %>
 <div class="vis-container">
   <div id="vis-reference"></div>
-  <h3> Which one of belows is easier to understand after reading the upper one?</h3></br>
+  <h3> <%= prompt %>
+    <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg">Hard?</button></br>
+  </h3>
   <%= form_for @human_answer do |f| %>
   <%= f.hidden_field :triplet_id, value: @triplet.id %>
 
@@ -35,7 +36,45 @@
   </div>
   <div style="margin: 20px 0;">
     <%= f.submit "Next", class: "btn btn-primary" %><br>
-    You've answered <span class="badge"><%= current_user.human_answers.count %></span> triplets.
-  </div>
+    You've answered <span class="badge"><%= current_user.human_answers.count %></span> triplets.<br/>
+
   <% end %>
+  </div>
 </div>
+
+<!-- Large modal -->
+
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Let me give you easier one...</h4>
+      </div>
+
+      <div class="row text-center">
+
+        <div class="col-xs-12 col-md-4 col-md-offset-4 helping-choice">
+          <p >Star Wars is an American epic space opera franchise, centered on a film series created by George Lucas. It depicts the adventures of various characters "a long time ago in a galaxy far, far away".</p>
+        </div>
+      </div>
+      <h3 class="text-center"> <%= prompt %> </h3>
+      <div class="row">
+        <div class="col-xs-6 col-md-4 col-md-offset-2 helping-choice">
+          <p >The first film in the series, Star Wars (later subtitled Episode IV: A New Hope), was released on May 25, 1977 by 20th Century Fox and became a worldwide pop culture phenomenon. It was followed by the similarly successful sequels The Empire Strikes Back (1980) and Return of the Jedi (1983); these three films constitute the original Star Wars trilogy.
+          </p>
+          <button type="button" class="btn btn-default center-block" data-dismiss="modal">Left</button>
+        </div>
+        <div class="col-xs-6 col-md-4 helping-choice">
+          <p> Weather is sunny! :)</p>
+          <button type="button" class="btn btn-default center-block" >Right</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        If you still need some helps : yhkim01@cs.washington.edu.
+      </div>
+    </div>
+  </div>
+</div>
+
