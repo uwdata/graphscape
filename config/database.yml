@@ -16,7 +16,8 @@ development:
   # database: db/vlspace_compass_small.sqlite3
   # database: db/vlspecs_gnmds_k.sqlite3
   # database: db/vlspecs_medium_gnmds_k.sqlite3
-  database: db/compass_v4_compact.sqlite3
+  database: db/compass_v4_abst.sqlite3
+  # database: db/compass_v4_compact.sqlite3
 
 
 

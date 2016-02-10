@@ -21,7 +21,8 @@ function isEmpty( el ){
     return el.length === 0;
 }
 function draw(selector, spec){
-  var vgSpec = vl.compile(spec.vegalite(visData)).spec;
+  var realFieldNames = { Q1:'Acceleration', Q2:'Horsepower', N1:'Origin', N2:'Cylinders' }
+  var vgSpec = vl.compile(spec.vegalite(visData, realFieldNames)).spec;
   vg.parse.spec(vgSpec, function(chart) {
     chart({el: selector}).update();
   });

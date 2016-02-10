@@ -1,43 +1,14 @@
 
-var fieldsAll = [];
-var marktypesAll = ['bar','point','line','area'];
-// var marktypesAll = ['point'];
-var channelsAll = ['x','y','shape','color','size','row','column'];
-var aggregateAll = ['mean'];
-
-var xScaleLog = { "channel": 'x', "property": "scale", "value": {"type":"log"} };
-var yScaleLog = { "channel": 'y', "property": "scale", "value": {"type":"log"} };
-var xAggregateMean = { "channel": 'x', "property": "aggregate", "value": "mean" };
-var yAggregateMean = { "channel": 'y', "property": "aggregate", "value": "mean" };
-var propertiesAll = ["scale", "aggregate", "bin"];
-var channelPropertiesAll = [xScaleLog, xAggregateMean, yAggregateMean, yScaleLog];
-
-
-function Field(fieldType, fieldName, cardinality){
+function Field(fieldType, fieldName){
   this.fieldType = fieldType;
   this.fieldName = fieldName;
-  this.cardinality = (cardinality===undefined) ? 0 : cardinality;
 }
-fieldsAll.push(new Field('quantitative','Acceleration'));
-fieldsAll.push(new Field('quantitative','Horsepower'));
-// fieldsAll.push(new Field('quantitative','Displacement'));
-fieldsAll.push(new Field('nominal','Origin',3));
-fieldsAll.push(new Field('nominal','Cylinders',6));
-
-var QFieldsAll = fieldsAll.filter(function( field ){
-  return field.fieldType === "quantitative"
-});
-
-var NFieldsAll = fieldsAll.filter(function( field ){
-  return field.fieldType === "nominal"
-});
 
 function Mapping(channels, fields){
   var that = this;
   // this.channels = channels;
   this.ch2f = {};
   this.f2ch = {};
-
   for (var i = 0; i < channels.length; i++) {
     that.ch2f[channels[i]] = fields[i];
     that.f2ch[fields[i].fieldName] = channels[i];
@@ -105,7 +76,7 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
     return info;
   }
 
-  this.vegalite = function(boundData){
+  this.vegalite = function(boundData, realFieldNames){
     var vlSpec = {};
     vlSpec["data"] = {"values": boundData};
     vlSpec["mark"] = that.marktype;
@@ -114,11 +85,7 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
       var ch = that.channels[i];
       var field = mapping.ch2f[ch];
 
-      vlSpec["encoding"][ch] = {"type": field.fieldType, "field": field.fieldName };
-
-      // if (that.marktype === "bar" && field.fieldType === "quantitative"){
-      //   vlSpec["encoding"][ch]["aggregate"] = "mean" ;
-      // }
+      vlSpec["encoding"][ch] = {"type": field.fieldType, "field": realFieldNames[field.fieldName] };
 
     };
     if (channelProperties.length > 0) {
@@ -127,17 +94,14 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
         var prop = channelProperties[i].property;
         var propVal = channelProperties[i].value;
 
-
         vlSpec["encoding"][ch][prop] =  propVal;
-
-
       };
     };
 
     return vlSpec;
   }
 
-  this.flat = function (){
+  this.flat = function (channelsAll, propertiesAll ){
     var result ={};
     var columns = [];
     var values =[];
@@ -183,8 +147,8 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
     return {"result": result, "columns": columns, "values": values}
   }
 
-  this.abstEqual = function(anotherVlf){
-    if (JSON.stringify(anotherVlf.flat().values) === JSON.stringify(this.flat().values)){
+  this.abstEqual = function(anotherVlf, channelsAll, propertiesAll){
+    if (JSON.stringify(anotherVlf.flat(channelsAll, propertiesAll).values) === JSON.stringify(this.flat(channelsAll, propertiesAll).values)){
       return true;
     }
     else {
@@ -236,7 +200,16 @@ function vl2vlf (vl) {
   return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
-function remap(vlfs){
+function remap(vlfs, fieldList){
+
+  var QFieldsAll = fieldList.filter(function( field ){
+    return field.fieldType === "quantitative"
+  });
+
+  var NFieldsAll = fieldList.filter(function( field ){
+    return field.fieldType === "nominal"
+  });
+
   return vlfs.map(function(vlf){
     var newFields = [];
     var q = 0;
@@ -262,14 +235,42 @@ function remap(vlfs){
   });
 }
 
+function fakeStats(fields){
+  return fields.reduce(function(s, field){
+    if (field.fieldType === "quantitative") {
+      s[field.fieldName] = {
+        type: "number",
+        missing: 0,
+        distinct: 100,
+        min: 0,
+        max: 24.8,
+        mean: 15.51970443349754,
+        stdev: 2.8,
+        };
+    }
+    else if (field.fieldType === "nominal") {
+      s[field.fieldName] = {
+        type: "string",
+        distinct: 5,
+        max: 100,
+        min: 0,
+        missing: 0
+        };
+    }
+    return s;
+  }, {
+    '*': {
+      max: 100,
+      min: 0
+    }
+  });
+}
 
 module.exports = {
   VegaLiteFeature: VegaLiteFeature,
   vl2vlf: vl2vlf,
+  Field, Field,
   Mapping: Mapping,
-  fieldsAll: fieldsAll,
-  channelsAll: channelsAll,
-  marktypesAll: marktypesAll,
-  channelPropertiesAll: channelPropertiesAll,
-  remap: remap
+  remap: remap,
+  fakeStats : fakeStats
 };

@@ -1,23 +1,9 @@
 var utils = require('./utils');
 var models = require('./models');
-var enumerater = require('./enumerater');
-var comparator = require('./comparator');
+var enumerater = require('./enumerater_with_compass');
 var fs = require('fs');
-var cp = require('./bower_components/viscompass/compass');
-var dl = require('./bower_components/datalib/datalib');
-var genScales = require('./bower_components/viscompass/src/gen/scales').default;
-var channel_1 = require('./bower_components/vega-lite/src/channel');
-var mark_1 = require('./bower_components/vega-lite/src/mark');
-
-
-
-
 
 var tables = [
-              // { name: "triplets",
-              //   columns: ["id", "ref_id", "left_id", "right_id", "compared_result", "reason"],
-              //   type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER", "INTEGER", "TEXT", "TEXT"]
-              // },
               { name: "specs",
                 columns: ["id", "json"],
                 type: ["INTEGER PRIMARY KEY", "TEXT" ]
@@ -27,25 +13,38 @@ var tables = [
                 type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER" ]
               }
             ];
-var filePath = "./results/compass_v4_compact/";
-var db = enumerater.dbInit(filePath + "compass_v4_compact.sqlite3",tables);
+var filePath = "./results/compass_v4_abst/";
+var db = enumerater.dbInit(filePath + "compass_v4_abst.sqlite3",tables);
+var data = JSON.parse(fs.readFileSync('./data/cars.json','utf8'));
+/***** Enumerating Settings  *****/
+var fieldsAll = [];
+fieldsAll.push(new models.Field('quantitative','Q1'));
+fieldsAll.push(new models.Field('quantitative','Q2'));
+fieldsAll.push(new models.Field('nominal','N1'));
+fieldsAll.push(new models.Field('nominal','N2'));
 
 
-// var specs = enumerater.generatingState( models, {db: db, tables: [tables[1]] } );
-var specs = enumerater.generateVLFWithCompass( './data/cars.json', {db: db,
-  tables: [tables[0]],
+
+// 1. eunumerating specs by Compass
+
+
+var specs = enumerater.generateVLFWithCompass({
+  db: db,
+  tables: [ tables[0] ],
+  fieldList: fieldsAll,
+  propertyList: ["scale", "aggregate", "bin"],
   projections: { maxAdditionalVariables: 4 },
   scales: {rescaleQuantitative: [undefined, 'log']},
   compassSpecs: {
-        markList: models.marktypesAll,
-        channelList: models.channelsAll
-      }
-  } );
+        markList: ['bar','point','line','area'],
+        channelList: ['x','y','shape','color','size','row','column']
+    }
+  });
 console.log("The number of specs : " + specs.length );
 
+// 2. eunumerating edges
 
 var edges = enumerater.generatingEdges(specs, {db: db, tables: [tables[1]] } );
-// var edges = enumerater.generatingEdges(specs );
 var edgesN = 0;
 for (var i = 0; i < edges.length; i++) {
   edgesN += edges[i].length;
@@ -58,6 +57,5 @@ fs.writeFileSync(filePath + 'specs.json',JSON.stringify(specs));
 fs.writeFileSync(filePath + 'edges.json',JSON.stringify(edges));
 console.log("Saved!");
 
-// var specs = JSON.parse(fs.readFileSync('./result12/specs.json','utf8'));
-// var edges = JSON.parse(fs.readFileSync('./result12/edges.json','utf8'));
+
 
