@@ -10,13 +10,6 @@ var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
 
 
 
-
-
-
-
-
-
-
 function generateVLFWithCompass( options ){
   var cp = require('./bower_components/viscompass/compass');
   var dl = require('./bower_components/datalib/datalib');
@@ -25,12 +18,13 @@ function generateVLFWithCompass( options ){
   var mark_1 = require('./bower_components/vega-lite/src/mark');
 
   var fieldDefs = options.fieldList.map(function(field){
+
     return { "field": field.fieldName, "type": field.fieldType };
   });
 
   var stats = options.stats;
   if(!stats){
-    stats =models.fakeStats(options.fieldList);
+    stats = models.fakeStats(options.fieldList);
   }
 
   var fieldSets = cp.gen.projections(fieldDefs, stats, options.projections)
@@ -47,25 +41,35 @@ function generateVLFWithCompass( options ){
 
 
   var vlfs = fieldSets.map(function(spec){
-    return models.vl2vlf(spec);
+    var vlf = models.vl2vlf(spec);
+    return vlf;
   });
+  console.log(vlfs.length);
+  console.log("Now, prunning redundant VegaLiteFeatures based on abstract...");
 
-  //exclude the redundant vlf
-  vlfs = vlfs.reduce(function(prevVlfs, curVlf){
-    for (var i = 0; i < prevVlfs.length; i++) {
-      if(prevVlfs[i].abstEqual(curVlf, options.compassSpecs.channelList, options.propertyList)){
-        return prevVlfs
-      }
+  var filteredVlfs = [];
+  for (var i = 0; i < vlfs.length; i++) {
+
+    for (var j = 0; j < filteredVlfs.length; j++) {
+      if (filteredVlfs[j].abstEqual(vlfs[i], options.compassSpecs.channelList, options.propertyList)) {
+        break;
+      };
+    }
+    if (j === filteredVlfs.length) {
+      filteredVlfs.push(vlfs[i])
     };
 
-    prevVlfs.push(curVlf);
-    return prevVlfs;
-  },[]);
+    if (i % Math.ceil(vlfs.length / 10) === 0 ) {
+      process.stdout.write("#");
+    };
 
+  }
 
-  vlfs = models.remap(vlfs, options.fieldList);
+  vlfs = models.remap(filteredVlfs, options.fieldList);
 
+  console.log("\nNow, remmaping...");
   return vlfs.map(function(vlf){
+
     if (options.db) {
       options.db.serialize(function(){
         var stmt = options.db.prepare("INSERT INTO "+ options.tables[0].name +" (" + options.tables[0].columns[1] + ") VALUES( ? )");
@@ -89,13 +93,15 @@ function generatingEdges(specs, options){
       var diffVarPoint = comparator.diffVarPoint(specs[i],specs[j]);
       var diffChPoint = comparator.diffChannelPoint(specs[i],specs[j]);
       var diffMpPoint = comparator.diffMappingPoint(specs[i],specs[j]);
+      var diffPropPoint = comparator.diffPropPoint(specs[i],specs[j]);
 
       // if (i >= 260) {
       //   console.log(diffVarPoint + ',' + diffChPoint +',' + diffMpPoint);
       // };
 
-
-      if( diffVarPoint <= 1.0 && diffChPoint <= 1.0 && diffMpPoint <= 1.0){
+      if( diffVarPoint + diffChPoint + diffMpPoint + diffPropPoint <= 1.0 ){
+        console.log(diffVarPoint + diffChPoint + diffMpPoint + diffPropPoint);
+      // if( diffVarPoint <= 1.0 && diffChPoint <= 1.0 && diffMpPoint <= 1.0){
 
         edges[i].push(j);
 

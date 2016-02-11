@@ -1,4 +1,4 @@
-var visDataCars = [
+[
    {
       "Name":"chevrolet chevelle malibu",
       "Miles_per_Gallon":18,
@@ -4465,4 +4465,4 @@ var visDataCars = [
       "Year":1982,
       "Origin":"A"
    }
-];
+]

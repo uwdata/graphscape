@@ -20,7 +20,7 @@ __TODO : should write after resolving the issue #12
 
 ## Deploy it to VLRuler (development environmet)
 
-__TODO : should write after resolving the issue #12
+__TODO : should write after resolving the issue #121
 
 
 Last update : 2016-02-09

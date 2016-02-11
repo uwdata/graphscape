@@ -170,9 +170,6 @@ function diffVarPoint(spec1, spec2){
     // count # of the diff channels,
     var field = totalFields[i];
     if (spec1Fields.indexOf(field) < 0 || spec2Fields.indexOf(field) < 0 ) {
-      if (field==="*")
-        continue;
-
       point += 1.0;
     }
     // else if (spec1.mapping.f2ch[field.fieldName] !== spec2.mapping.f2ch[field.fieldName]) {
@@ -337,6 +334,7 @@ module.exports = {
   diffVarPoint: diffVarPoint,
   diffChannelPoint: diffChannelPoint,
   diffMappingPoint: diffMappingPoint,
+  diffPropPoint : diffPropPoint,
   specCompare: specCompare
 };
 

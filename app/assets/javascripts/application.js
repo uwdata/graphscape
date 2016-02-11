@@ -21,8 +21,12 @@ function isEmpty( el ){
     return el.length === 0;
 }
 function draw(selector, spec){
-  var realFieldNames = { Q1:'Acceleration', Q2:'Horsepower', N1:'Origin', N2:'Cylinders' }
-  var vgSpec = vl.compile(spec.vegalite(visData, realFieldNames)).spec;
+  var realFieldNames = { Q1:'Acceleration', Q2:'Horsepower', N1:'Origin', N2:'Cylinders', T1:'Year', "*":"*" }
+  // var realFieldNames = { Q1:'HLY-TEMP-NORMAL', Q2:'HLY-PRES-NORMAL', N1:'STATION', N2:'STATION_NAME', T1:'DATE' };
+  // var realFieldNames = { Q1:'delay', Q2:'distance', N1:'origin', N2:'destination', T1:'date' };
+
+  // var vgSpec = vl.compile(spec.vegalite({"url":"/data/flights-2k.json"}, realFieldNames)).spec;
+  var vgSpec = vl.compile(spec.vegalite({"url":"/data/cars.json"}, realFieldNames)).spec;
   vg.parse.spec(vgSpec, function(chart) {
     chart({el: selector}).update();
   });
@@ -97,13 +101,10 @@ $(document).on('ready page:load', function () {
       var specLeft = new VegaLiteFeature(left.marktype, left.channels, left.mapping, left.fields, left.channelProperties);
       var specRight = new VegaLiteFeature(right.marktype, right.channels, right.mapping, right.fields, right.channelProperties);
 
-      // var vgSpecRef = vl.compile(specRef.vegalite(visData)).spec;
       draw("#vis-ref" + i, specRef);
 
-      // var vgSpecLeft = vl.compile(specLeft.vegalite(visData)).spec;
       draw("#vis-left" + i, specLeft);
 
-      // var vgSpecRight = vl.compile(specRight.vegalite(visData)).spec;
       draw("#vis-right" + i, specRight);
 
     }

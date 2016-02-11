@@ -1,7 +1,8 @@
 
-function Field(fieldType, fieldName){
+function Field(fieldType, fieldName, timeUnit){
   this.fieldType = fieldType;
   this.fieldName = fieldName;
+  this.timeUnit = timeUnit;
 }
 
 function Mapping(channels, fields){
@@ -78,14 +79,18 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
 
   this.vegalite = function(boundData, realFieldNames){
     var vlSpec = {};
-    vlSpec["data"] = {"values": boundData};
+    vlSpec["data"] = boundData;
     vlSpec["mark"] = that.marktype;
     vlSpec["encoding"] = {};
     for (var i = 0; i < that.channels.length; i++) {
       var ch = that.channels[i];
       var field = mapping.ch2f[ch];
 
-      vlSpec["encoding"][ch] = {"type": field.fieldType, "field": realFieldNames[field.fieldName] };
+
+      vlSpec["encoding"][ch] = {"type": field.fieldType, "field": realFieldNames[field.fieldName]  };
+      if (field.fieldType) {
+        vlSpec["encoding"][ch]["timeUnit"] = field.timeUnit;
+      };
 
     };
     if (channelProperties.length > 0) {
@@ -148,6 +153,12 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
   }
 
   this.abstEqual = function(anotherVlf, channelsAll, propertiesAll){
+
+    if (that.marktype !== anotherVlf.marktype ) { return false };
+    if (that.channels.slice(0).sort().join("") !== anotherVlf.channels.slice(0).sort().join("") ) { return false };
+    if (that.fields.slice(0).sort().join("") !== anotherVlf.fields.slice(0).sort().join("") ) { return false };
+    if (that.channelProperties.slice(0).sort().join("") !== anotherVlf.channelProperties.slice(0).sort().join("") ) { return false };
+
     if (JSON.stringify(anotherVlf.flat(channelsAll, propertiesAll).values) === JSON.stringify(this.flat(channelsAll, propertiesAll).values)){
       return true;
     }
@@ -177,7 +188,9 @@ function vl2vlf (vl) {
       channels.push(channel);
 
       //check field
-      fields.push(new Field(vl.encoding[channel].type,vl.encoding[channel].field,0));
+      var field = new Field(vl.encoding[channel].type, vl.encoding[channel].field, vl.encoding[channel].timeUnit );
+      fields.push(field);
+
 
       //check properties
       for (var j = 0; j < chPropAll.length; j++) {
@@ -196,33 +209,40 @@ function vl2vlf (vl) {
 
   //convert to mapping
   mapping = new Mapping(channels, fields)
-
   return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
 function remap(vlfs, fieldList){
 
-  var QFieldsAll = fieldList.filter(function( field ){
-    return field.fieldType === "quantitative"
-  });
+  var fieldListPerType = ["quantitative","nominal","temporal"].reduce(function(flpType, fieldType){
 
-  var NFieldsAll = fieldList.filter(function( field ){
-    return field.fieldType === "nominal"
-  });
+    flpType[fieldType] = fieldList.filter(function( field ){
+      return field.fieldType === fieldType;
+    });
+
+    return flpType;
+
+  },{});
+
 
   return vlfs.map(function(vlf){
     var newFields = [];
-    var q = 0;
-    var n = 0;
+    var q = 0, n=0, t=0;
+
     for (var i = 0; i < vlf.fields.length; i++) {
       if ( vlf.fields[i].fieldName !== "*" ) {
+
         if ( vlf.fields[i].fieldType === 'quantitative' ){
-          newFields.push(QFieldsAll[q]);
+          newFields.push(fieldListPerType['quantitative'][q]);
           q += 1;
         }
         if ( vlf.fields[i].fieldType ==='nominal'){
-          newFields.push(NFieldsAll[n]);
+          newFields.push(fieldListPerType['nominal'][n]);
           n += 1;
+        }
+        if ( vlf.fields[i].fieldType ==='temporal'){
+          newFields.push(fieldListPerType['temporal'][t]);
+          t += 1;
         }
       }
       else{
@@ -248,7 +268,7 @@ function fakeStats(fields){
         stdev: 2.8,
         };
     }
-    else if (field.fieldType === "nominal") {
+    else if (field.fieldType === "nominal" ) {
       s[field.fieldName] = {
         type: "string",
         distinct: 5,
@@ -257,10 +277,19 @@ function fakeStats(fields){
         missing: 0
         };
     }
+    else if (field.fieldType === "temporal" ) {
+      s[field.fieldName] = {
+        type: "string",
+        distinct: 1000,
+        max: 999,
+        min: 0,
+        missing: 0
+        };
+    }
     return s;
   }, {
     '*': {
-      max: 100,
+      max: 1000,
       min: 0
     }
   });

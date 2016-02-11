@@ -3,6 +3,7 @@ var models = require('./models');
 var enumerater = require('./enumerater_with_compass');
 var fs = require('fs');
 
+
 var tables = [
               { name: "specs",
                 columns: ["id", "json"],
@@ -13,19 +14,24 @@ var tables = [
                 type: ["INTEGER PRIMARY KEY", "INTEGER", "INTEGER" ]
               }
             ];
-var filePath = "./results/compass_v4_abst/";
-var db = enumerater.dbInit(filePath + "compass_v4_abst.sqlite3",tables);
-var data = JSON.parse(fs.readFileSync('./data/cars.json','utf8'));
+var filePath = "./results/compass_universal/";
+var db = enumerater.dbInit(filePath + "compass_universal.sqlite3",tables);
+var data = JSON.parse(fs.readFileSync('./data/climate.json','utf8'));
 /***** Enumerating Settings  *****/
 var fieldsAll = [];
 fieldsAll.push(new models.Field('quantitative','Q1'));
 fieldsAll.push(new models.Field('quantitative','Q2'));
 fieldsAll.push(new models.Field('nominal','N1'));
 fieldsAll.push(new models.Field('nominal','N2'));
+fieldsAll.push(new models.Field('temporal','T1','year'));
 
-
-
+var compassSpecs = {
+  markList: ['bar','point','line','area'],
+  channelList: ['x','y','shape','color','size','row','column'],
+  omitShapeWithTimeDimension: false
+  };
 // 1. eunumerating specs by Compass
+
 
 
 var specs = enumerater.generateVLFWithCompass({
@@ -35,10 +41,7 @@ var specs = enumerater.generateVLFWithCompass({
   propertyList: ["scale", "aggregate", "bin"],
   projections: { maxAdditionalVariables: 4 },
   scales: {rescaleQuantitative: [undefined, 'log']},
-  compassSpecs: {
-        markList: ['bar','point','line','area'],
-        channelList: ['x','y','shape','color','size','row','column']
-    }
+  compassSpecs: compassSpecs
   });
 console.log("The number of specs : " + specs.length );
 
