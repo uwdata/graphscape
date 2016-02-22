@@ -12,6 +12,7 @@ function Mapping(channels, fields){
   this.f2ch = {};
   for (var i = 0; i < channels.length; i++) {
     that.ch2f[channels[i]] = fields[i];
+
     that.f2ch[fields[i].fieldName] = channels[i];
   }
 
@@ -126,6 +127,7 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
         result[channelsAll[i]] = "o";
         result[channelsAll[i] + "_Q"] = ( field.fieldType === "quantitative" ) ? "o" : "x";
         result[channelsAll[i] + "_N"] = ( field.fieldType === "nominal" ) ? "o" : "x";
+        result[channelsAll[i] + "_O"] = ( field.fieldType === "ordinal" ) ? "o" : "x";
       }
 
       columns.push(channelsAll[i]);
@@ -212,6 +214,7 @@ function vl2vlf (vl) {
   return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
+
 function remap(vlfs, fieldList){
 
   var fieldListPerType = ["quantitative","nominal","temporal"].reduce(function(flpType, fieldType){
@@ -227,7 +230,7 @@ function remap(vlfs, fieldList){
 
   return vlfs.map(function(vlf){
     var newFields = [];
-    var q = 0, n=0, t=0;
+    var q = 0, n=0, t=0, o=0;
 
     for (var i = 0; i < vlf.fields.length; i++) {
       if ( vlf.fields[i].fieldName !== "*" ) {
@@ -243,6 +246,9 @@ function remap(vlfs, fieldList){
         if ( vlf.fields[i].fieldType ==='temporal'){
           newFields.push(fieldListPerType['temporal'][t]);
           t += 1;
+        if ( vlf.fields[i].fieldType ==='ordinal'){
+          newFields.push(fieldListPerType['ordinal'][o]);
+          o += 1;
         }
       }
       else{
