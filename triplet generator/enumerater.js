@@ -17,10 +17,10 @@ function generateVLFWithCompass(dataPath, options ){
   var mark_1 = require('./bower_components/vega-lite/src/mark');
 
   var data = JSON.parse(fs.readFileSync(dataPath,'utf8'));
-  var fieldDefs = models.fieldsAll.map(function(field){
+  var fieldDefs = options.fieldsAll.map(function(field){
     return {'field': field.fieldName, 'type': field.fieldType }
   });
-
+  console.log(fieldDefs);
   // fieldDefs = List of fieldDef object {field:..., type: ...}
   const stats = dl.summary(data).reduce(function(s, profile) {
     s[profile.field] = profile;
@@ -62,7 +62,7 @@ function generateVLFWithCompass(dataPath, options ){
     return prevVlfs;
   },[]);
 
-  vlfs = models.remap(vlfs);
+  vlfs = models.remap(vlfs, options.fieldsAll);
 
   return vlfs.map(function(vlf){
     if (options.db) {

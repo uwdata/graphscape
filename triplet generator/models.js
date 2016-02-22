@@ -24,22 +24,15 @@ fieldsAll.push(new Field('quantitative','Horsepower'));
 fieldsAll.push(new Field('nominal','Origin',3));
 fieldsAll.push(new Field('nominal','Cylinders',6));
 
-var QFieldsAll = fieldsAll.filter(function( field ){
-  return field.fieldType === "quantitative"
-});
-
-var NFieldsAll = fieldsAll.filter(function( field ){
-  return field.fieldType === "nominal"
-});
 
 function Mapping(channels, fields){
   var that = this;
   // this.channels = channels;
   this.ch2f = {};
   this.f2ch = {};
-
   for (var i = 0; i < channels.length; i++) {
     that.ch2f[channels[i]] = fields[i];
+
     that.f2ch[fields[i].fieldName] = channels[i];
   }
 
@@ -157,6 +150,7 @@ function VegaLiteFeature (marktype, channels, mapping, fields, channelProperties
         result[channelsAll[i]] = "o";
         result[channelsAll[i] + "_Q"] = ( field.fieldType === "quantitative" ) ? "o" : "x";
         result[channelsAll[i] + "_N"] = ( field.fieldType === "nominal" ) ? "o" : "x";
+        result[channelsAll[i] + "_O"] = ( field.fieldType === "ordinal" ) ? "o" : "x";
       }
 
       columns.push(channelsAll[i]);
@@ -236,11 +230,26 @@ function vl2vlf (vl) {
   return new VegaLiteFeature(marktype, channels, mapping, fields, channelProperties);
 }
 
-function remap(vlfs){
+function remap(vlfs, fieldsAll){
+
+
+  var QFieldsAll = fieldsAll.filter(function( field ){
+    return field.fieldType === "quantitative"
+  });
+
+  var NFieldsAll = fieldsAll.filter(function( field ){
+    return field.fieldType === "nominal"
+  });
+
+  var OFieldsAll = fieldsAll.filter(function( field ){
+    return field.fieldType === "ordinal"
+  });
+
   return vlfs.map(function(vlf){
     var newFields = [];
     var q = 0;
     var n = 0;
+    var o = 0;
     for (var i = 0; i < vlf.fields.length; i++) {
       if ( vlf.fields[i].fieldName !== "*" ) {
         if ( vlf.fields[i].fieldType === 'quantitative' ){
@@ -250,6 +259,10 @@ function remap(vlfs){
         if ( vlf.fields[i].fieldType ==='nominal'){
           newFields.push(NFieldsAll[n]);
           n += 1;
+        }
+        if ( vlf.fields[i].fieldType ==='ordinal'){
+          newFields.push(OFieldsAll[o]);
+          o += 1;
         }
       }
       else{
@@ -267,6 +280,7 @@ module.exports = {
   VegaLiteFeature: VegaLiteFeature,
   vl2vlf: vl2vlf,
   Mapping: Mapping,
+  Field, Field,
   fieldsAll: fieldsAll,
   channelsAll: channelsAll,
   marktypesAll: marktypesAll,
