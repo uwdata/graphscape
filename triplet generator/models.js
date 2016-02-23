@@ -217,7 +217,7 @@ function vl2vlf (vl) {
 
 function remap(vlfs, fieldList){
 
-  var fieldListPerType = ["quantitative","nominal","temporal"].reduce(function(flpType, fieldType){
+  var fieldListPerType = ["quantitative","nominal","temporal","ordinal"].reduce(function(flpType, fieldType){
 
     flpType[fieldType] = fieldList.filter(function( field ){
       return field.fieldType === fieldType;
@@ -230,7 +230,7 @@ function remap(vlfs, fieldList){
 
   return vlfs.map(function(vlf){
     var newFields = [];
-    var q = 0, n=0, t=0, o=0;
+    var q = 0, n=0, t=0, o = 0;
 
     for (var i = 0; i < vlf.fields.length; i++) {
       if ( vlf.fields[i].fieldName !== "*" ) {
@@ -246,6 +246,7 @@ function remap(vlfs, fieldList){
         if ( vlf.fields[i].fieldType ==='temporal'){
           newFields.push(fieldListPerType['temporal'][t]);
           t += 1;
+        }
         if ( vlf.fields[i].fieldType ==='ordinal'){
           newFields.push(fieldListPerType['ordinal'][o]);
           o += 1;
@@ -274,7 +275,7 @@ function fakeStats(fields){
         stdev: 2.8,
         };
     }
-    else if (field.fieldType === "nominal" ) {
+    else if (field.fieldType === "nominal" || field.fieldType === "ordinal" ) {
       s[field.fieldName] = {
         type: "string",
         distinct: 5,
