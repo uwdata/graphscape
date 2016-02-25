@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Transitions</title>
+
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/main.css" rel="stylesheet">
+
+
+    <script type="text/javascript" src="js/get-data.js"></script>
+    <script type="text/javascript" src="js/get-specs.js"></script>
+    <script type="text/javascript" src="js/get-transitionSets.js"></script>
+    <script type="text/javascript" src="js/jquery-1.12.0.min.js"></script>
+    <script type="text/javascript" src="js/d3.min.js"></script>
+    <script type="text/javascript" src="js/vega.min.js"></script>
+    <script type="text/javascript" src="js/vega-lite.min.js"></script>
+
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./BEA.js"></script>
+    <script type="text/javascript" src="js/transitions.js"></script>
+
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary "  id="clustering-rank">
+          <input type="radio" name="options" autocomplete="off" > Clustering by rank
+        </label>
+        <label class="btn btn-danger"  id="raw-rank">
+          <input type="radio" name="options" autocomplete="off"> Raw View by rank
+        </label>
+      </div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary"  id="clustering-cost">
+          <input type="radio" name="options" autocomplete="off"> Clustering by cost
+        </label>
+        <label class="btn btn-danger"  id="raw-cost">
+          <input type="radio" name="options" autocomplete="off"> Raw View by cost
+        </label>
+      </div>
+
+      <div class="row" >
+        <div class="col-md-6" id="transitions"></div>
+        <div class="col-md-6" id="transitionsList"></div>
+      </div>
+      <div class="row" >
+        <div class="col-md-6" id="visS"></div>
+        <div class="col-md-6" id="visD"></div>
+      </div>
+
+    </div>
+
+  </body>
+</html>
