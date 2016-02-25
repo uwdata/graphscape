@@ -10,7 +10,41 @@ function draw(selector, spec, data){
   });
 }
 
+
 $(document).on('ready page:load', function () {
+  dataExtension();
+
+
+  var transitionCostMatrix = new Matrix("rank");
+  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
+  var sortedTransitionSetsByRank = BEA(transitionCostMatrix).rows;
+
+  transitionCostMatrix = new Matrix("cost");
+  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
+  var sortedTransitionSetsByCost = BEA(transitionCostMatrix).rows;
+
+
+
+  $('#clustering-rank').on('click',function(){
+    $('svg').remove();
+    visualization(sortedTransitionSetsByRank,"rank");
+  })
+  $('#clustering-cost').on('click',function(){
+    $('svg').remove();
+    visualization(sortedTransitionSetsByCost,"cost");
+  })
+  $('#raw-rank').on('click',function(){
+    $('svg').remove();
+    visualization(transitionSets,"rank");
+  })
+  $('#raw-cost').on('click',function(){
+    $('svg').remove();
+    visualization(transitionSets,"cost");
+  })
+
+});
+
+function visualization(transitionSets, valueAttr){
   var n = specs.length;
   var width = $('#transitions').width();
   var height = width;
@@ -20,21 +54,60 @@ $(document).on('ready page:load', function () {
   var vis = d3.select('#transitions')
                 .append("svg:svg");
 
-  var matrix = vis.attr("width",width)
+  var matrixG = vis.attr("width",width)
                  .attr("height",height)
                  .append("g");
 
-  // var minCost = 999, maxCost = -1;
-  // for (var i = 0; i < transitionSets.length; i++) {
-  //   for (var j = 0; j < transitionSets[i].length; j++) {
-  //     if (transitionSets[i][j].cost < minCost) {
-  //       minCost = transitionSets[i][j].cost
-  //     }
-  //     if (transitionSets[i][j].cost > maxCost) {
-  //       maxCost = transitionSets[i][j].cost
-  //     }
-  //   }
-  // }
+
+  var min = 999, max = -1;
+  for (var i = 0; i < transitionSets.length; i++) {
+    for (var j = 0; j < transitionSets[i].length; j++) {
+      if (transitionSets[i][j][valueAttr] < min) {
+        min = transitionSets[i][j][valueAttr]
+      }
+      if (transitionSets[i][j][valueAttr] > max) {
+        max = transitionSets[i][j][valueAttr]
+      }
+    }
+  }
+  var color = d3.scale.linear()
+    .domain([min,max])
+    .range(["white","red"]);
+
+  matrixG.selectAll(".row")
+      .data(transitionSets)
+      .enter()
+        .append("g")
+        .attr("class","row")
+        .selectAll("rect")
+        .data(function(d){ return d; })
+        .enter()
+          .append("rect")
+          .attr("class", "transitions")
+          .attr("x",function(d,destination,start){ return destination * (boxSize.w + boxInterval.x) + padding.left; })
+          .attr("y",function(d,destination,start){ return start * (boxSize.h + boxInterval.y) + padding.top; })
+          .attr("width", boxSize.w)
+          .attr("height", boxSize.h)
+          .attr("fill", function(d,i,j){ return color(d[valueAttr]); })
+          .on("mouseover", function(d){
+            draw("#visS", specs[d.start], visData);
+            draw("#visD", specs[d.destination], visData);
+            var transitionDetails = "Marktype : " + transDetails(d.marktype) + "<br>";
+            transitionDetails += "Transform : " + transDetails(d.transform) + "<br>";
+            transitionDetails += "Encoding : " + transDetails(d.encoding) + "<br>";
+            transitionDetails += valueAttr + " : " + d[valueAttr] + "<br>";
+            $("#transitionsList").html(transitionDetails);
+          });
+
+
+  function transDetails(transitions){
+    return transitions.map(function(trans){
+              return trans.name;
+           }).join(", ");
+  }
+}
+
+function dataExtension(){
 
   var flattendCosts = transitionSets.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
@@ -49,43 +122,13 @@ $(document).on('ready page:load', function () {
 
   var rank = d3.scale.ordinal()
     .domain(uniqueCosts)
-    .rangePoints([uniqueCosts[0], uniqueCosts[uniqueCosts.length-1]]);
+    .rangePoints([1,100]);
 
-  var color = d3.scale.linear()
-    .domain([uniqueCosts[0],uniqueCosts[uniqueCosts.length-1]])
-    .range(["white","red"]);
-
-
-  matrix.selectAll(".row")
-      .data(transitionSets)
-      .enter()
-        .append("g")
-        .attr("class","row")
-        .selectAll("rect")
-        .data(function(d){ return d; })
-        .enter()
-          .append("rect")
-          .attr("class", "transitions")
-          .attr("x",function(d,destination,start){ return destination * (boxSize.w + boxInterval.x) + padding.left; })
-          .attr("y",function(d,destination,start){ return start * (boxSize.h + boxInterval.y) + padding.top; })
-          .attr("width", boxSize.w)
-          .attr("height", boxSize.h)
-          .attr("fill", function(d,i,j){ return color(rank(d.cost)); })
-          .on("mouseover", function(d,destination,start){
-            draw("#visS", specs[start], visData);
-            draw("#visD", specs[destination], visData);
-            var transitionDetails = "Marktype : " + transDetails(d.marktype) + "<br>";
-            transitionDetails += "Transform : " + transDetails(d.transform) + "<br>";
-            transitionDetails += "Encoding : " + transDetails(d.encoding) + "<br>";
-            transitionDetails += "Cost : " + d.cost + "<br>";
-            $("#transitionsList").html(transitionDetails);
-          });
-
-
-  function transDetails(transitions){
-    return transitions.map(function(trans){
-              return trans.name;
-           }).join(", ");
+  for (var i = 0; i < transitionSets.length; i++) {
+    for (var j = 0; j < transitionSets[i].length; j++) {
+      transitionSets[i][j]["start"] = i;
+      transitionSets[i][j]["destination"] = j;
+      transitionSets[i][j]["rank"] = Math.floor(rank(transitionSets[i][j].cost));
+    }
   }
-
-});
+}

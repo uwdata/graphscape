@@ -22,12 +22,30 @@
     <script type="text/javascript" src="js/vega-lite.min.js"></script>
 
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./BEA.js"></script>
     <script type="text/javascript" src="js/transitions.js"></script>
 
 
   </head>
   <body>
     <div class="container">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary "  id="clustering-rank">
+          <input type="radio" name="options" autocomplete="off" > Clustering by rank
+        </label>
+        <label class="btn btn-danger"  id="raw-rank">
+          <input type="radio" name="options" autocomplete="off"> Raw View by rank
+        </label>
+      </div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary"  id="clustering-cost">
+          <input type="radio" name="options" autocomplete="off"> Clustering by cost
+        </label>
+        <label class="btn btn-danger"  id="raw-cost">
+          <input type="radio" name="options" autocomplete="off"> Raw View by cost
+        </label>
+      </div>
+
       <div class="row" >
         <div class="col-md-6" id="transitions"></div>
         <div class="col-md-6" id="transitionsList"></div>
