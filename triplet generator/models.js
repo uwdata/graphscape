@@ -278,7 +278,7 @@ function fakeStats(fields){
     else if (field.fieldType === "nominal" || field.fieldType === "ordinal" ) {
       s[field.fieldName] = {
         type: "string",
-        distinct: 5,
+        distinct: 3,
         max: 100,
         min: 0,
         missing: 0

@@ -63,7 +63,7 @@ function BEA(M){
   function bondEnergy(v1, v2, valueAttr){
     var BE = 0;
     for (var i = 0; i < v1.length; i++) {
-      BE += Math.abs(v1[i][valueAttr] - v2[i][valueAttr]);
+      BE += Math.pow(v1[i][valueAttr] - v2[i][valueAttr],2);
     }
     return BE
   }

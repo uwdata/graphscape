@@ -47,10 +47,11 @@ $(document).on('ready page:load', function () {
 function visualization(transitionSets, valueAttr){
   var n = specs.length;
   var width = $('#transitions').width();
-  var height = width;
+
   var padding = { left:30, top: 30 };
   var boxSize = { w: 12, h:12 };
   var boxInterval = { x: 1, y:1 };
+  var height = specs.length * (boxSize.w+boxInterval.x) + 50;
   var vis = d3.select('#transitions')
                 .append("svg:svg");
 
@@ -122,7 +123,7 @@ function dataExtension(){
 
   var rank = d3.scale.ordinal()
     .domain(uniqueCosts)
-    .rangePoints([1,100]);
+    .rangePoints([0,uniqueCosts.length]);
 
   for (var i = 0; i < transitionSets.length; i++) {
     for (var j = 0; j < transitionSets[i].length; j++) {
