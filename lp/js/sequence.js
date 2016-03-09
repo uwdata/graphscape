@@ -1,3 +1,4 @@
+var BookmarksMode = false;
 
 function isEmpty( el ){
     return el.length === 0;
@@ -12,13 +13,23 @@ function draw(selector, spec, data){
 
 $(document).on('ready page:load', function () {
 
+  if(BookmarksMode){
+    specs = bookmarks[0].specs;
+    visData = (bookmarks[0].data === "Birdstrikes") ? birdstrikesData : moviesData;
+    transitionSets = bookmarks[0].transitionSets;
+  }
+
   dataExtension();
 
   var i = -1;
   var defaultOrder = specs.map(function(item){
     return i+=1;
   });
-  defaultOrder = [0,1,4,5,2,3];
+
+  if (!BookmarksMode) {
+    defaultOrder = [2,1,3,5,0,4];
+  }
+
   $('#order').val(defaultOrder.join(','));
   drawingByOrder(defaultOrder);
   $('#score').html(totalDist(defaultOrder,"rank"));
@@ -69,7 +80,10 @@ $(document).on('ready page:load', function () {
     specsDiv.children().remove();
     if (!isEmpty(specsDiv)) {
       for (var i = 0; i < specs.length; i++) {
-        var VLdiv = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-xs-12 col-md-2");
+        var VLdiv = VLdiv = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-md-2 col-xs-12");
+        if(BookmarksMode){
+          VLdiv = $("<div id='vega-lite-" + i + "'></div>").attr("class","row ");
+        }
         VLdiv.remove("span");
         specsDiv.append(VLdiv);
         draw("#vega-lite-" + i, specs[order[i]], visData);
