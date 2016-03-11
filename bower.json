@@ -23,6 +23,7 @@
   ],
   "dependencies": {
     "vega-lite": "^1.0.8",
-    "viscompass": "^0.6.2"
+    "viscompass": "^0.6.2",
+    "datalib": "^1.6.3"
   }
 }

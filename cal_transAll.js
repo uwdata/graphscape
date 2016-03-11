@@ -1,5 +1,5 @@
-var models = require('./../triplet\ generator/models');
-var enumerater = require('./../triplet\ generator/enumerater_with_compass');
+var models = require('./lib/models');
+var enumerater = require('./lib/enumerater_with_compass');
 var fs = require('fs');
 var marktypesAll = ['bar','point','line','area','tick','text'];
 var channelsAll = ['x','y','shape','color','size'];
@@ -61,12 +61,14 @@ var specs = enumerater.generateVLFWithCompass({
 
 console.log("The number of specs : " + specs.length );
 var specsFile = "var specs = ";
-fs.writeFileSync('./js/get-specs.js',specsFile + JSON.stringify(specs) + ";");
+fs.writeFileSync('./js/get_specs.js',specsFile + JSON.stringify(specs) + ";");
 
 //Calcualte Transitions
 var ruleSet = JSON.parse(fs.readFileSync('ruleSet.json','utf8'));
 var transitionSets = [];
-var cpTrans = require('./bower_components/viscompass/src/trans/trans');
+// var cpTrans = require('./bower_components/viscompass/src/trans/trans');
+var cp = require('./compass.js');
+var cpTrans = cp.trans;
 for (var i = 0; i < specs.length; i++) {
 
   transitionSets.push([]);
@@ -80,4 +82,4 @@ for (var i = 0; i < specs.length; i++) {
 };
 
 var transitionSetsFile = "var transitionSets = ";
-fs.writeFileSync('./js/get-transitionSets.js',transitionSetsFile + JSON.stringify(transitionSets) + ";");
+fs.writeFileSync('./js/get_transitionSets.js',transitionSetsFile + JSON.stringify(transitionSets) + ";");

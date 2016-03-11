@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "viscompass": "^0.6.2",
-    "vega-lite": "^1.0.8"
+    "vega-lite": "^1.0.8",
+    "datalib": "^1.6.3"
   },
   "homepage": "https://github.com/uwdata/GraphScape#readme"
 }
