@@ -1,53 +1,11 @@
-
-*.rbc
-capybara-*.html
-.rspec
-/log
-/tmp
-/db/*.sqlite3
-/db/*.sqlite3-journal
-/public/system
-/coverage/
-/spec/tmp
-**.orig
-rerun.txt
-pickle-email-*.html
-
-# TODO Comment out these rules if you are OK with secrets being uploaded to the repo
-config/initializers/secret_token.rb
-config/secrets.yml
-
-## Environment normalization:
-/.bundle
-/vendor/bundle
-
-# these should all be checked in to normalize the environment:
-# Gemfile.lock, .ruby-version, .ruby-gemset
-
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
-
-# if using bower-rails ignore default bower_components path bower.json files
-/vendor/assets/bower_components
-*.bowerrc
-bower.json
-
-# Ignore pow environment settings
-.powenv
-
-# -- added by yhoonkim --
-# Ignore db import script
-/db/*.sql
-
-# Ignore .DS_store
-.DS_Store
-
-# Ignore results of triplet generator
-triplet generator/results
-triplet generator/node_modules
-triplet generator/bower_components
-
-lp/node_modules
-lp/bower_components
-
-
+npm-debug.log
+node_modules
+compass.min.js
+compass.min.js.map
+compass.js
+bower_components
+coverage
+lib/vega-lite.js
+src/**/*.js
+test/**/*.js
+**/*.js.map

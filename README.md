@@ -7,7 +7,7 @@ Sorting *Vega-Lite* visualizations to have the smallest transition cost.
 
 ### Prerequisite
 - MATLAB
-- Node
+- Link to *Compass* yh/neigbor branch
 - Dependents of *Compass*
 
 ### Minimal tutorial
