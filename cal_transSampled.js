@@ -10,7 +10,7 @@ var transitionSets = [];
 
 for (var i = 0; i < specs.length; i++) {
   transitionSets.push([]);
-  for (var j = i; j < specs.length; j++) {
+  for (var j = 0; j < specs.length; j++) {
     transitionSets[i].push(cpTrans.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
   }
 }

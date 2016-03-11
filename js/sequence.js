@@ -21,13 +21,23 @@ $(document).on('ready page:load', function () {
 
   dataExtension();
 
+  var transitionCostMatrix = new Matrix("rank");
+  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
+  var sortedTransitionSetsByRank = BEA(transitionCostMatrix).rows;
+
+  transitionCostMatrix = new Matrix("cost");
+  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
+  var sortedTransitionSetsByCost = BEA(transitionCostMatrix).rows;
+
+
+
   var i = -1;
   var defaultOrder = specs.map(function(item){
     return i+=1;
   });
 
   if (!BookmarksMode) {
-    defaultOrder = [2,1,3,5,0,4];
+    defaultOrder = sortedTransitionSetsByRank[0].map(function(jtem){ return jtem.destination});
   }
 
   $('#order').val(defaultOrder.join(','));
@@ -54,23 +64,24 @@ $(document).on('ready page:load', function () {
   })
 
   function dist(i,j,valueAttr){
-    if (i < j) {
-      return transitionSets[i][j - i][valueAttr];
-    }
-    return transitionSets[j][i - j][valueAttr];
+    return transitionSets[i][j][valueAttr];
   }
 
   function totalDist(order, valueAttr) {
     var sum = order.reduce(function(prev,curr,i){
-      if (i===0) {
+
+      if (i === 0) {
+
         return 0;
       }
 
       var currSpecIndex = curr;
       var prevSpecIndex = order[i-1];
-      return prev += dist(currSpecIndex,prevSpecIndex, valueAttr);
 
-    });
+      console.log(prev,prevSpecIndex,currSpecIndex);
+      return prev += dist(prevSpecIndex,currSpecIndex, valueAttr);
+
+    },0);
     console.log(order,sum);
     return sum;
   }
@@ -89,7 +100,7 @@ $(document).on('ready page:load', function () {
         draw("#vega-lite-" + i, specs[order[i]], visData);
         var distSpan = $("<span></span>");
         if (i>0) {
-           distSpan.html( dist(order[i],order[i-1],'rank') );
+           distSpan.html( dist(order[i-1],order[i],'rank') );
         }
         VLdiv.append(distSpan);
       }
