@@ -1,5 +1,7 @@
 'use strict';
 var fs = require('fs');
+// If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
+// var cp = require(bower_components/viscompass)
 var cp = require('./compass.js');
 var cpTrans = cp.trans;
 var specs = JSON.parse(fs.readFileSync('./js/sampled-specs.json','utf8'));

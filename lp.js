@@ -5,7 +5,6 @@ const fs = require('fs');
 // For example:
 //  ['a', 'b', 'c'] -> a < b < c
 //  ['a', ['b', 'c'], 'd'] -> a < b < d && a < c < d
-var title = "yh02"
 var  ruleSet = [
     {
       name: 'marktype',

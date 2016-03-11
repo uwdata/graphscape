@@ -1,11 +1,4 @@
 npm-debug.log
 node_modules
-compass.min.js
-compass.min.js.map
-compass.js
 bower_components
-coverage
-lib/vega-lite.js
-src/**/*.js
-test/**/*.js
-**/*.js.map
+temp/*.json

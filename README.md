@@ -6,9 +6,8 @@
 Sorting *Vega-Lite* visualizations to have the smallest transition cost.  
 
 ### Prerequisite
+
 - MATLAB
-- Link to *Compass* [yh/neighbors](https://github.com/vega/compass/tree/yh/neighbors) branch
-- Dependents of *Compass*
 
 ### Minimal tutorial
 
@@ -29,3 +28,9 @@ Sorting *Vega-Lite* visualizations to have the smallest transition cost.
 ### Others
 1. If you want to generate all kinds of specs and see their distances, run `calTransAll.js` with editing generating options and open `specs.html` and `transition.html`.
 2. Or you can use `specs.html` and `transition.html` to see your own visualization samples by copying and pasting `js/get-sampled-specs.js` and `get-sampled-transitionSets.js` to `js/get-specs.js` and `get-transitionSets.js`.
+
+---
+
+### To develop
+
+- Link to *Compass* [yh/neighbors](https://github.com/vega/compass/tree/yh/neighbors) branch.
