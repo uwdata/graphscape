@@ -91,16 +91,14 @@ $(document).on('ready page:load', function () {
     specsDiv.children().remove();
     if (!isEmpty(specsDiv)) {
       for (var i = 0; i < specs.length; i++) {
-        var VLdiv = VLdiv = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-md-2 col-xs-12");
-        if(BookmarksMode){
-          VLdiv = $("<div id='vega-lite-" + i + "'></div>").attr("class","row ");
-        }
+        var VLdiv  = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-md-12 col-xs-12");
+
         VLdiv.remove("span");
         specsDiv.append(VLdiv);
         draw("#vega-lite-" + i, specs[order[i]], visData);
         var distSpan = $("<span></span>");
         if (i>0) {
-           distSpan.html( dist(order[i-1],order[i],'rank') );
+           distSpan.html( "cost from the upper to lower : " +  dist(order[i-1],order[i],'rank') );
         }
         VLdiv.append(distSpan);
       }

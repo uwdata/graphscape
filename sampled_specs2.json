@@ -1,0 +1,5 @@
+[{"data":{},"mark":"point","encoding":{"y":{"type":"quantitative","field":"Acceleration","scale":{"type":"log"}}}},
+{"data":{},"mark":"point","encoding":{"x":{"type":"quantitative","field":"Acceleration","aggregate":"mean","scale":{"includeRawDomain":true}}}},
+{"data":{},"mark":"bar","encoding":{"y":{"type":"quantitative","field":"Acceleration","aggregate":"mean","scale":{"includeRawDomain":true}}}},
+{"data":{},"mark":"tick","encoding":{"x":{"type":"quantitative","field":"Acceleration"},"y":{"type":"nominal","field":"Origin"}}},
+{"data":{},"mark":"bar","encoding":{"x":{"type":"nominal","field":"Origin"},"y":{"type":"quantitative","field":"Acceleration","aggregate":"mean","scale":{"includeRawDomain":true}}}}]

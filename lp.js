@@ -67,7 +67,9 @@ var  ruleSet = [
       ['MODIFY_COLOR_REMOVE_COUNT','MODIFY_COLOR_ADD_COUNT','MODIFY_COLOR',['MODIFY_ROW_REMOVE_COUNT', 'MODIFY_COLUMN_REMOVE_COUNT']],
       [['MODIFY_ROW_REMOVE_COUNT', 'MODIFY_COLUMN_REMOVE_COUNT'],['MODIFY_ROW_ADD_COUNT', 'MODIFY_COLUMN_ADD_COUNT'],['MODIFY_ROW', 'MODIFY_COLUMN'],['MODIFY_X_REMOVE_COUNT', 'MODIFY_Y_REMOVE_COUNT']],
       [['MODIFY_X_REMOVE_COUNT', 'MODIFY_Y_REMOVE_COUNT'],['MODIFY_X_ADD_COUNT', 'MODIFY_Y_ADD_COUNT'],['MODIFY_X', 'MODIFY_Y']]
-    ]
+    ],
+    ceiling: { depth: 3 } //more than 3 encoding transitions are too far to be measured.
+
   }
 ];
 
@@ -193,3 +195,5 @@ var s = lpMATLAB(lp);
 
 fs.writeFileSync('lp.m', s);
 fs.writeFileSync('temp/idMap.json', JSON.stringify(lp.actions.idMap));
+
+fs.writeFileSync('temp/encodingCeiling.json', JSON.stringify(ruleSet[2].ceiling));
