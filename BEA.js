@@ -59,7 +59,7 @@ function Matrix(valueAttr, rowN, colN){
 }
 
 
-function BEA(M){
+function BEA(M, options){
   function bondEnergy(v1, v2, valueAttr){
     var BE = 0;
     for (var i = 0; i < v1.length; i++) {
@@ -67,8 +67,14 @@ function BEA(M){
     }
     return BE
   }
-  function BEArow(RM){
+  function BEArow(RM,options){
     var CM = new Matrix(RM.valueAttr);
+    var fixedFirst;
+    if (options.fixFirst) {
+      console.log('hi');
+      fixedFirst = RM.rows.splice(0,1);
+    }
+
     var selectedRow = RM.rows.splice(0,1);
     CM.pushRow(selectedRow[0]);
 
@@ -86,6 +92,10 @@ function BEA(M){
 
           if (CM_i === 0) {
             BE = bondEnergy(CM.row(CM_i), remainedRow, RM.valueAttr);
+
+            if (options.fixFirst) {
+              BE += bondEnergy(fixedFirst, remainedRow, RM.valueAttr);
+            }
           }
           else if( CM_i === CM.rowN()) {
             BE = bondEnergy(CM.row(CM_i-1), remainedRow, RM.valueAttr);
@@ -104,8 +114,11 @@ function BEA(M){
 
       CM.rows.splice(minBE_CM_i, 0, RM.rows.splice(minRemained_i,1)[0]);
     }
+    if(options.fixFirst){
+      CM.rows.splice(0,0,fixedFirst[0]);
+    }
     return CM;
   }
-  var CM1 = BEArow(M)
-  return BEArow(CM1.transpose()).transpose();
+  var CM1 = BEArow(M, options);
+  return BEArow(CM1.transpose(), options).transpose();
 }
