@@ -17,11 +17,11 @@ $(document).on('ready page:load', function () {
 
   var transitionCostMatrix = new Matrix("rank");
   transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  var sortedTransitionSetsByRank = BEA(transitionCostMatrix).rows;
+  var sortedTransitionSetsByRank = BEA(transitionCostMatrix,{}).rows;
 
   transitionCostMatrix = new Matrix("cost");
   transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  var sortedTransitionSetsByCost = BEA(transitionCostMatrix).rows;
+  var sortedTransitionSetsByCost = BEA(transitionCostMatrix,{}).rows;
 
 
 

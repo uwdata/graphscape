@@ -8,10 +8,11 @@ function keys(obj) {
 };
 
 // Generated from lp_yh01.m
-var costs = JSON.parse(fs.readFileSync('temp/costs.json','utf8'));
+var costs = JSON.parse(fs.readFileSync('./../../temp/costs.json','utf8'));
 //Generated from lp_yh01.js
-var map = JSON.parse(fs.readFileSync('temp/idMap.json','utf8'));
-var encodingCeiling = JSON.parse(fs.readFileSync('temp/encodingCeiling.json','utf8'));
+var map = JSON.parse(fs.readFileSync('./../../temp/idMap.json','utf8'));
+var encodingCeiling = JSON.parse(fs.readFileSync('./../../temp/encodingCeiling.json','utf8'));
+
 var maxEncodingCost = 0;
 //Imports the lp result
 var ruleNames = keys(map);
@@ -40,4 +41,4 @@ ruleSet.encodingTransitions['ceiling'] = {
   cost: maxEncodingCost * encodingCeiling.depth,
   alternatingCost: maxEncodingCost * ( encodingCeiling.depth + 1 )
 };
-fs.writeFileSync('ruleSet.json', JSON.stringify(ruleSet));
+fs.writeFileSync('./../../ruleSet.json', JSON.stringify(ruleSet));

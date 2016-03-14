@@ -183,7 +183,7 @@ function lpMATLAB(lp) {
   var matlabCode = [A, b, c, lb].join(';\n') + ';\n'
                   + 'x = linprog(c, A, b, [], [], lb);\n'
                   + "str = strjoin(strtrim(cellstr(num2str(x))),',');\n"
-                  + "fid = fopen('temp/costs.json','wt');\n"
+                  + "fid = fopen('./../../temp/costs.json','wt');\n"
                   + "fprintf(fid, strcat('[',str,']'));\n"
                   + "fclose(fid);";
   return matlabCode;
@@ -194,6 +194,5 @@ var lp = linearProgram(ruleSet);
 var s = lpMATLAB(lp);
 
 fs.writeFileSync('lp.m', s);
-fs.writeFileSync('temp/idMap.json', JSON.stringify(lp.actions.idMap));
-
-fs.writeFileSync('temp/encodingCeiling.json', JSON.stringify(ruleSet[2].ceiling));
+fs.writeFileSync('./../../temp/idMap.json', JSON.stringify(lp.actions.idMap));
+fs.writeFileSync('./../../temp/encodingCeiling.json', JSON.stringify(ruleSet[2].ceiling));

@@ -64,10 +64,10 @@ var specsFile = "var specs = ";
 fs.writeFileSync('./js/get_specs.js',specsFile + JSON.stringify(specs) + ";");
 
 //Calcualte Transitions
-var ruleSet = JSON.parse(fs.readFileSync('ruleSet.json','utf8'));
+var ruleSet = JSON.parse(fs.readFileSync('./../../ruleSet.json','utf8'));
 var transitionSets = [];
 // var cpTrans = require('./bower_components/viscompass/src/trans/trans');
-var cp = require('./compass.js');
+var cp = require('./lib/compass.js');
 var cpTrans = cp.trans;
 for (var i = 0; i < specs.length; i++) {
 
