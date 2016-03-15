@@ -6,13 +6,22 @@ var cp = require('./lib/compass.js');
 var BEA = require('./lib/BEA.js');
 var d3 = require('./js/d3.min.js');
 var cpTrans = cp.trans;
-// Younghoon's Polestar bookmars
-var specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs.json','utf8'));
-// Younghoon's Polestar bookmars
-// var specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_randomly_picked.json','utf8'));
-// Visualizations corresponding to Jessica's paper
-// var specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_prev_paper.json','utf8'));
-var ruleSet = JSON.parse(fs.readFileSync('./../../ruleSet.json','utf8'));
+var specs, ruleSet;
+
+if (process.argv.length === 4) {
+  specs = JSON.parse(fs.readFileSync(process.argv[2]));
+  ruleSet = JSON.parse(fs.readFileSync(process.argv[3]));
+}
+else {
+  // Younghoon's Polestar bookmars
+  // specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs.json','utf8'));
+  // Younghoon's Polestar bookmars
+  specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_randomly_picked.json','utf8'));
+  // Visualizations corresponding to Jessica's paper
+  // specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_prev_paper.json','utf8'));
+  ruleSet = JSON.parse(fs.readFileSync('./../../ruleSet.json','utf8'));
+
+}
 
 function serialize(specs, ruleSet, options){
 
