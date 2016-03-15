@@ -34,12 +34,16 @@ $ node cal_transSampled.js
 
 ### Miscellaneous
 1. If you want to generate all kinds of specs and see their distances, run `cal_transAll.js` with editing generating options and open `specs.html` and `transitions.html`. (It require you to link bower module. see *To Develop* )
+
 2. `sequence.html` and `transitions_sampled.html` are using BEA with an option fixing a starting spec as an empty point visualization.
+
 3. You can also use `serialize.js` to simply serialize visualization specs.
+
 ```console
 $ node serialize.js path/to/specs.json path/to/ruleSet.json
 ```
-
+Here, `specs.json` is an array of visualization specs, and `ruleSet.json` can be created by `gen_ruleSet.js`.
+ 
 ---
 
 ### To Develop
