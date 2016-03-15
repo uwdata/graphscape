@@ -37,7 +37,7 @@ $ node cal_transSampled.js
 2. `sequence.html` and `transitions_sampled.html` are using BEA with an option fixing a starting spec as an empty point visualization.
 3. You can also use `serialize.js` to simply serialize visualization specs.
 ```console
-$ node serialization.js path/to/specs.json path/to/ruleSet.json
+$ node serialize.js path/to/specs.json path/to/ruleSet.json
 ```
 
 ---
