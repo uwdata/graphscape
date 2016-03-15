@@ -42,3 +42,10 @@ $ node cal_transSampled.js
 ### To Develop
 
 - Link to *Compass* [yh/neighbors](https://github.com/vega/compass/tree/yh/neighbors) branch.
+```console
+// at Compass directory.
+$ bower link
+
+// at GraphScape directory
+$ bower link viscompass
+```
