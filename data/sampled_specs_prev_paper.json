@@ -1,0 +1,116 @@
+[
+  {
+    "description": "Corresponding to vis of (1900, Eastern)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year <= 1976 && datum.Horsepower < 140"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "description": "Corresponding to vis of (1900, Western)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year <= 1976 && datum.Horsepower >= 140"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "description": "Corresponding to vis of (2010, Eastern)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year > 1976 && datum.Horsepower < 140"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "description": "Corresponding to vis of (2010, Western)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year > 1976 && datum.Horsepower >= 140"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "description": "Corresponding to vis of (1900)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year <= 1976 "},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "description": "Corresponding to vis of (2010)",
+    "data": {"url": "data/cars.json"},
+    "transform": {"filter": " datum.Year > 1976 "},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  }
+]
