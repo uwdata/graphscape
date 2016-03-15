@@ -11,7 +11,7 @@ Sorting *Vega-Lite* visualizations to have the smallest transition cost.
 
 ### Minimal tutorial
 
-```
+```console
 // Generating Transition Rule
 $ cd src/rule
 $ node lp.js
