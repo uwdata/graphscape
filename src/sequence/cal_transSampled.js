@@ -29,7 +29,6 @@ for (var i = 0; i < specs.length; i++) {
   }
 }
 
-var getSampledSpecs = "var specs = ";
-fs.writeFileSync('js/get_sampled_specs.js',getSampledSpecs + JSON.stringify(specs) + ";");
-var getSampledTransitionSets = "var transitionSets = ";
-fs.writeFileSync('js/get_sampled_transitionSets.js',getSampledTransitionSets + JSON.stringify(transitionSets) + ";");
+
+fs.writeFileSync('specs.json',JSON.stringify(specs));
+fs.writeFileSync('transitionSets.json',JSON.stringify(transitionSets));

@@ -1,45 +1,36 @@
-var BookmarksMode = false;
-
-function isEmpty( el ){
-    return el.length === 0;
-}
-function draw(selector, spec, data){
-  spec.data = { "values": data };
-  var vgSpec = vl.compile(spec).spec;
-  vg.parse.spec(vgSpec, function(chart) {
-    chart({el: selector, renderer:"svg"}).update();
-  });
-}
-
 $(document).on('ready page:load', function () {
 
-  if(BookmarksMode){
-    specs = bookmarks[0].specs;
-    visData = (bookmarks[0].data === "Birdstrikes") ? birdstrikesData : moviesData;
-    transitionSets = bookmarks[0].transitionSets;
-  }
-
-  dataExtension();
-
-  var transitionCostMatrix = new Matrix("rank");
-  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  var sortedTransitionSetsByRank = BEA(transitionCostMatrix, {fixFirst: true}).rows;
-
-  transitionCostMatrix = new Matrix("cost");
-  transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  var sortedTransitionSetsByCost = BEA(transitionCostMatrix, {fixFirst: true}).rows;
-
-
-
-  var i = -1;
-  var defaultOrder = specs.map(function(item){
-    return i+=1;
+  var transitionSets, specs, TSPresult;
+  $.ajax({
+    url: "result/transitionSets.json",
+    dataType: 'json',
+    async: false,
+    success: function(data){
+      transitionSets = data;
+      dataExtension();
+    }
   });
+  $.ajax({
+    url: "result/specs.json",
+    dataType: 'json',
+    async: false,
+    success: function(data){
+      specs = data;
+    }
+  })
+  $.ajax({
+    url: "result/TSPresult.json",
+    dataType: 'json',
+    async: false,
+    success: function(data){
+      TSPresult = data;
+      TSPresult.map(function(bestSequence){
+        $('#best-sequences').append('<span>'+bestSequence.sequence.join(',')+'</span>').append(" / ");
+      })
+    }
+  })
 
-  if (!BookmarksMode) {
-    defaultOrder = sortedTransitionSetsByRank[0].map(function(jtem){ return jtem.destination});
-  }
-
+  var defaultOrder = TSPresult[0].sequence;
   $('#order').val(defaultOrder.join(','));
   drawingByOrder(defaultOrder);
   $('#score').html(totalDist(defaultOrder,"rank"));
@@ -95,7 +86,7 @@ $(document).on('ready page:load', function () {
 
         VLdiv.remove("span");
         specsDiv.append(VLdiv);
-        draw("#vega-lite-" + i, specs[order[i]], visData);
+        draw("#vega-lite-" + i, specs[order[i]]);
         var distSpan = $("<span></span>");
         if (i>0) {
            distSpan.html( "cost from the upper to lower : " +  dist(order[i-1],order[i],'rank') );

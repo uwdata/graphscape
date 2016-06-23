@@ -1,15 +1,4 @@
 
-function isEmpty( el ){
-    return el.length === 0;
-}
-function draw(selector, spec, data){
-  spec.data = { "values": data };
-  var vgSpec = vl.compile(spec).spec;
-  vg.parse.spec(vgSpec, function(chart) {
-    chart({el: selector, renderer:"svg"}).update();
-  });
-}
-
 
 $(document).on('ready page:load', function () {
   dataExtension();

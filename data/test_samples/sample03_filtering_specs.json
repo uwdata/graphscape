@@ -1,0 +1,136 @@
+[
+  {
+    "description": "USA cars in 1976",
+    "data": {"url": "/data/cars.json"},
+    "transform": {"filter": " datum.Year === 1976 && datum.Origin === 'USA'"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+      "scale": {"domain": [0,240]} },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean",
+      "scale": {"domain": [0,5000]}
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count",
+      "scale": {"domain": [0,100]}
+      }
+    }
+  },
+  {
+    "description": "European cars in 1976",
+    "data": {"url": "/data/cars.json"},
+    "transform": {"filter": " datum.Year === 1976 && datum.Origin === 'Europe'"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+      "scale": {"domain": [0,240]} },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean",
+      "scale": {"domain": [0,5000]}
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count",
+      "scale": {"domain": [0,100]}
+      }
+    }
+  },
+  {
+    "description": "USA cars in 1980",
+    "data": {"url": "/data/cars.json"},
+    "transform": {"filter": " datum.Year === 1980 && datum.Origin === 'USA'"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+      "scale": {"domain": [0,240]} },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean",
+      "scale": {"domain": [0,5000]}
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count",
+      "scale": {"domain": [0,100]}
+      }
+    }
+},
+{
+  "description": "European cars in 1980",
+  "data": {"url": "/data/cars.json"},
+  "transform": {"filter": " datum.Year === 1980 && datum.Origin === 'Europe'"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+    "scale": {"domain": [0,240]} },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+    "scale": {"domain": [0,5000]}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+    "scale": {"domain": [0,100]}
+    }
+  }
+},
+{
+
+  "description": "Cars in 1976",
+  "data": {"url": "/data/cars.json"},
+  "transform": {"filter": " datum.Year === 1976"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+    "scale": {"domain": [0,240]} },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+    "scale": {"domain": [0,5000]}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+    "scale": {"domain": [0,100]}
+    }
+  }
+},
+{
+
+  "description": "Cars in 1980",
+  "data": {"url": "/data/cars.json"},
+  "transform": {"filter": " datum.Year === 1980"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative", "bin":true,
+    "scale": {"domain": [0, 240]} },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+    "scale": {"domain": [0, 5000]}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+    "scale": {"domain": [0,100]}
+    }
+  }
+}
+]

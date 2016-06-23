@@ -1,0 +1,113 @@
+[
+  
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Horsepower",
+        "type": "quantitative",
+        "scale": {"type":"log"}
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative"
+      }
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Cylinders",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative"
+      }
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Cylinders","type": "quantitative"},
+      "y": {"field": "Weight_in_lbs","type": "quantitative"},
+      "color": {"field": "Horsepower","type": "quantitative"}
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "point",
+    "transform": {"filter": " datum.Horsepower > 110 "},
+    "encoding": {
+      "x": {"field": "Cylinders","type": "quantitative"},
+      "y": {"field": "Weight_in_lbs","type": "quantitative"},
+      "color": {"field": "Horsepower","type": "quantitative"}
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Cylinders",
+        "type": "ordinal"
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      }
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "line",
+    "encoding": {
+      "x": {
+        "field": "Cylinders",
+        "type": "ordinal"
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      }
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "bar",
+    "encoding": {
+      "x": {
+        "field": "Cylinders",
+        "type": "ordinal"
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      }
+    }
+  },
+  {
+    "data": {"url": "data/cars.json"},
+    "mark": "bar",
+    "encoding": {
+      "x": {
+        "field": "Cylinders",
+        "type": "ordinal",
+        "sort": {"op":"mean", "field":"Weight_in_lbs", "order":"descending"}
+      },
+      "y": {
+        "field": "Weight_in_lbs",
+        "type": "quantitative",
+        "aggregate": "mean"
+      }
+    }
+  }
+
+]

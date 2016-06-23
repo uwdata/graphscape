@@ -26,7 +26,7 @@ for (var i = 0; i < ruleNames.length; i++) {
   if ( i <= 14 ) {
     ruleSet.marktypeTransitions[ruleNames[i]] = { name: ruleNames[i], cost: costs[i] };
   }
-  else if( i <= 20 ){
+  else if( i <= 21 ){
     ruleSet.transformTransitions[ruleNames[i]] = { name: ruleNames[i], cost: costs[i] };
   }
   else{
@@ -42,3 +42,4 @@ ruleSet.encodingTransitions['ceiling'] = {
   alternatingCost: maxEncodingCost * ( encodingCeiling.depth + 1 )
 };
 fs.writeFileSync('./../../ruleSet.json', JSON.stringify(ruleSet));
+fs.writeFileSync('./../../data/ruleSet.json', JSON.stringify(ruleSet));
