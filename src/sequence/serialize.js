@@ -17,13 +17,18 @@ function serialize(specs, ruleSet, options, callback){
   }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
-  
+  console.log(transitionSets);
   transitionSets = extendTransitionSets(transitionSets);
-  var TSPResult = TSP.TSP(transitionSets, "rank", options.fixFirst===true ? 0 : undefined);
+  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined).out;
+  
 
-  var serializedSpecs = TSPResult.map(function(optSequence){
+  var serializedSpecs = TSPResult.filter(function(item){
+    return item.sequence[0] === 0;
+  }).map(function(optSequence){
     // console.log(optSequence);
+    optSequence.sequence.splice(0,1);
     return { 
+            "distance": optSequence.distance,
             "sequence": optSequence.sequence,
             "specs" : optSequence.sequence.map(function(index){
                         return specs[index];

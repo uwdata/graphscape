@@ -7,7 +7,7 @@ var BEA = require('./lib/BEA.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
 var cpTrans = cp.trans;
-var specs, ruleSet;
+var specs, ruleSet, specMap;
 var transitionSetsFileName, fixFirst;
 
 if (process.argv.length === 4) {
@@ -26,15 +26,14 @@ else if (process.argv.length === 6){
   fixFirst = process.argv[5] ==='true' ? true : false;
 }
 else {
-  // Younghoon's Polestar bookmars
-  // specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs.json','utf8'));
-  // Younghoon's Polestar bookmars
-  specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_randomly_picked.json','utf8'));
-  // Visualizations corresponding to Jessica's paper
-  // specs = JSON.parse(fs.readFileSync('./../../data/sampled_specs_prev_paper.json','utf8'));
+  
+  // specs = JSON.parse(fs.readFileSync('./../../data/charts for evaluation/visSet_Transpose vs Filter.json','utf8'));
+  specs = JSON.parse(fs.readFileSync('./../../data/charts for evaluation/visSet_Cars.json','utf8'));
+  specMap = [28,25,26,23,24,27];
   ruleSet = JSON.parse(fs.readFileSync('./../../ruleSet.json','utf8'));
 
   transitionSetsFileName = "transitionSets";
+  fixFirst = false;
 }
 
 function serialize(specs, ruleSet, options){
@@ -48,13 +47,31 @@ function serialize(specs, ruleSet, options){
 
   fs.writeFileSync('result/specs.json',JSON.stringify(specs));  
   var transitionSets = getTransitionSets(specs, ruleSet);
-  console.log(transitionSets[0][1]);
-  console.log(transitionSets[0][2]);
+
+  
   fs.writeFileSync('result/'+transitionSetsFileName, JSON.stringify(transitionSets));
   transitionSets = extendTransitionSets(transitionSets);
   fs.writeFileSync('result/specs.json',JSON.stringify(specs));
   
-  var TSPResult = TSP.TSP(transitionSets, "rank", options.fixFirst===true ? 0 : undefined);
+  var TSPResults = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
+  var TSPResult = TSPResults.out;
+  TSPResults.all = TSPResults.all.filter(function(seqWithDist){
+    return seqWithDist.sequence[0] === 0;
+  }).sort(function(a,b){
+    if (a.distance > b.distance) {
+      return 1;
+    }
+    if (a.distance < b.distance) {
+      return -1;
+    }
+    return 0;
+  }).map(function(seqWithDist){
+    return { 
+              sequence : seqWithDist.sequence.splice(1,seqWithDist.sequence.length-1).map(function(val){ return specMap[val-1];}),
+              distance : seqWithDist.distance 
+           };
+  }));
+
   fs.writeFileSync('result/TSPResult.json',JSON.stringify(TSPResult));
 
   var serializedSpecs = TSPResult.map(function(optSequence){

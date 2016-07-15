@@ -31,7 +31,7 @@ $(document).on('ready page:load', function () {
         results = e.data;
         $('#sorted-result').children().remove();
         for (var i = 0; i < results.length; i++) {
-          var link = $('<button href="#" data-id="'+i+'"></button>').html(results[i].sequence.join(','));
+          var link = $('<button href="#" data-id="'+i+'"></button>').html(results[i].sequence.join(',') + ' | ' + Math.round(results[i].distance*100)/100 );
           link.addClass('result btn btn-default btn-xs');
           $('#sorted-result').append(link);
 

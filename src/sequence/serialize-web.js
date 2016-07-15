@@ -178,6 +178,7 @@ function TSP(matrix, value, fixFirst){
   var argMin = 0;
   var distance = 0;
   var out = [];
+  var all = [];
   for (var i = 0; i < sequences.length; i++) {
     if (i*100/sequences.length %10 === 0) {
       // process.std.out(i*100/sequences.length);
@@ -187,6 +188,7 @@ function TSP(matrix, value, fixFirst){
     for (var j = 0; j < sequences[i].length-1; j++) {
       distance += matrix[sequences[i][j]][sequences[i][j+1]][value];
     }
+    all.push({sequence: sequences[i], distance: distance});
 
     if (distance <= minDistance ) {
 
@@ -199,12 +201,12 @@ function TSP(matrix, value, fixFirst){
       }
       argMin = i;
       minDistance = distance;
-      console.log(i,minDistance);
+      // console.log(i,minDistance);
     }
     distance = 0;
   }
 
-  return out;
+  return {out: out, all: all};
 }
 
 
@@ -237,13 +239,18 @@ function serialize(specs, ruleSet, options, callback){
   }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
-  
+  console.log(transitionSets);
   transitionSets = extendTransitionSets(transitionSets);
-  var TSPResult = TSP.TSP(transitionSets, "rank", options.fixFirst===true ? 0 : undefined);
+  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined).out;
+  
 
-  var serializedSpecs = TSPResult.map(function(optSequence){
+  var serializedSpecs = TSPResult.filter(function(item){
+    return item.sequence[0] === 0;
+  }).map(function(optSequence){
     // console.log(optSequence);
+    optSequence.sequence.splice(0,1);
     return { 
+            "distance": optSequence.distance,
             "sequence": optSequence.sequence,
             "specs" : optSequence.sequence.map(function(index){
                         return specs[index];
