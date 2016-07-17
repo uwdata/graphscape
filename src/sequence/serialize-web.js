@@ -136,6 +136,102 @@ function BEA(M, options){
 // };
 
 },{}],3:[function(require,module,exports){
+'use strict'
+//Longest Repeated Pattern
+
+
+function LRP(inputArray, value) {
+  var longestRepeatedPattern = [], maxLength=0, maxCoverage=0;
+  for (var l = 1; l <= inputArray.length; l++) {
+    
+    for (var i = 0; i < inputArray.length-l+1; i++) {
+      var appear = [i];
+      for (var j = i + 1; j < inputArray.length-l+1; j++) {
+        if (isSameSub(inputArray, i, i + (l-1), j, j + (l-1))) {        
+          appear.push(j);
+          
+        }
+      }
+      if (appear.length > 1){
+        var newRP = dup(inputArray).splice(i,l);
+        var RPcoverage = coverage(inputArray, newRP.length, appear);
+
+        if( !longestRepeatedPattern.find(function(rp){ return s(rp.pattern) === s(newRP); }) ){
+          newRP = { 'pattern': newRP, 'appear': appear, 'coverage': RPcoverage  };
+          if ( value === 'coverage' ) {
+            if (RPcoverage > maxCoverage) {
+              maxCoverage = RPcoverage;
+              maxLength = l;
+              longestRepeatedPattern = [ newRP ];  
+            } else if ( RPcoverage === maxCoverage ) {
+              if (l > maxLength) {
+                maxLength = l;
+                longestRepeatedPattern = [ newRP ];  
+              } else if (l ===maxLength){
+                longestRepeatedPattern.push(newRP);    
+              }
+            };
+          } else if (value === 'length'){
+            if (l > maxLength) {
+              maxLength = l;
+              maxCoverage = RPcoverage;
+              longestRepeatedPattern = [ newRP ];
+            } else if(l === maxLength) {
+              if (RPcoverage > maxCoverage) {
+                maxCoverage = RPcoverage;
+                longestRepeatedPattern = [ newRP ];  
+              } else if ( RPcoverage === maxCoverage ) {
+                longestRepeatedPattern.push(newRP);
+              };
+            }
+          }
+        }
+      }
+    };
+  };
+
+  return longestRepeatedPattern;
+}
+
+function coverage(array, Patternlength, appear){
+  var s, coverage = 0;
+  for (var i = 0; i < appear.length-1; i++) {
+    s=i;
+    while ( appear[i] + Patternlength > appear[i+1] ) {
+      i++;
+    }
+    coverage += appear[i] + Patternlength - appear[s];
+
+  };
+  if (i===appear.length-1) { 
+    coverage += Patternlength;
+  };
+
+  return coverage / array.length;
+}
+
+function isSameSub(array, i1, f1, i2, f2) {
+  for (var i = 0; i < (f1-i1+1); i++) {
+    if (array[i1+i] !== array[i2+i]) {
+      return false;
+    }
+  }
+  return true;
+}
+function s(a) {
+  return JSON.stringify(a);
+}
+function dup(a) {
+  return JSON.parse(s(a));
+}
+
+// console.log(LRP("sdsd xxxx".split(''),'coverage'));
+// console.log(coverage("sdsdxxxasdsdsdaasdsdsdsdsdsdsdsd".split(''), 2, [ 0, 2, 8, 10, 12, 16, 18, 20, 22, 24, 26, 28, 30 ]))
+module.exports = {
+  LRP: LRP
+};
+
+},{}],4:[function(require,module,exports){
 var fs = require('fs');
 
 'use strict'
@@ -219,7 +315,7 @@ module.exports = {
   TSP: TSP
 };
 
-},{"fs":5}],4:[function(require,module,exports){
+},{"fs":6}],5:[function(require,module,exports){
 'use strict';
 
 // If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
@@ -228,10 +324,15 @@ module.exports = {
 var BEA = require('./lib/BEA.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
+var LRP = require('./lib/LRP.js');
 
 function serialize(specs, ruleSet, options, callback){
 
   
+  function point(dist, patternScore){
+    return 1 / ( dist * (1 - patternScore + 0.0001) );
+  }
+
   //Brute force version
   if (!options.fixFirst) {
     var startingSpec = { "mark":"point", "encoding": {} };
@@ -239,24 +340,50 @@ function serialize(specs, ruleSet, options, callback){
   }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
-  console.log(transitionSets);
   transitionSets = extendTransitionSets(transitionSets);
-  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined).out;
-  
-
-  var serializedSpecs = TSPResult.filter(function(item){
-    return item.sequence[0] === 0;
-  }).map(function(optSequence){
-    // console.log(optSequence);
-    optSequence.sequence.splice(0,1);
-    return { 
-            "distance": optSequence.distance,
-            "sequence": optSequence.sequence,
-            "specs" : optSequence.sequence.map(function(index){
-                        return specs[index];
-                      })
+  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
+  var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
+    return seqWithDist.sequence[0] === 0;
+  }).map(function(tspR){
+    var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    var transitionSet = [];
+    for (var i = 0; i < sequence.length-1; i++) {
+      transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
+    };
+    var pattern = transitionSet.map(function(r){ return r.id; });
+    var LRPResult = LRP.LRP(pattern,'coverage');
+    var result = { 
+              "sequence" : sequence,
+              "transitionSet" : transitionSet,
+              "distance" : tspR.distance,
+              "patternScore" : !!LRPResult[0] ? LRPResult[0].coverage : 0,
+              "specs" : sequence.map(function(index){
+                          return specs[index];
+                        })
            };
+    result.globalScore = point(result.distance, result.patternScore);
+    return result;
+  }).sort(function(a,b){
+    if (a.globalScore < b.globalScore) {
+      return 1;
+    }
+    if (a.globalScore > b.globalScore) {
+      return -1;
+    }
+    return 0;
   });
+  
+  var serializedSpecs = [];
+  var maxGlobalScore = TSPResultAll[0].globalScore;
+  for (var i = 0; i < TSPResultAll.length; i++) {
+    if(TSPResultAll[i].globalScore === maxGlobalScore){
+      serializedSpecs.push(TSPResultAll[i]);
+    }
+    else { 
+      break; 
+    }
+  }
+
 
   // if (options.fixFirst) {
   //   var startingSpec = { "mark":"point", "encoding": {} };
@@ -293,14 +420,23 @@ function getTransitionSets(specs, ruleSet){
 }
 
 function extendTransitionSets(transitionSets){
-  
-  var flattendCosts = transitionSets.reduce(function(prev,curr){
+  var flatTransitionSets = [];
+  var flatCosts = transitionSets.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
       prev.push(curr[i].cost);
+      var transitionSetString = JSON.stringify(curr[i]);
+      var index = flatTransitionSets.indexOf(transitionSetString);
+      if ( index === -1) {
+        curr[i]["id"] = flatTransitionSets.push(transitionSetString) - 1;  
+      } else {
+        curr[i]["id"] = index;
+      }
+      
     };
     return prev;
   }, []);
-  var uniqueCosts = d3.set(flattendCosts)
+  
+  var uniqueCosts = d3.set(flatCosts)
                       .values()
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
@@ -324,7 +460,7 @@ module.exports = {
   serialize: serialize
 };
 
-},{"./js/d3.min.js":1,"./lib/BEA.js":2,"./lib/TSP.js":3}],5:[function(require,module,exports){
+},{"./js/d3.min.js":1,"./lib/BEA.js":2,"./lib/LRP.js":3,"./lib/TSP.js":4}],6:[function(require,module,exports){
 
-},{}]},{},[4])(4)
+},{}]},{},[5])(5)
 });

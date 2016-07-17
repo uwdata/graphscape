@@ -4,6 +4,7 @@ var fs = require('fs');
 var cp = require('./../../bower_components/viscompass')
 // var cp = require('./lib/compass.js');
 var BEA = require('./lib/BEA.js');
+var LRP = require('./lib/LRP.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
 var cpTrans = cp.trans;
@@ -51,6 +52,7 @@ function serialize(specs, ruleSet, options){
   
   fs.writeFileSync('result/'+transitionSetsFileName, JSON.stringify(transitionSets));
   transitionSets = extendTransitionSets(transitionSets);
+
   fs.writeFileSync('result/specs.json',JSON.stringify(specs));
   
   var TSPResults = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
@@ -66,11 +68,26 @@ function serialize(specs, ruleSet, options){
     }
     return 0;
   }).map(function(seqWithDist){
+    var sequence = seqWithDist.sequence.splice(1,seqWithDist.sequence.length-1)
+    var transitionSet = [];
+    for (var i = 0; i < sequence.length-1; i++) {
+      transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
+    };
+
     return { 
-              sequence : seqWithDist.sequence.splice(1,seqWithDist.sequence.length-1).map(function(val){ return specMap[val-1];}),
+              sequence : sequence.map(function(val){ return specMap[val-1];}),
+              transitionSet : transitionSet,
               distance : seqWithDist.distance 
            };
-  }));
+  });
+  
+
+
+  TSPResults.all.forEach(function(tspR){
+    var pattern = tspR.transitionSet.map(function(r){ return r.id; });
+    console.log(pattern, LRP.LRP(pattern,'coverage')[0], tspR.sequence );
+  })
+  
 
   fs.writeFileSync('result/TSPResult.json',JSON.stringify(TSPResult));
 
@@ -116,14 +133,23 @@ function getTransitionSets(specs, ruleSet){
 }
 
 function extendTransitionSets(transitionSets){
-  
-  var flattendCosts = transitionSets.reduce(function(prev,curr){
+  var flatTransitionSets = [];
+  var flatCosts = transitionSets.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
       prev.push(curr[i].cost);
+      var transitionSetString = JSON.stringify(curr[i]);
+      var index = flatTransitionSets.indexOf(transitionSetString);
+      if ( index === -1) {
+        curr[i]["id"] = flatTransitionSets.push(transitionSetString) - 1;  
+      } else {
+        curr[i]["id"] = index;
+      }
+      
     };
     return prev;
   }, []);
-  var uniqueCosts = d3.set(flattendCosts)
+  
+  var uniqueCosts = d3.set(flatCosts)
                       .values()
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
