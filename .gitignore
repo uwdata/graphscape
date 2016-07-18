@@ -1,5 +1,6 @@
 npm-debug.log
 node_modules
+bower_omponents
 temp/*.json
 *.pptx
 temp/
