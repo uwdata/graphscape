@@ -1,0 +1,22 @@
+{
+  "spec": {
+    "data": {"url": "data/cars.json"},
+    "mark": "?",
+    "encodings": [
+      {
+        "channel": "?",
+        "field": "Cylinders",
+        "type": "ordinal"
+      }
+    ]
+  },
+  "nest": [
+    {"groupBy": "fieldTransform"},
+    {"groupBy": "encoding", "orderGroupBy": "effectiveness"},
+    {"groupBy": "transpose", "orderGroupBy": "effectiveness"}
+  ],
+  "orderBy": "effectiveness",
+  "config": {
+    "autoAddCount": true
+  }
+}

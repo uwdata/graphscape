@@ -1,0 +1,93 @@
+{
+  "1 Field": [
+    {
+      "name": "1d-N-mark",
+      "title": "N - mark?"
+    },
+    {
+      "name": "1d-N",
+      "title": "N - mark?, channel?"
+    },
+    {
+      "name": "1d-O",
+      "title": "O - mark?, channel?"
+    },
+    {
+      "name": "1d-Q",
+      "title": "?(Q) - mark?, channel?"
+    },
+    {
+      "name": "1d-Q-mark",
+      "title": "Q - mark?"
+    },
+    {
+      "name": "1d-T",
+      "title": "?(T) - mark?, channel?"
+    }
+  ],
+  "2 Fields": [
+    {
+      "name": "2d-NxN",
+      "title": "NxN - mark?, channel?"
+    },
+    {
+      "name": "2d-NxQ",
+      "title": "Nx?(Q) - mark?, channel?"
+    },
+    {
+      "name": "2d-OxQ",
+      "title": "Ox?(Q) - mark?, channel?"
+    },
+    {
+      "name": "2d-QxQ",
+      "title": "?(Q)x?(Q) - mark?, channel?"
+    },
+    {
+      "name": "2d-QxT",
+      "title": "?(Q)x?(T) - mark?, channel?"
+    }
+  ],
+  "3 Fields": [
+    {
+      "name": "3d-NxOxQ",
+      "title": "NxOx?(Q) - mark?, channel?"
+    },
+    {
+      "name": "3d-NxQxQ",
+      "title": "Nx?(Q)x?(Q) - mark?, channel?"
+    },
+    {
+      "name": "3d-OxQxQ",
+      "title": "Ox?(Q)x?(Q) - mark?, channel?"
+    }
+  ],
+  "Nested Property": [
+    {
+      "name": "bin-maxbins",
+      "title": "Histogram - maxbins?"
+    },
+    {
+      "name": "scale-type",
+      "title": "Strip Plot - scale.type?"
+    }
+  ],
+  "Demo": [
+    {
+      "name": "rank-by-feature_histogram",
+      "title": "Univariate Summary"
+    },
+    {
+      "name": "showme_add-to-sheet",
+      "title": "Show Me: Add To Sheet"
+    },
+    {
+      "name": "showme_automatic-mark",
+      "title": "Show Me: Automatic Mark"
+    },
+    {
+      "name": "voyager_exact-match",
+      "title": "Voyager Exact Match"
+    }
+
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "angular-zeroclipboard",
+  "version": "0.8.0",
+  "description": "Angular Wrapper for ZeroClipboard",
+  "main": "src/angular-zeroclipboard.js",
+  "keywords": [
+    "angular",
+    "zeroclipboard"
+  ],
+  "authors": [
+    "Leigh Zhu",
+    "Stan Bondi"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "bower_components",
+    "test*",
+    "demo*",
+    "GruntFile.js",
+    "package.json"
+  ],
+  "license": "MIT",
+  "homepage": "http://github.com/lisposter/angular-zeroclipboard",
+  "dependencies": {
+    "angular": "^1.2.16",
+    "zeroclipboard": ">=2"
+  },
+  "_release": "0.8.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.8.0",
+    "commit": "5f345d6d18b37db44e02d3bd472dc471aba668ab"
+  },
+  "_source": "https://github.com/lisposter/angular-zeroclipboard.git",
+  "_target": "~0.8.0",
+  "_originalSource": "angular-zeroclipboard"
+}

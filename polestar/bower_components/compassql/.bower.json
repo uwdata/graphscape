@@ -1,0 +1,35 @@
+{
+  "name": "compassql",
+  "description": "CompassQL visualization query language.",
+  "main": "compassql.js",
+  "authors": [
+    "Kanit \"Ham\" Wongsuphasawat <kanitw@gmail.com>",
+    "Interactive Data Lab (http://idl.cs.washington.edu)"
+  ],
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "visualization",
+    "recommendation"
+  ],
+  "homepage": "https://github.com/uwdata/CompassQL",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "version": "0.2.1",
+  "_release": "0.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.2.1",
+    "commit": "280ff1493c3e9822a8cd3aa5493e2a16b3836fd3"
+  },
+  "_source": "https://github.com/uwdata/compassql.git",
+  "_target": "~0.2.1",
+  "_originalSource": "compassql"
+}

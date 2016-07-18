@@ -1,0 +1,29 @@
+{
+  "name": "Angular-Chronicle",
+  "version": "1.0.10",
+  "description": "An undo/redo service for AngularJS.",
+  "main": "chronicle.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Blitzen/Angular-Chronicle.git"
+  },
+  "author": "Sam Maier",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-karma": "^0.8.3",
+    "karma": "^0.12.21",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-jasmine": "^0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-script-launcher": "^0.1.0"
+  },
+  "dependencies": {},
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Blitzen/Angular-Chronicle/issues"
+  },
+  "homepage": "https://github.com/Blitzen/Angular-Chronicle"
+}

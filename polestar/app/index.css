@@ -1,0 +1,3642 @@
+@charset "UTF-8";
+/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+html {
+  font-family: sans-serif;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */ }
+
+/**
+ * Remove default margin.
+ */
+body {
+  margin: 0; }
+
+/* HTML5 display definitions
+   ========================================================================== */
+/**
+ * Correct `block` display not defined for any HTML5 element in IE 8/9.
+ * Correct `block` display not defined for `details` or `summary` in IE 10/11
+ * and Firefox.
+ * Correct `block` display not defined for `main` in IE 11.
+ */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block; }
+
+/**
+ * 1. Correct `inline-block` display not defined in IE 8/9.
+ * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
+ */
+audio,
+canvas,
+progress,
+video {
+  display: inline-block;
+  /* 1 */
+  vertical-align: baseline;
+  /* 2 */ }
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+audio:not([controls]) {
+  display: none;
+  height: 0; }
+
+/**
+ * Address `[hidden]` styling not present in IE 8/9/10.
+ * Hide the `template` element in IE 8/9/11, Safari, and Firefox < 22.
+ */
+[hidden],
+template {
+  display: none; }
+
+/* Links
+   ========================================================================== */
+/**
+ * Remove the gray background color from active links in IE 10.
+ */
+a {
+  background-color: transparent; }
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+a:active,
+a:hover {
+  outline: 0; }
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
+ */
+abbr[title] {
+  border-bottom: 1px dotted; }
+
+/**
+ * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
+ */
+b,
+strong {
+  font-weight: bold; }
+
+/**
+ * Address styling not present in Safari and Chrome.
+ */
+dfn {
+  font-style: italic; }
+
+/**
+ * Address variable `h1` font-size and margin within `section` and `article`
+ * contexts in Firefox 4+, Safari, and Chrome.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0; }
+
+/**
+ * Address styling not present in IE 8/9.
+ */
+mark {
+  background: #ff0;
+  color: #000; }
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+small {
+  font-size: 80%; }
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline; }
+
+sup {
+  top: -0.5em; }
+
+sub {
+  bottom: -0.25em; }
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove border when inside `a` element in IE 8/9/10.
+ */
+img {
+  border: 0; }
+
+/**
+ * Correct overflow not hidden in IE 9/10/11.
+ */
+svg:not(:root) {
+  overflow: hidden; }
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * Address margin not present in IE 8/9 and Safari.
+ */
+figure {
+  margin: 1em 40px; }
+
+/**
+ * Address differences between Firefox and other browsers.
+ */
+hr {
+  box-sizing: content-box;
+  height: 0; }
+
+/**
+ * Contain overflow in all browsers.
+ */
+pre {
+  overflow: auto; }
+
+/**
+ * Address odd `em`-unit font size rendering in all browsers.
+ */
+code,
+kbd,
+pre,
+samp {
+  font-family: monospace, monospace;
+  font-size: 1em; }
+
+/* Forms
+   ========================================================================== */
+/**
+ * Known limitation: by default, Chrome and Safari on OS X allow very limited
+ * styling of `select`, unless a `border` property is set.
+ */
+/**
+ * 1. Correct color not being inherited.
+ *    Known issue: affects color of disabled elements.
+ * 2. Correct font properties not being inherited.
+ * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+  margin: 0;
+  /* 3 */ }
+
+/**
+ * Address `overflow` set to `hidden` in IE 8/9/10/11.
+ */
+button {
+  overflow: visible; }
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
+ * Correct `select` style inheritance in Firefox.
+ */
+button,
+select {
+  text-transform: none; }
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  /* 2 */
+  cursor: pointer;
+  /* 3 */ }
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+button[disabled],
+html input[disabled] {
+  cursor: default; }
+
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+input {
+  line-height: normal; }
+
+/**
+ * It's recommended that you don't attempt to style these elements.
+ * Firefox's implementation doesn't respect box-sizing, padding, or width.
+ *
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+
+/**
+ * Fix the cursor style for Chrome's increment/decrement buttons. For certain
+ * `font-size` values of the `input`, it causes the cursor style of the
+ * decrement button to change from `default` to `text`.
+ */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari and Chrome
+ *    (include `-moz` to future-proof).
+ */
+input[type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  /* 2 */
+  box-sizing: content-box; }
+
+/**
+ * Remove inner padding and search cancel button in Safari and Chrome on OS X.
+ * Safari (but not Chrome) clips the cancel button when the search input has
+ * padding (and `textfield` appearance).
+ */
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em; }
+
+/**
+ * 1. Correct `color` not being inherited in IE 8/9/10/11.
+ * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ */
+legend {
+  border: 0;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+
+/**
+ * Remove default vertical scrollbar in IE 8/9/10/11.
+ */
+textarea {
+  overflow: auto; }
+
+/**
+ * Don't inherit the `font-weight` (applied by a rule above).
+ * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
+ */
+optgroup {
+  font-weight: bold; }
+
+/* Tables
+   ========================================================================== */
+/**
+ * Remove most spacing between table cells.
+ */
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+td,
+th {
+  padding: 0; }
+
+html {
+  height: 100%; }
+
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #E2E9F3;
+  font-size: 12px;
+  line-height: 18px; }
+
+a:hover, a:focus {
+  color: #72757B; }
+
+a:hover {
+  cursor: pointer; }
+
+#logo {
+  height: 34px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+
+.top-card a {
+  color: #38425D; }
+
+.top-card a:hover {
+  color: #72757B; }
+
+.controls {
+  margin-left: 33px;
+  margin-top: 7px; }
+  .controls > a.command {
+    font-size: 14px;
+    margin-right: 40px; }
+
+.idl-logo {
+  background: url("../assets/images/idl-h56.png") center no-repeat;
+  display: block;
+  background-size: 40px 28px;
+  width: 40px;
+  height: 28px; }
+
+.clickable, .clickable.draggable {
+  cursor: pointer; }
+
+.draggable {
+  cursor: move; }
+
+.invisible {
+  visibility: hidden; }
+
+a:active, a:hover {
+  outline: 0; }
+
+a {
+  color: #38425D;
+  text-decoration: none;
+  line-height: inherit; }
+
+.italic {
+  font-style: italic; }
+
+a.command, div.command {
+  margin-left: 10px; }
+  a.command.debug, a.command .debug, div.command.debug, div.command .debug {
+    color: #72a386; }
+  a.command.disabled, a.command.disabled:hover, a.command[disabled=disabled], a.command [disabled=disabled]:hover, div.command.disabled, div.command.disabled:hover, div.command[disabled=disabled], div.command [disabled=disabled]:hover {
+    cursor: not-allowed;
+    color: #ccc; }
+
+textarea {
+  width: 100%; }
+
+.right {
+  float: right; }
+
+.card {
+  margin: 3px 3px 0 0;
+  padding: 8px;
+  background: white;
+  border-style: none; }
+  .card.margin-bottom {
+    margin-bottom: 3px; }
+
+.top-card {
+  background-color: #FCFDFE; }
+
+.no-right-margin {
+  margin-right: 0 !important; }
+
+.no-top-margin {
+  margin-top: 0 !important; }
+
+.no-left-margin {
+  margin-left: 0 !important; }
+
+.no-bottom-margin {
+  margin-bottom: 0 !important; }
+
+/* prevent element from being selected http://stackoverflow.com/questions/826782 */
+.noselect, h1, h2, h3, h4, .shelf .shelf-label {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: default; }
+
+h1 {
+  font-size: 24px;
+  line-height: 36px;
+  font-weight: 700;
+  margin: 0; }
+
+h2 {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  margin: 0 0 15px; }
+
+h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 10px; }
+
+h4 {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0; }
+
+.flex-root {
+  overflow: auto; }
+
+.popup-menu {
+  padding: 5px;
+  background-color: #eee;
+  border: 1px solid #eee;
+  border-radius: 3px; }
+  .popup-menu.popup-command .command {
+    display: block; }
+
+/* PANES */
+.pane {
+  padding: 0px;
+  position: relative; }
+
+.pane .subpane {
+  margin-bottom: 20px; }
+
+.pane .subpane:last-child {
+  margin-bottom: 0px; }
+
+.main-panel {
+  min-height: 250px;
+  height: 450px;
+  -webkit-box-flex: 1.5;
+      -ms-flex-positive: 1.5;
+          flex-grow: 1.5; }
+
+.dev-panel {
+  min-height: 150px;
+  height: 300px;
+  -webkit-box-flex: 0.5;
+      -ms-flex-positive: 0.5;
+          flex-grow: 0.5;
+  background-color: #EEE; }
+
+.alert-box {
+  z-index: 1;
+  position: absolute;
+  top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  width: 500px; }
+
+.alert-item {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  padding: 5px;
+  margin-bottom: 5px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow-wrap: break-word; }
+  .alert-item a.close {
+    float: right;
+    color: #a94442;
+    font-weight: bold; }
+
+/* UTILITIES */
+.mb5 {
+  margin-bottom: 5px; }
+
+.relative {
+  position: relative; }
+
+.full-width {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: initial; }
+
+.full-height {
+  height: 100%; }
+
+.inline-label {
+  display: inline-block;
+  min-width: 100px;
+  font-weight: bold; }
+
+.inline-block {
+  display: inline-block; }
+
+.block {
+  display: block; }
+
+.grow-1 {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+
+.hflex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  position: relative; }
+
+.vflex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  position: relative; }
+
+.flex-wrap {
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap; }
+
+.flex-grow-1 {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+
+.no-shrink {
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+
+.abs-w100 {
+  position: absolute;
+  left: 0;
+  right: 0; }
+
+.abs-h100 {
+  position: absolute;
+  top: 0;
+  bottom: 0; }
+
+.abs-100 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0; }
+
+.absolute-top-right {
+  position: absolute;
+  top: 3px;
+  right: 0; }
+
+.persist-scroll, .scroll-y, .scroll-x, .scroll-xy, .vl-plot.overflow.scroll, #vis {
+  /*
+    Prevent scroll bars from being hidden for OS X.
+    http://stackoverflow.com/questions/7855590/how-can-i-prevent-scroll-bars-from-being-hidden-for-os-x-trackpad-users-in-webkit
+  */ }
+  .persist-scroll::-webkit-scrollbar, .scroll-y::-webkit-scrollbar, .scroll-x::-webkit-scrollbar, .scroll-xy::-webkit-scrollbar, .vl-plot.overflow.scroll::-webkit-scrollbar, #vis::-webkit-scrollbar {
+    -webkit-appearance: none; }
+  .persist-scroll::-webkit-scrollbar:vertical, .scroll-y::-webkit-scrollbar:vertical, .scroll-x::-webkit-scrollbar:vertical, .scroll-xy::-webkit-scrollbar:vertical, .vl-plot.overflow.scroll::-webkit-scrollbar:vertical, #vis::-webkit-scrollbar:vertical {
+    width: 11px; }
+  .persist-scroll::-webkit-scrollbar:horizontal, .scroll-y::-webkit-scrollbar:horizontal, .scroll-x::-webkit-scrollbar:horizontal, .scroll-xy::-webkit-scrollbar:horizontal, .vl-plot.overflow.scroll::-webkit-scrollbar:horizontal, #vis::-webkit-scrollbar:horizontal {
+    height: 11px; }
+  .persist-scroll::-webkit-scrollbar-thumb, .scroll-y::-webkit-scrollbar-thumb, .scroll-x::-webkit-scrollbar-thumb, .scroll-xy::-webkit-scrollbar-thumb, .vl-plot.overflow.scroll::-webkit-scrollbar-thumb, #vis::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, 0.5); }
+  .persist-scroll::-webkit-scrollbar-track, .scroll-y::-webkit-scrollbar-track, .scroll-x::-webkit-scrollbar-track, .scroll-xy::-webkit-scrollbar-track, .vl-plot.overflow.scroll::-webkit-scrollbar-track, #vis::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 8px; }
+
+.scroll-y {
+  overflow-y: scroll; }
+
+.scroll-x {
+  overflow-x: scroll; }
+
+.scroll-xy {
+  overflow-y: scroll;
+  overflow-x: scroll; }
+
+.small {
+  font-size: 10px; }
+
+/**** Components ****/
+.drop-container {
+  display: none; }
+
+.drop {
+  display: none; }
+  .drop.drop-open {
+    display: block; }
+
+.data-card {
+  background-color: #38425D; }
+  .data-card h2, .data-card h3 {
+    color: white; }
+  .data-card .current-dataset {
+    color: white; }
+  .data-card .sidebar-header {
+    padding-bottom: 5px;
+    margin-bottom: 5px; }
+  .data-card .current-dataset {
+    display: inline-block;
+    white-space: nowrap;
+    width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .data-card .current-dataset .fa-database {
+      margin-left: 2px;
+      margin-right: 5px; }
+  .data-card button {
+    margin-top: -3px; }
+
+.data-load {
+  background-color: #30374A;
+  padding: 0;
+  margin: 0; }
+
+.pane.data-pane {
+  width: 250px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+
+#footer {
+  position: absolute;
+  bottom: 5px;
+  left: 10px; }
+  #footer ul.menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    #footer ul.menu li {
+      margin-bottom: 4px;
+      padding: 0;
+      display: inline-block; }
+      #footer ul.menu li:after {
+        color: #eee;
+        content: '\000b7';
+        padding: 0 3px; }
+      #footer ul.menu li:last-of-type:after {
+        content: none;
+        padding-right: 0; }
+
+._720kb-tooltip:not(._720kb-tooltip-open) {
+  visibility: hidden !important; }
+
+.add-myria-dataset p {
+  max-width: 450px; }
+
+.add-myria-dataset input {
+  width: 300px; }
+
+.add-myria-dataset button {
+  margin-top: 1.5em;
+  line-height: 15px; }
+
+.add-url-dataset p {
+  width: 300px; }
+
+.add-url-dataset .form-group {
+  margin-top: 1em; }
+  .add-url-dataset .form-group label {
+    width: 50px;
+    display: block;
+    float: left;
+    text-align: right;
+    font-weight: bold;
+    margin-right: 10px; }
+  .add-url-dataset .form-group input {
+    width: 230px; }
+
+.add-url-dataset button {
+  margin-top: 1.5em;
+  line-height: 15px; }
+
+.change-loaded-dataset {
+  padding-top: 10px; }
+  .change-loaded-dataset ul {
+    padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px; }
+  .change-loaded-dataset li {
+    margin-bottom: 5px;
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 20px 5px 10px; }
+    @media (min-width: 640px) {
+      .change-loaded-dataset li {
+        padding-right: 10px;
+        width: 49%; } }
+    .change-loaded-dataset li.selected {
+      background-color: #eef0f7;
+      border: 1px solid #aeb8d4;
+      border-radius: 3px; }
+
+.paste-data .form-group {
+  margin-top: 1em; }
+
+.paste-data form {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%; }
+  @media (min-width: 640px) {
+    .paste-data form {
+      width: 55%; } }
+  .paste-data form input {
+    width: 230px; }
+  .paste-data form textarea {
+    width: 100%;
+    min-height: 200px; }
+    @media (min-width: 640px) {
+      .paste-data form textarea {
+        min-height: 250px; } }
+
+.paste-data label {
+  width: 50px;
+  display: block;
+  float: left;
+  font-weight: bold;
+  margin-right: 10px; }
+
+.paste-data button {
+  margin-top: 1.5em;
+  line-height: 15px; }
+
+.paste-data .upload-data {
+  margin-right: 20px;
+  width: 100%; }
+  @media (min-width: 640px) {
+    .paste-data .upload-data {
+      width: 40%;
+      display: inline-block;
+      vertical-align: top; } }
+
+.dropzone {
+  display: inline-block;
+  vertical-align: top; }
+  .dropzone,
+  .dropzone .dropzone-target {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px dashed #aaa; }
+    .dropzone:hover,
+    .dropzone .dropzone-target:hover {
+      border: 1px dashed #777; }
+  .dropzone .dropzone-target {
+    color: #888;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase; }
+    @media (min-width: 640px) {
+      .dropzone .dropzone-target {
+        padding: 50px 20px; } }
+
+#bookmark-list .sv-placeholder {
+  border: 4px dashed #ccd3de;
+  border-radius: 4px;
+  min-width: 200px;
+  min-height: 200px;
+  margin: 10px; }
+
+#bookmark-list .wrapped-vl-plot-group {
+  cursor: move; }
+
+#bookmark-list .bookmark-list-util {
+  display: inline-block;
+  margin-right: 8px; }
+
+/* FIXME should be in vl-ui*/
+.shelf-group {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  font-size: 11px; }
+
+.shelf {
+  border-radius: 3px;
+  background-color: rgba(55, 65, 92, 0.2);
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 22px; }
+  .shelf.any {
+    background-color: rgba(15, 123, 133, 0.4); }
+  .shelf.disabled {
+    opacity: 0.5; }
+  .shelf .shelf-label {
+    display: block;
+    width: 45px;
+    margin: 0 0.2rem;
+    line-height: 22px;
+    -ms-flex-negative: 0;
+        flex-shrink: 0; }
+    .shelf .shelf-label .fa {
+      margin-top: 4px;
+      opacity: 0.5; }
+    .shelf .shelf-label.expanded .fa, .shelf .shelf-label:hover .fa {
+      opacity: 1; }
+  .shelf .field-drop {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+    width: auto;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    height: 22px;
+    line-height: 22px; }
+    .shelf .field-drop .field-info {
+      margin-right: 0; }
+    .shelf .field-drop .placeholder {
+      display: block;
+      width: 100%;
+      padding: 0 0.5em;
+      border: 1px solid #ccc;
+      background-color: white;
+      line-height: 20px;
+      border-radius: 3px;
+      text-overflow: ellipsis;
+      font-weight: normal;
+      color: #aaa; }
+  .shelf .field-drop.drop-active {
+    border: 1px dashed #4CAF50;
+    background-color: #C8E6C9; }
+    .shelf .field-drop.drop-active .placeholder {
+      background-color: #C8E6C9;
+      color: #212121; }
+    .shelf .field-drop.drop-active .field-info {
+      opacity: 0.5; }
+
+.shelf-properties {
+  min-width: 250px; }
+
+.shelf-functions {
+  width: 160px; }
+
+.shelf-properties, .shelf-functions {
+  line-height: 20px; }
+  .shelf-properties label, .shelf-functions label {
+    display: inline-block; }
+    .shelf-properties label.prop-label, .shelf-functions label.prop-label {
+      width: 110px;
+      text-align: right;
+      margin-right: 3px; }
+      .shelf-properties label.prop-label .name, .shelf-functions label.prop-label .name {
+        text-overflow: ellipsis;
+        width: 90px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle; }
+    .shelf-properties label.func-label, .shelf-properties label.type-label, .shelf-functions label.func-label, .shelf-functions label.type-label {
+      min-width: 75px;
+      margin-right: 5px; }
+
+.field-info {
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 3px;
+  line-height: 18px;
+  box-sizing: border-box;
+  height: 20px;
+  margin-bottom: 0;
+  margin-right: 3px;
+  padding: 1px 3px;
+  font-size: 11px;
+  border: 1px solid transparent;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  overflow: hidden; }
+  .field-info .type-caret {
+    -ms-flex-negative: 0;
+        flex-shrink: 0; }
+  .field-info .type {
+    font-size: 0.8rem;
+    margin-right: 3px;
+    margin-right: 6px;
+    -ms-flex-negative: 0;
+        flex-shrink: 0; }
+  .field-info .icon-hash {
+    margin-top: 1px; }
+    .field-info .icon-hash:before {
+      content: "#";
+      padding-left: 2px;
+      padding-right: 2px;
+      font-family: sans-serif;
+      font-size: 1rem; }
+  .field-info .field-info-text {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1; }
+  .field-info .field-func, .field-info .field-count {
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    margin-right: 3px; }
+
+.field-func, .field-count {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 11px; }
+  .field-func.any, .field-count.any {
+    color: #bbb; }
+
+.field-info .field-name {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+  .field-info .field-name.hasfunc::before {
+    content: "("; }
+  .field-info .field-name.hasfunc::after {
+    content: ")"; }
+  .field-info .field-name.hasfunc.any::before, .field-info .field-name.hasfunc.any::after {
+    color: #bbb; }
+
+.field-info .fa.fa-caret-down, .field-info .fa.fa-times {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  border-radius: 3px;
+  margin-top: 1px; }
+
+.field-info .fa.fa-caret-down {
+  padding: 2px 3px 1px; }
+
+.field-info .fa.fa-times {
+  padding: 1px 2px; }
+
+.field-info .type-caret .fa-caret-down {
+  visibility: hidden; }
+
+.field-info .type-caret.active {
+  color: black;
+  cursor: pointer; }
+  .field-info .type-caret.active .fa-caret-down {
+    visibility: visible; }
+
+.field-info .type-caret.active:hover .fa.fa-caret-down, .field-info .fa.fa-times:hover,
+.field-info:hover .type-caret.active:hover .fa.fa-caret-down,
+.field-info.highlighted .type-caret.active:hover .fa.fa-caret-down {
+  color: white;
+  background-color: #999; }
+
+.field-info .type-caret.drop-enabled .fa.fa-caret-down {
+  background-color: #bbb;
+  color: black; }
+
+.field-info .info {
+  opacity: 0.5; }
+  .field-info .info:hover {
+    opacity: 1; }
+
+.field-info.unselected {
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  background-color: #fafafa; }
+
+.field-info.selected {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: rgba(237, 237, 237, 0.8);
+  font-weight: 500; }
+
+.field-info.pill {
+  background-color: rgba(237, 237, 237, 0.8);
+  font-weight: 500; }
+
+.field-info.list-item {
+  margin-bottom: 4px; }
+
+.field-info.highlighted,
+.field-list-item:hover .field-info {
+  border: 1px solid #FFE14A;
+  background-color: #FFE14A;
+  font-weight: 500; }
+  .field-info.highlighted .field-func.any, .field-info.highlighted .field-count.any,
+  .field-list-item:hover .field-info .field-func.any,
+  .field-list-item:hover .field-info .field-count.any {
+    color: #666; }
+  .field-info.highlighted .field-info .field-name.hasfunc.any::before, .field-info.highlighted .field-info .field-name.hasfunc.any::after,
+  .field-list-item:hover .field-info .field-info .field-name.hasfunc.any::before,
+  .field-list-item:hover .field-info .field-info .field-name.hasfunc.any::after {
+    color: #666; }
+
+.field-info.ui-draggable-dragging {
+  min-width: 150px;
+  width: auto;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.2); }
+  .field-info.ui-draggable-dragging .info {
+    display: none; }
+
+.tooltip-content {
+  max-width: 300px; }
+  .tooltip-content strong {
+    width: 75px;
+    display: inline-block;
+    text-align: right;
+    margin-right: 5px; }
+
+.shelf.filter-shelf {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: auto;
+  max-height: 150px; }
+  .shelf.filter-shelf .field-drop {
+    -ms-flex-negative: 0;
+        flex-shrink: 0; }
+
+.filter-box {
+  padding: 0 4px 4px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+
+.categorical-filter-box .actions {
+  margin-bottom: 4px; }
+
+.categorical-filter-box .values {
+  overflow-y: scroll; }
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1; }
+  .modal .modal-header {
+    background-color: #F1F4F9;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    margin: 3px 3px 0 0;
+    padding: 8px; }
+    .modal .modal-header h2 {
+      margin-bottom: 0; }
+  .modal .modal-wrapper {
+    margin: 50px auto;
+    width: calc( 100% - 100px);
+    max-height: calc( 100% - 100px);
+    overflow: hidden;
+    padding: 6px;
+    background-color: #E2E9F3;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+            align-items: stretch; }
+  .modal .modal-wrapper .scroll-y::-webkit-scrollbar-thumb {
+    border: 2px solid #E2E9F3; }
+  .modal .modal-main {
+    background-color: white; }
+  .modal .modal-close {
+    position: absolute;
+    top: 58px;
+    right: 58px; }
+
+.shelf-pane {
+  margin-bottom: 20px; }
+
+.tab-container .tab {
+  display: inline-block;
+  padding: 5px 10px;
+  margin-right: 5px;
+  margin-bottom: -1px;
+  border-radius: 3px 3px 0 0;
+  border: 1px solid #ddd;
+  border-bottom-color: #aaa; }
+  .tab-container .tab.active {
+    font-weight: bold;
+    border-color: #aaa;
+    border-bottom: 1px solid white; }
+
+.tab-container .tab-contents {
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 0 3px 3px 3px; }
+
+.vis-tooltip {
+  background-color: black;
+  padding: 3px;
+  border-radius: 3px;
+  color: white;
+  position: fixed;
+  z-index: 2000;
+  font-size: 10px; }
+  .vis-tooltip td.key, .vis-tooltip td.value {
+    overflow: hidden;
+    text-overflow: ellipsis; }
+  .vis-tooltip td.key {
+    max-width: 100px;
+    text-align: right;
+    padding-right: 5px; }
+  .vis-tooltip td.value {
+    max-width: 150px;
+    text-align: left; }
+
+.vis-list-more, .vis-list-empty {
+  height: 60px;
+  line-height: 60px;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 20px; }
+
+/** vl-plot-group in vis-list */
+.vl-plot-group.wrapped-vl-plot-group {
+  max-width: 520px;
+  max-height: 390px;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  padding-right: 11px;
+  padding-bottom: 11px; }
+  .vl-plot-group.wrapped-vl-plot-group .vl-plot {
+    min-height: 150px; }
+
+/** used for vertical scroll thumbnails */
+.vl-plot-group.row-vl-plot-group {
+  max-width: 100%;
+  max-height: 390px; }
+  .vl-plot-group.row-vl-plot-group.selected {
+    border: 3px solid #aaa;
+    background: #ccc; }
+    .vl-plot-group.row-vl-plot-group.selected .vl-plot canvas {
+      opacity: 0.85; }
+
+.vl-plot-group a.command {
+  color: #aaa; }
+  .vl-plot-group a.command.debug {
+    color: #72a386; }
+  .vl-plot-group a.command.active {
+    color: #38425D; }
+  .vl-plot-group a.command.active:hover {
+    color: #72757B; }
+  .vl-plot-group a.command:hover {
+    color: #72C1D5; }
+  .vl-plot-group a.command .fa.fa-refresh.transpose {
+    -webkit-transform: rotateZ(135deg) scaleX(-1);
+            transform: rotateZ(135deg) scaleX(-1); }
+  .vl-plot-group a.command .fa.sort.sort-x {
+    -webkit-transform: rotateZ(270deg);
+            transform: rotateZ(270deg); }
+  .vl-plot-group a.command.disabled, .vl-plot-group a.command.disabled:hover, .vl-plot-group a.command[disabled=disabled], .vl-plot-group a.command [disabled=disabled]:hover {
+    display: none; }
+
+.vl-plot-group-header {
+  margin-bottom: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+  .vl-plot-group-header .toolbox {
+    position: relative;
+    -webkit-box-flex: 0;
+        -ms-flex-positive: 0;
+            flex-grow: 0;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    text-align: right; }
+  .vl-plot-group-header .toolbox .command {
+    text-transform: uppercase; }
+  .vl-plot-group-header .field-set-info {
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1; }
+
+.vl-plot {
+  min-width: 250px;
+  overflow: hidden;
+  text-align: center; }
+  .vl-plot .vega canvas {
+    margin: auto; }
+  .vl-plot.fit {
+    width: 100%; }
+    .vl-plot.fit .vega {
+      -ms-flex-item-align: end;
+          align-self: flex-end; }
+  .vl-plot.overflow.scroll {
+    overflow: auto; }
+
+.dev-tool {
+  width: 150px; }
+
+.vl-plot-group .annotation {
+  min-height: 60px;
+  resize: none;
+  border-color: lightgray; }
+
+.bookmark-alert {
+  position: absolute;
+  right: 0;
+  top: 20px;
+  color: white;
+  background-color: #38425D;
+  padding: 8px;
+  border-radius: 3px;
+  text-align: left;
+  z-index: 1;
+  min-width: 150px; }
+
+.bookmark-alert a {
+  color: white;
+  margin-right: 8px; }
+
+.bookmark-alert a:hover {
+  color: lightgray; }
+
+.bookmark-alert a i {
+  margin-right: 4px; }
+
+.vis-list-container {
+  border-top: 1px solid #E2E9F3; }
+
+.vis-list-header {
+  margin: 5px 6px 0;
+  background-color: #F1F4F9; }
+  .vis-list-header .description {
+    font-size: 16px;
+    font-weight: bold; }
+  .vis-list-header .explanation {
+    color: #333; }
+  .vis-list-header .field-info {
+    margin-top: -6px; }
+
+.vis-list {
+  margin-left: 6px;
+  margin-right: 3px;
+  margin-bottom: 20px;
+  -ms-flex-line-pack: start;
+      align-content: flex-start; }
+
+/*!
+ *  Font Awesome 4.5.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("../../bower_components/fontawesome/fonts/fontawesome-webfont.eot?v=4.5.0");
+  src: url("../../bower_components/fontawesome/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0") format("embedded-opentype"), url("../../bower_components/fontawesome/fonts/fontawesome-webfont.woff2?v=4.5.0") format("woff2"), url("../../bower_components/fontawesome/fonts/fontawesome-webfont.woff?v=4.5.0") format("woff"), url("../../bower_components/fontawesome/fonts/fontawesome-webfont.ttf?v=4.5.0") format("truetype"), url("../../bower_components/fontawesome/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+/* makes the font 33% larger relative to the icon container */
+.fa-lg {
+  font-size: 1.33333em;
+  line-height: 0.75em;
+  vertical-align: -15%; }
+
+.fa-2x {
+  font-size: 2em; }
+
+.fa-3x {
+  font-size: 3em; }
+
+.fa-4x {
+  font-size: 4em; }
+
+.fa-5x {
+  font-size: 5em; }
+
+.fa-fw {
+  width: 1.28571em;
+  text-align: center; }
+
+.fa-ul {
+  padding-left: 0;
+  margin-left: 2.14286em;
+  list-style-type: none; }
+  .fa-ul > li {
+    position: relative; }
+
+.fa-li {
+  position: absolute;
+  left: -2.14286em;
+  width: 2.14286em;
+  top: 0.14286em;
+  text-align: center; }
+  .fa-li.fa-lg {
+    left: -1.85714em; }
+
+.fa-border {
+  padding: .2em .25em .15em;
+  border: solid 0.08em #eee;
+  border-radius: .1em; }
+
+.fa-pull-left {
+  float: left; }
+
+.fa-pull-right {
+  float: right; }
+
+.fa.fa-pull-left {
+  margin-right: .3em; }
+
+.fa.fa-pull-right {
+  margin-left: .3em; }
+
+/* Deprecated as of 4.4.0 */
+.pull-right {
+  float: right; }
+
+.pull-left {
+  float: left; }
+
+.fa.pull-left {
+  margin-right: .3em; }
+
+.fa.pull-right {
+  margin-left: .3em; }
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear; }
+
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8); }
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
+.fa-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg); }
+
+.fa-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg); }
+
+.fa-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-transform: rotate(270deg);
+  transform: rotate(270deg); }
+
+.fa-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+  -webkit-transform: scale(-1, 1);
+  transform: scale(-1, 1); }
+
+.fa-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: scale(1, -1);
+  transform: scale(1, -1); }
+
+:root .fa-rotate-90,
+:root .fa-rotate-180,
+:root .fa-rotate-270,
+:root .fa-flip-horizontal,
+:root .fa-flip-vertical {
+  -webkit-filter: none;
+          filter: none; }
+
+.fa-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle; }
+
+.fa-stack-1x, .fa-stack-2x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center; }
+
+.fa-stack-1x {
+  line-height: inherit; }
+
+.fa-stack-2x {
+  font-size: 2em; }
+
+.fa-inverse {
+  color: #fff; }
+
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+.fa-glass:before {
+  content: ""; }
+
+.fa-music:before {
+  content: ""; }
+
+.fa-search:before {
+  content: ""; }
+
+.fa-envelope-o:before {
+  content: ""; }
+
+.fa-heart:before {
+  content: ""; }
+
+.fa-star:before {
+  content: ""; }
+
+.fa-star-o:before {
+  content: ""; }
+
+.fa-user:before {
+  content: ""; }
+
+.fa-film:before {
+  content: ""; }
+
+.fa-th-large:before {
+  content: ""; }
+
+.fa-th:before {
+  content: ""; }
+
+.fa-th-list:before {
+  content: ""; }
+
+.fa-check:before {
+  content: ""; }
+
+.fa-remove:before,
+.fa-close:before,
+.fa-times:before {
+  content: ""; }
+
+.fa-search-plus:before {
+  content: ""; }
+
+.fa-search-minus:before {
+  content: ""; }
+
+.fa-power-off:before {
+  content: ""; }
+
+.fa-signal:before {
+  content: ""; }
+
+.fa-gear:before,
+.fa-cog:before {
+  content: ""; }
+
+.fa-trash-o:before {
+  content: ""; }
+
+.fa-home:before {
+  content: ""; }
+
+.fa-file-o:before {
+  content: ""; }
+
+.fa-clock-o:before {
+  content: ""; }
+
+.fa-road:before {
+  content: ""; }
+
+.fa-download:before {
+  content: ""; }
+
+.fa-arrow-circle-o-down:before {
+  content: ""; }
+
+.fa-arrow-circle-o-up:before {
+  content: ""; }
+
+.fa-inbox:before {
+  content: ""; }
+
+.fa-play-circle-o:before {
+  content: ""; }
+
+.fa-rotate-right:before,
+.fa-repeat:before {
+  content: ""; }
+
+.fa-refresh:before {
+  content: ""; }
+
+.fa-list-alt:before {
+  content: ""; }
+
+.fa-lock:before {
+  content: ""; }
+
+.fa-flag:before {
+  content: ""; }
+
+.fa-headphones:before {
+  content: ""; }
+
+.fa-volume-off:before {
+  content: ""; }
+
+.fa-volume-down:before {
+  content: ""; }
+
+.fa-volume-up:before {
+  content: ""; }
+
+.fa-qrcode:before {
+  content: ""; }
+
+.fa-barcode:before {
+  content: ""; }
+
+.fa-tag:before {
+  content: ""; }
+
+.fa-tags:before {
+  content: ""; }
+
+.fa-book:before {
+  content: ""; }
+
+.fa-bookmark:before {
+  content: ""; }
+
+.fa-print:before {
+  content: ""; }
+
+.fa-camera:before {
+  content: ""; }
+
+.fa-font:before {
+  content: ""; }
+
+.fa-bold:before {
+  content: ""; }
+
+.fa-italic:before {
+  content: ""; }
+
+.fa-text-height:before {
+  content: ""; }
+
+.fa-text-width:before {
+  content: ""; }
+
+.fa-align-left:before {
+  content: ""; }
+
+.fa-align-center:before {
+  content: ""; }
+
+.fa-align-right:before {
+  content: ""; }
+
+.fa-align-justify:before {
+  content: ""; }
+
+.fa-list:before {
+  content: ""; }
+
+.fa-dedent:before,
+.fa-outdent:before {
+  content: ""; }
+
+.fa-indent:before {
+  content: ""; }
+
+.fa-video-camera:before {
+  content: ""; }
+
+.fa-photo:before,
+.fa-image:before,
+.fa-picture-o:before {
+  content: ""; }
+
+.fa-pencil:before {
+  content: ""; }
+
+.fa-map-marker:before {
+  content: ""; }
+
+.fa-adjust:before {
+  content: ""; }
+
+.fa-tint:before {
+  content: ""; }
+
+.fa-edit:before,
+.fa-pencil-square-o:before {
+  content: ""; }
+
+.fa-share-square-o:before {
+  content: ""; }
+
+.fa-check-square-o:before {
+  content: ""; }
+
+.fa-arrows:before {
+  content: ""; }
+
+.fa-step-backward:before {
+  content: ""; }
+
+.fa-fast-backward:before {
+  content: ""; }
+
+.fa-backward:before {
+  content: ""; }
+
+.fa-play:before {
+  content: ""; }
+
+.fa-pause:before {
+  content: ""; }
+
+.fa-stop:before {
+  content: ""; }
+
+.fa-forward:before {
+  content: ""; }
+
+.fa-fast-forward:before {
+  content: ""; }
+
+.fa-step-forward:before {
+  content: ""; }
+
+.fa-eject:before {
+  content: ""; }
+
+.fa-chevron-left:before {
+  content: ""; }
+
+.fa-chevron-right:before {
+  content: ""; }
+
+.fa-plus-circle:before {
+  content: ""; }
+
+.fa-minus-circle:before {
+  content: ""; }
+
+.fa-times-circle:before {
+  content: ""; }
+
+.fa-check-circle:before {
+  content: ""; }
+
+.fa-question-circle:before {
+  content: ""; }
+
+.fa-info-circle:before {
+  content: ""; }
+
+.fa-crosshairs:before {
+  content: ""; }
+
+.fa-times-circle-o:before {
+  content: ""; }
+
+.fa-check-circle-o:before {
+  content: ""; }
+
+.fa-ban:before {
+  content: ""; }
+
+.fa-arrow-left:before {
+  content: ""; }
+
+.fa-arrow-right:before {
+  content: ""; }
+
+.fa-arrow-up:before {
+  content: ""; }
+
+.fa-arrow-down:before {
+  content: ""; }
+
+.fa-mail-forward:before,
+.fa-share:before {
+  content: ""; }
+
+.fa-expand:before {
+  content: ""; }
+
+.fa-compress:before {
+  content: ""; }
+
+.fa-plus:before {
+  content: ""; }
+
+.fa-minus:before {
+  content: ""; }
+
+.fa-asterisk:before {
+  content: ""; }
+
+.fa-exclamation-circle:before {
+  content: ""; }
+
+.fa-gift:before {
+  content: ""; }
+
+.fa-leaf:before {
+  content: ""; }
+
+.fa-fire:before {
+  content: ""; }
+
+.fa-eye:before {
+  content: ""; }
+
+.fa-eye-slash:before {
+  content: ""; }
+
+.fa-warning:before,
+.fa-exclamation-triangle:before {
+  content: ""; }
+
+.fa-plane:before {
+  content: ""; }
+
+.fa-calendar:before {
+  content: ""; }
+
+.fa-random:before {
+  content: ""; }
+
+.fa-comment:before {
+  content: ""; }
+
+.fa-magnet:before {
+  content: ""; }
+
+.fa-chevron-up:before {
+  content: ""; }
+
+.fa-chevron-down:before {
+  content: ""; }
+
+.fa-retweet:before {
+  content: ""; }
+
+.fa-shopping-cart:before {
+  content: ""; }
+
+.fa-folder:before {
+  content: ""; }
+
+.fa-folder-open:before {
+  content: ""; }
+
+.fa-arrows-v:before {
+  content: ""; }
+
+.fa-arrows-h:before {
+  content: ""; }
+
+.fa-bar-chart-o:before,
+.fa-bar-chart:before {
+  content: ""; }
+
+.fa-twitter-square:before {
+  content: ""; }
+
+.fa-facebook-square:before {
+  content: ""; }
+
+.fa-camera-retro:before {
+  content: ""; }
+
+.fa-key:before {
+  content: ""; }
+
+.fa-gears:before,
+.fa-cogs:before {
+  content: ""; }
+
+.fa-comments:before {
+  content: ""; }
+
+.fa-thumbs-o-up:before {
+  content: ""; }
+
+.fa-thumbs-o-down:before {
+  content: ""; }
+
+.fa-star-half:before {
+  content: ""; }
+
+.fa-heart-o:before {
+  content: ""; }
+
+.fa-sign-out:before {
+  content: ""; }
+
+.fa-linkedin-square:before {
+  content: ""; }
+
+.fa-thumb-tack:before {
+  content: ""; }
+
+.fa-external-link:before {
+  content: ""; }
+
+.fa-sign-in:before {
+  content: ""; }
+
+.fa-trophy:before {
+  content: ""; }
+
+.fa-github-square:before {
+  content: ""; }
+
+.fa-upload:before {
+  content: ""; }
+
+.fa-lemon-o:before {
+  content: ""; }
+
+.fa-phone:before {
+  content: ""; }
+
+.fa-square-o:before {
+  content: ""; }
+
+.fa-bookmark-o:before {
+  content: ""; }
+
+.fa-phone-square:before {
+  content: ""; }
+
+.fa-twitter:before {
+  content: ""; }
+
+.fa-facebook-f:before,
+.fa-facebook:before {
+  content: ""; }
+
+.fa-github:before {
+  content: ""; }
+
+.fa-unlock:before {
+  content: ""; }
+
+.fa-credit-card:before {
+  content: ""; }
+
+.fa-feed:before,
+.fa-rss:before {
+  content: ""; }
+
+.fa-hdd-o:before {
+  content: ""; }
+
+.fa-bullhorn:before {
+  content: ""; }
+
+.fa-bell:before {
+  content: ""; }
+
+.fa-certificate:before {
+  content: ""; }
+
+.fa-hand-o-right:before {
+  content: ""; }
+
+.fa-hand-o-left:before {
+  content: ""; }
+
+.fa-hand-o-up:before {
+  content: ""; }
+
+.fa-hand-o-down:before {
+  content: ""; }
+
+.fa-arrow-circle-left:before {
+  content: ""; }
+
+.fa-arrow-circle-right:before {
+  content: ""; }
+
+.fa-arrow-circle-up:before {
+  content: ""; }
+
+.fa-arrow-circle-down:before {
+  content: ""; }
+
+.fa-globe:before {
+  content: ""; }
+
+.fa-wrench:before {
+  content: ""; }
+
+.fa-tasks:before {
+  content: ""; }
+
+.fa-filter:before {
+  content: ""; }
+
+.fa-briefcase:before {
+  content: ""; }
+
+.fa-arrows-alt:before {
+  content: ""; }
+
+.fa-group:before,
+.fa-users:before {
+  content: ""; }
+
+.fa-chain:before,
+.fa-link:before {
+  content: ""; }
+
+.fa-cloud:before {
+  content: ""; }
+
+.fa-flask:before {
+  content: ""; }
+
+.fa-cut:before,
+.fa-scissors:before {
+  content: ""; }
+
+.fa-copy:before,
+.fa-files-o:before {
+  content: ""; }
+
+.fa-paperclip:before {
+  content: ""; }
+
+.fa-save:before,
+.fa-floppy-o:before {
+  content: ""; }
+
+.fa-square:before {
+  content: ""; }
+
+.fa-navicon:before,
+.fa-reorder:before,
+.fa-bars:before {
+  content: ""; }
+
+.fa-list-ul:before {
+  content: ""; }
+
+.fa-list-ol:before {
+  content: ""; }
+
+.fa-strikethrough:before {
+  content: ""; }
+
+.fa-underline:before {
+  content: ""; }
+
+.fa-table:before {
+  content: ""; }
+
+.fa-magic:before {
+  content: ""; }
+
+.fa-truck:before {
+  content: ""; }
+
+.fa-pinterest:before {
+  content: ""; }
+
+.fa-pinterest-square:before {
+  content: ""; }
+
+.fa-google-plus-square:before {
+  content: ""; }
+
+.fa-google-plus:before {
+  content: ""; }
+
+.fa-money:before {
+  content: ""; }
+
+.fa-caret-down:before {
+  content: ""; }
+
+.fa-caret-up:before {
+  content: ""; }
+
+.fa-caret-left:before {
+  content: ""; }
+
+.fa-caret-right:before {
+  content: ""; }
+
+.fa-columns:before {
+  content: ""; }
+
+.fa-unsorted:before,
+.fa-sort:before {
+  content: ""; }
+
+.fa-sort-down:before,
+.fa-sort-desc:before {
+  content: ""; }
+
+.fa-sort-up:before,
+.fa-sort-asc:before {
+  content: ""; }
+
+.fa-envelope:before {
+  content: ""; }
+
+.fa-linkedin:before {
+  content: ""; }
+
+.fa-rotate-left:before,
+.fa-undo:before {
+  content: ""; }
+
+.fa-legal:before,
+.fa-gavel:before {
+  content: ""; }
+
+.fa-dashboard:before,
+.fa-tachometer:before {
+  content: ""; }
+
+.fa-comment-o:before {
+  content: ""; }
+
+.fa-comments-o:before {
+  content: ""; }
+
+.fa-flash:before,
+.fa-bolt:before {
+  content: ""; }
+
+.fa-sitemap:before {
+  content: ""; }
+
+.fa-umbrella:before {
+  content: ""; }
+
+.fa-paste:before,
+.fa-clipboard:before {
+  content: ""; }
+
+.fa-lightbulb-o:before {
+  content: ""; }
+
+.fa-exchange:before {
+  content: ""; }
+
+.fa-cloud-download:before {
+  content: ""; }
+
+.fa-cloud-upload:before {
+  content: ""; }
+
+.fa-user-md:before {
+  content: ""; }
+
+.fa-stethoscope:before {
+  content: ""; }
+
+.fa-suitcase:before {
+  content: ""; }
+
+.fa-bell-o:before {
+  content: ""; }
+
+.fa-coffee:before {
+  content: ""; }
+
+.fa-cutlery:before {
+  content: ""; }
+
+.fa-file-text-o:before {
+  content: ""; }
+
+.fa-building-o:before {
+  content: ""; }
+
+.fa-hospital-o:before {
+  content: ""; }
+
+.fa-ambulance:before {
+  content: ""; }
+
+.fa-medkit:before {
+  content: ""; }
+
+.fa-fighter-jet:before {
+  content: ""; }
+
+.fa-beer:before {
+  content: ""; }
+
+.fa-h-square:before {
+  content: ""; }
+
+.fa-plus-square:before {
+  content: ""; }
+
+.fa-angle-double-left:before {
+  content: ""; }
+
+.fa-angle-double-right:before {
+  content: ""; }
+
+.fa-angle-double-up:before {
+  content: ""; }
+
+.fa-angle-double-down:before {
+  content: ""; }
+
+.fa-angle-left:before {
+  content: ""; }
+
+.fa-angle-right:before {
+  content: ""; }
+
+.fa-angle-up:before {
+  content: ""; }
+
+.fa-angle-down:before {
+  content: ""; }
+
+.fa-desktop:before {
+  content: ""; }
+
+.fa-laptop:before {
+  content: ""; }
+
+.fa-tablet:before {
+  content: ""; }
+
+.fa-mobile-phone:before,
+.fa-mobile:before {
+  content: ""; }
+
+.fa-circle-o:before {
+  content: ""; }
+
+.fa-quote-left:before {
+  content: ""; }
+
+.fa-quote-right:before {
+  content: ""; }
+
+.fa-spinner:before {
+  content: ""; }
+
+.fa-circle:before {
+  content: ""; }
+
+.fa-mail-reply:before,
+.fa-reply:before {
+  content: ""; }
+
+.fa-github-alt:before {
+  content: ""; }
+
+.fa-folder-o:before {
+  content: ""; }
+
+.fa-folder-open-o:before {
+  content: ""; }
+
+.fa-smile-o:before {
+  content: ""; }
+
+.fa-frown-o:before {
+  content: ""; }
+
+.fa-meh-o:before {
+  content: ""; }
+
+.fa-gamepad:before {
+  content: ""; }
+
+.fa-keyboard-o:before {
+  content: ""; }
+
+.fa-flag-o:before {
+  content: ""; }
+
+.fa-flag-checkered:before {
+  content: ""; }
+
+.fa-terminal:before {
+  content: ""; }
+
+.fa-code:before {
+  content: ""; }
+
+.fa-mail-reply-all:before,
+.fa-reply-all:before {
+  content: ""; }
+
+.fa-star-half-empty:before,
+.fa-star-half-full:before,
+.fa-star-half-o:before {
+  content: ""; }
+
+.fa-location-arrow:before {
+  content: ""; }
+
+.fa-crop:before {
+  content: ""; }
+
+.fa-code-fork:before {
+  content: ""; }
+
+.fa-unlink:before,
+.fa-chain-broken:before {
+  content: ""; }
+
+.fa-question:before {
+  content: ""; }
+
+.fa-info:before {
+  content: ""; }
+
+.fa-exclamation:before {
+  content: ""; }
+
+.fa-superscript:before {
+  content: ""; }
+
+.fa-subscript:before {
+  content: ""; }
+
+.fa-eraser:before {
+  content: ""; }
+
+.fa-puzzle-piece:before {
+  content: ""; }
+
+.fa-microphone:before {
+  content: ""; }
+
+.fa-microphone-slash:before {
+  content: ""; }
+
+.fa-shield:before {
+  content: ""; }
+
+.fa-calendar-o:before {
+  content: ""; }
+
+.fa-fire-extinguisher:before {
+  content: ""; }
+
+.fa-rocket:before {
+  content: ""; }
+
+.fa-maxcdn:before {
+  content: ""; }
+
+.fa-chevron-circle-left:before {
+  content: ""; }
+
+.fa-chevron-circle-right:before {
+  content: ""; }
+
+.fa-chevron-circle-up:before {
+  content: ""; }
+
+.fa-chevron-circle-down:before {
+  content: ""; }
+
+.fa-html5:before {
+  content: ""; }
+
+.fa-css3:before {
+  content: ""; }
+
+.fa-anchor:before {
+  content: ""; }
+
+.fa-unlock-alt:before {
+  content: ""; }
+
+.fa-bullseye:before {
+  content: ""; }
+
+.fa-ellipsis-h:before {
+  content: ""; }
+
+.fa-ellipsis-v:before {
+  content: ""; }
+
+.fa-rss-square:before {
+  content: ""; }
+
+.fa-play-circle:before {
+  content: ""; }
+
+.fa-ticket:before {
+  content: ""; }
+
+.fa-minus-square:before {
+  content: ""; }
+
+.fa-minus-square-o:before {
+  content: ""; }
+
+.fa-level-up:before {
+  content: ""; }
+
+.fa-level-down:before {
+  content: ""; }
+
+.fa-check-square:before {
+  content: ""; }
+
+.fa-pencil-square:before {
+  content: ""; }
+
+.fa-external-link-square:before {
+  content: ""; }
+
+.fa-share-square:before {
+  content: ""; }
+
+.fa-compass:before {
+  content: ""; }
+
+.fa-toggle-down:before,
+.fa-caret-square-o-down:before {
+  content: ""; }
+
+.fa-toggle-up:before,
+.fa-caret-square-o-up:before {
+  content: ""; }
+
+.fa-toggle-right:before,
+.fa-caret-square-o-right:before {
+  content: ""; }
+
+.fa-euro:before,
+.fa-eur:before {
+  content: ""; }
+
+.fa-gbp:before {
+  content: ""; }
+
+.fa-dollar:before,
+.fa-usd:before {
+  content: ""; }
+
+.fa-rupee:before,
+.fa-inr:before {
+  content: ""; }
+
+.fa-cny:before,
+.fa-rmb:before,
+.fa-yen:before,
+.fa-jpy:before {
+  content: ""; }
+
+.fa-ruble:before,
+.fa-rouble:before,
+.fa-rub:before {
+  content: ""; }
+
+.fa-won:before,
+.fa-krw:before {
+  content: ""; }
+
+.fa-bitcoin:before,
+.fa-btc:before {
+  content: ""; }
+
+.fa-file:before {
+  content: ""; }
+
+.fa-file-text:before {
+  content: ""; }
+
+.fa-sort-alpha-asc:before {
+  content: ""; }
+
+.fa-sort-alpha-desc:before {
+  content: ""; }
+
+.fa-sort-amount-asc:before {
+  content: ""; }
+
+.fa-sort-amount-desc:before {
+  content: ""; }
+
+.fa-sort-numeric-asc:before {
+  content: ""; }
+
+.fa-sort-numeric-desc:before {
+  content: ""; }
+
+.fa-thumbs-up:before {
+  content: ""; }
+
+.fa-thumbs-down:before {
+  content: ""; }
+
+.fa-youtube-square:before {
+  content: ""; }
+
+.fa-youtube:before {
+  content: ""; }
+
+.fa-xing:before {
+  content: ""; }
+
+.fa-xing-square:before {
+  content: ""; }
+
+.fa-youtube-play:before {
+  content: ""; }
+
+.fa-dropbox:before {
+  content: ""; }
+
+.fa-stack-overflow:before {
+  content: ""; }
+
+.fa-instagram:before {
+  content: ""; }
+
+.fa-flickr:before {
+  content: ""; }
+
+.fa-adn:before {
+  content: ""; }
+
+.fa-bitbucket:before {
+  content: ""; }
+
+.fa-bitbucket-square:before {
+  content: ""; }
+
+.fa-tumblr:before {
+  content: ""; }
+
+.fa-tumblr-square:before {
+  content: ""; }
+
+.fa-long-arrow-down:before {
+  content: ""; }
+
+.fa-long-arrow-up:before {
+  content: ""; }
+
+.fa-long-arrow-left:before {
+  content: ""; }
+
+.fa-long-arrow-right:before {
+  content: ""; }
+
+.fa-apple:before {
+  content: ""; }
+
+.fa-windows:before {
+  content: ""; }
+
+.fa-android:before {
+  content: ""; }
+
+.fa-linux:before {
+  content: ""; }
+
+.fa-dribbble:before {
+  content: ""; }
+
+.fa-skype:before {
+  content: ""; }
+
+.fa-foursquare:before {
+  content: ""; }
+
+.fa-trello:before {
+  content: ""; }
+
+.fa-female:before {
+  content: ""; }
+
+.fa-male:before {
+  content: ""; }
+
+.fa-gittip:before,
+.fa-gratipay:before {
+  content: ""; }
+
+.fa-sun-o:before {
+  content: ""; }
+
+.fa-moon-o:before {
+  content: ""; }
+
+.fa-archive:before {
+  content: ""; }
+
+.fa-bug:before {
+  content: ""; }
+
+.fa-vk:before {
+  content: ""; }
+
+.fa-weibo:before {
+  content: ""; }
+
+.fa-renren:before {
+  content: ""; }
+
+.fa-pagelines:before {
+  content: ""; }
+
+.fa-stack-exchange:before {
+  content: ""; }
+
+.fa-arrow-circle-o-right:before {
+  content: ""; }
+
+.fa-arrow-circle-o-left:before {
+  content: ""; }
+
+.fa-toggle-left:before,
+.fa-caret-square-o-left:before {
+  content: ""; }
+
+.fa-dot-circle-o:before {
+  content: ""; }
+
+.fa-wheelchair:before {
+  content: ""; }
+
+.fa-vimeo-square:before {
+  content: ""; }
+
+.fa-turkish-lira:before,
+.fa-try:before {
+  content: ""; }
+
+.fa-plus-square-o:before {
+  content: ""; }
+
+.fa-space-shuttle:before {
+  content: ""; }
+
+.fa-slack:before {
+  content: ""; }
+
+.fa-envelope-square:before {
+  content: ""; }
+
+.fa-wordpress:before {
+  content: ""; }
+
+.fa-openid:before {
+  content: ""; }
+
+.fa-institution:before,
+.fa-bank:before,
+.fa-university:before {
+  content: ""; }
+
+.fa-mortar-board:before,
+.fa-graduation-cap:before {
+  content: ""; }
+
+.fa-yahoo:before {
+  content: ""; }
+
+.fa-google:before {
+  content: ""; }
+
+.fa-reddit:before {
+  content: ""; }
+
+.fa-reddit-square:before {
+  content: ""; }
+
+.fa-stumbleupon-circle:before {
+  content: ""; }
+
+.fa-stumbleupon:before {
+  content: ""; }
+
+.fa-delicious:before {
+  content: ""; }
+
+.fa-digg:before {
+  content: ""; }
+
+.fa-pied-piper:before {
+  content: ""; }
+
+.fa-pied-piper-alt:before {
+  content: ""; }
+
+.fa-drupal:before {
+  content: ""; }
+
+.fa-joomla:before {
+  content: ""; }
+
+.fa-language:before {
+  content: ""; }
+
+.fa-fax:before {
+  content: ""; }
+
+.fa-building:before {
+  content: ""; }
+
+.fa-child:before {
+  content: ""; }
+
+.fa-paw:before {
+  content: ""; }
+
+.fa-spoon:before {
+  content: ""; }
+
+.fa-cube:before {
+  content: ""; }
+
+.fa-cubes:before {
+  content: ""; }
+
+.fa-behance:before {
+  content: ""; }
+
+.fa-behance-square:before {
+  content: ""; }
+
+.fa-steam:before {
+  content: ""; }
+
+.fa-steam-square:before {
+  content: ""; }
+
+.fa-recycle:before {
+  content: ""; }
+
+.fa-automobile:before,
+.fa-car:before {
+  content: ""; }
+
+.fa-cab:before,
+.fa-taxi:before {
+  content: ""; }
+
+.fa-tree:before {
+  content: ""; }
+
+.fa-spotify:before {
+  content: ""; }
+
+.fa-deviantart:before {
+  content: ""; }
+
+.fa-soundcloud:before {
+  content: ""; }
+
+.fa-database:before {
+  content: ""; }
+
+.fa-file-pdf-o:before {
+  content: ""; }
+
+.fa-file-word-o:before {
+  content: ""; }
+
+.fa-file-excel-o:before {
+  content: ""; }
+
+.fa-file-powerpoint-o:before {
+  content: ""; }
+
+.fa-file-photo-o:before,
+.fa-file-picture-o:before,
+.fa-file-image-o:before {
+  content: ""; }
+
+.fa-file-zip-o:before,
+.fa-file-archive-o:before {
+  content: ""; }
+
+.fa-file-sound-o:before,
+.fa-file-audio-o:before {
+  content: ""; }
+
+.fa-file-movie-o:before,
+.fa-file-video-o:before {
+  content: ""; }
+
+.fa-file-code-o:before {
+  content: ""; }
+
+.fa-vine:before {
+  content: ""; }
+
+.fa-codepen:before {
+  content: ""; }
+
+.fa-jsfiddle:before {
+  content: ""; }
+
+.fa-life-bouy:before,
+.fa-life-buoy:before,
+.fa-life-saver:before,
+.fa-support:before,
+.fa-life-ring:before {
+  content: ""; }
+
+.fa-circle-o-notch:before {
+  content: ""; }
+
+.fa-ra:before,
+.fa-rebel:before {
+  content: ""; }
+
+.fa-ge:before,
+.fa-empire:before {
+  content: ""; }
+
+.fa-git-square:before {
+  content: ""; }
+
+.fa-git:before {
+  content: ""; }
+
+.fa-y-combinator-square:before,
+.fa-yc-square:before,
+.fa-hacker-news:before {
+  content: ""; }
+
+.fa-tencent-weibo:before {
+  content: ""; }
+
+.fa-qq:before {
+  content: ""; }
+
+.fa-wechat:before,
+.fa-weixin:before {
+  content: ""; }
+
+.fa-send:before,
+.fa-paper-plane:before {
+  content: ""; }
+
+.fa-send-o:before,
+.fa-paper-plane-o:before {
+  content: ""; }
+
+.fa-history:before {
+  content: ""; }
+
+.fa-circle-thin:before {
+  content: ""; }
+
+.fa-header:before {
+  content: ""; }
+
+.fa-paragraph:before {
+  content: ""; }
+
+.fa-sliders:before {
+  content: ""; }
+
+.fa-share-alt:before {
+  content: ""; }
+
+.fa-share-alt-square:before {
+  content: ""; }
+
+.fa-bomb:before {
+  content: ""; }
+
+.fa-soccer-ball-o:before,
+.fa-futbol-o:before {
+  content: ""; }
+
+.fa-tty:before {
+  content: ""; }
+
+.fa-binoculars:before {
+  content: ""; }
+
+.fa-plug:before {
+  content: ""; }
+
+.fa-slideshare:before {
+  content: ""; }
+
+.fa-twitch:before {
+  content: ""; }
+
+.fa-yelp:before {
+  content: ""; }
+
+.fa-newspaper-o:before {
+  content: ""; }
+
+.fa-wifi:before {
+  content: ""; }
+
+.fa-calculator:before {
+  content: ""; }
+
+.fa-paypal:before {
+  content: ""; }
+
+.fa-google-wallet:before {
+  content: ""; }
+
+.fa-cc-visa:before {
+  content: ""; }
+
+.fa-cc-mastercard:before {
+  content: ""; }
+
+.fa-cc-discover:before {
+  content: ""; }
+
+.fa-cc-amex:before {
+  content: ""; }
+
+.fa-cc-paypal:before {
+  content: ""; }
+
+.fa-cc-stripe:before {
+  content: ""; }
+
+.fa-bell-slash:before {
+  content: ""; }
+
+.fa-bell-slash-o:before {
+  content: ""; }
+
+.fa-trash:before {
+  content: ""; }
+
+.fa-copyright:before {
+  content: ""; }
+
+.fa-at:before {
+  content: ""; }
+
+.fa-eyedropper:before {
+  content: ""; }
+
+.fa-paint-brush:before {
+  content: ""; }
+
+.fa-birthday-cake:before {
+  content: ""; }
+
+.fa-area-chart:before {
+  content: ""; }
+
+.fa-pie-chart:before {
+  content: ""; }
+
+.fa-line-chart:before {
+  content: ""; }
+
+.fa-lastfm:before {
+  content: ""; }
+
+.fa-lastfm-square:before {
+  content: ""; }
+
+.fa-toggle-off:before {
+  content: ""; }
+
+.fa-toggle-on:before {
+  content: ""; }
+
+.fa-bicycle:before {
+  content: ""; }
+
+.fa-bus:before {
+  content: ""; }
+
+.fa-ioxhost:before {
+  content: ""; }
+
+.fa-angellist:before {
+  content: ""; }
+
+.fa-cc:before {
+  content: ""; }
+
+.fa-shekel:before,
+.fa-sheqel:before,
+.fa-ils:before {
+  content: ""; }
+
+.fa-meanpath:before {
+  content: ""; }
+
+.fa-buysellads:before {
+  content: ""; }
+
+.fa-connectdevelop:before {
+  content: ""; }
+
+.fa-dashcube:before {
+  content: ""; }
+
+.fa-forumbee:before {
+  content: ""; }
+
+.fa-leanpub:before {
+  content: ""; }
+
+.fa-sellsy:before {
+  content: ""; }
+
+.fa-shirtsinbulk:before {
+  content: ""; }
+
+.fa-simplybuilt:before {
+  content: ""; }
+
+.fa-skyatlas:before {
+  content: ""; }
+
+.fa-cart-plus:before {
+  content: ""; }
+
+.fa-cart-arrow-down:before {
+  content: ""; }
+
+.fa-diamond:before {
+  content: ""; }
+
+.fa-ship:before {
+  content: ""; }
+
+.fa-user-secret:before {
+  content: ""; }
+
+.fa-motorcycle:before {
+  content: ""; }
+
+.fa-street-view:before {
+  content: ""; }
+
+.fa-heartbeat:before {
+  content: ""; }
+
+.fa-venus:before {
+  content: ""; }
+
+.fa-mars:before {
+  content: ""; }
+
+.fa-mercury:before {
+  content: ""; }
+
+.fa-intersex:before,
+.fa-transgender:before {
+  content: ""; }
+
+.fa-transgender-alt:before {
+  content: ""; }
+
+.fa-venus-double:before {
+  content: ""; }
+
+.fa-mars-double:before {
+  content: ""; }
+
+.fa-venus-mars:before {
+  content: ""; }
+
+.fa-mars-stroke:before {
+  content: ""; }
+
+.fa-mars-stroke-v:before {
+  content: ""; }
+
+.fa-mars-stroke-h:before {
+  content: ""; }
+
+.fa-neuter:before {
+  content: ""; }
+
+.fa-genderless:before {
+  content: ""; }
+
+.fa-facebook-official:before {
+  content: ""; }
+
+.fa-pinterest-p:before {
+  content: ""; }
+
+.fa-whatsapp:before {
+  content: ""; }
+
+.fa-server:before {
+  content: ""; }
+
+.fa-user-plus:before {
+  content: ""; }
+
+.fa-user-times:before {
+  content: ""; }
+
+.fa-hotel:before,
+.fa-bed:before {
+  content: ""; }
+
+.fa-viacoin:before {
+  content: ""; }
+
+.fa-train:before {
+  content: ""; }
+
+.fa-subway:before {
+  content: ""; }
+
+.fa-medium:before {
+  content: ""; }
+
+.fa-yc:before,
+.fa-y-combinator:before {
+  content: ""; }
+
+.fa-optin-monster:before {
+  content: ""; }
+
+.fa-opencart:before {
+  content: ""; }
+
+.fa-expeditedssl:before {
+  content: ""; }
+
+.fa-battery-4:before,
+.fa-battery-full:before {
+  content: ""; }
+
+.fa-battery-3:before,
+.fa-battery-three-quarters:before {
+  content: ""; }
+
+.fa-battery-2:before,
+.fa-battery-half:before {
+  content: ""; }
+
+.fa-battery-1:before,
+.fa-battery-quarter:before {
+  content: ""; }
+
+.fa-battery-0:before,
+.fa-battery-empty:before {
+  content: ""; }
+
+.fa-mouse-pointer:before {
+  content: ""; }
+
+.fa-i-cursor:before {
+  content: ""; }
+
+.fa-object-group:before {
+  content: ""; }
+
+.fa-object-ungroup:before {
+  content: ""; }
+
+.fa-sticky-note:before {
+  content: ""; }
+
+.fa-sticky-note-o:before {
+  content: ""; }
+
+.fa-cc-jcb:before {
+  content: ""; }
+
+.fa-cc-diners-club:before {
+  content: ""; }
+
+.fa-clone:before {
+  content: ""; }
+
+.fa-balance-scale:before {
+  content: ""; }
+
+.fa-hourglass-o:before {
+  content: ""; }
+
+.fa-hourglass-1:before,
+.fa-hourglass-start:before {
+  content: ""; }
+
+.fa-hourglass-2:before,
+.fa-hourglass-half:before {
+  content: ""; }
+
+.fa-hourglass-3:before,
+.fa-hourglass-end:before {
+  content: ""; }
+
+.fa-hourglass:before {
+  content: ""; }
+
+.fa-hand-grab-o:before,
+.fa-hand-rock-o:before {
+  content: ""; }
+
+.fa-hand-stop-o:before,
+.fa-hand-paper-o:before {
+  content: ""; }
+
+.fa-hand-scissors-o:before {
+  content: ""; }
+
+.fa-hand-lizard-o:before {
+  content: ""; }
+
+.fa-hand-spock-o:before {
+  content: ""; }
+
+.fa-hand-pointer-o:before {
+  content: ""; }
+
+.fa-hand-peace-o:before {
+  content: ""; }
+
+.fa-trademark:before {
+  content: ""; }
+
+.fa-registered:before {
+  content: ""; }
+
+.fa-creative-commons:before {
+  content: ""; }
+
+.fa-gg:before {
+  content: ""; }
+
+.fa-gg-circle:before {
+  content: ""; }
+
+.fa-tripadvisor:before {
+  content: ""; }
+
+.fa-odnoklassniki:before {
+  content: ""; }
+
+.fa-odnoklassniki-square:before {
+  content: ""; }
+
+.fa-get-pocket:before {
+  content: ""; }
+
+.fa-wikipedia-w:before {
+  content: ""; }
+
+.fa-safari:before {
+  content: ""; }
+
+.fa-chrome:before {
+  content: ""; }
+
+.fa-firefox:before {
+  content: ""; }
+
+.fa-opera:before {
+  content: ""; }
+
+.fa-internet-explorer:before {
+  content: ""; }
+
+.fa-tv:before,
+.fa-television:before {
+  content: ""; }
+
+.fa-contao:before {
+  content: ""; }
+
+.fa-500px:before {
+  content: ""; }
+
+.fa-amazon:before {
+  content: ""; }
+
+.fa-calendar-plus-o:before {
+  content: ""; }
+
+.fa-calendar-minus-o:before {
+  content: ""; }
+
+.fa-calendar-times-o:before {
+  content: ""; }
+
+.fa-calendar-check-o:before {
+  content: ""; }
+
+.fa-industry:before {
+  content: ""; }
+
+.fa-map-pin:before {
+  content: ""; }
+
+.fa-map-signs:before {
+  content: ""; }
+
+.fa-map-o:before {
+  content: ""; }
+
+.fa-map:before {
+  content: ""; }
+
+.fa-commenting:before {
+  content: ""; }
+
+.fa-commenting-o:before {
+  content: ""; }
+
+.fa-houzz:before {
+  content: ""; }
+
+.fa-vimeo:before {
+  content: ""; }
+
+.fa-black-tie:before {
+  content: ""; }
+
+.fa-fonticons:before {
+  content: ""; }
+
+.fa-reddit-alien:before {
+  content: ""; }
+
+.fa-edge:before {
+  content: ""; }
+
+.fa-credit-card-alt:before {
+  content: ""; }
+
+.fa-codiepie:before {
+  content: ""; }
+
+.fa-modx:before {
+  content: ""; }
+
+.fa-fort-awesome:before {
+  content: ""; }
+
+.fa-usb:before {
+  content: ""; }
+
+.fa-product-hunt:before {
+  content: ""; }
+
+.fa-mixcloud:before {
+  content: ""; }
+
+.fa-scribd:before {
+  content: ""; }
+
+.fa-pause-circle:before {
+  content: ""; }
+
+.fa-pause-circle-o:before {
+  content: ""; }
+
+.fa-stop-circle:before {
+  content: ""; }
+
+.fa-stop-circle-o:before {
+  content: ""; }
+
+.fa-shopping-bag:before {
+  content: ""; }
+
+.fa-shopping-basket:before {
+  content: ""; }
+
+.fa-hashtag:before {
+  content: ""; }
+
+.fa-bluetooth:before {
+  content: ""; }
+
+.fa-bluetooth-b:before {
+  content: ""; }
+
+.fa-percent:before {
+  content: ""; }
+
+/*
+ * angular-tooltips
+ * 1.0.10
+ * 
+ * Angular.js tooltips module.
+ * http://720kb.github.io/angular-tooltips
+ * 
+ * MIT license
+ * Sat Apr 30 2016
+ */
+tooltip._bottom tip tip-arrow, tooltip._top tip tip-arrow {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  left: 50%;
+  margin-left: -6px; }
+
+._exradicated-tooltip {
+  position: absolute;
+  display: block;
+  opacity: 1;
+  z-index: 999; }
+
+tooltip {
+  display: inline-block;
+  position: relative; }
+
+@-webkit-keyframes animate-tooltip {
+  0% {
+    opacity: 0; }
+  50% {
+    opacity: .5; }
+  60% {
+    opacity: .8; }
+  70% {
+    opacity: .9; }
+  90% {
+    opacity: 1; } }
+
+@keyframes animate-tooltip {
+  0% {
+    opacity: 0; }
+  50% {
+    opacity: .5; }
+  60% {
+    opacity: .8; }
+  70% {
+    opacity: .9; }
+  90% {
+    opacity: 1; } }
+
+tooltip._multiline {
+  display: block; }
+
+tooltip._slow._ready tip {
+  -webkit-animation: animate-tooltip .65s;
+          animation: animate-tooltip .65s; }
+
+tooltip._fast._ready tip {
+  -webkit-animation: animate-tooltip .15s;
+          animation: animate-tooltip .15s; }
+
+tooltip._steady._ready tip {
+  -webkit-animation: animate-tooltip .35s;
+          animation: animate-tooltip .35s; }
+
+tooltip tip {
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  display: none;
+  line-height: normal;
+  max-width: 500px;
+  min-width: 100px;
+  opacity: 0;
+  padding: 8px 16px;
+  position: absolute;
+  text-align: center;
+  width: auto;
+  will-change: top,left,bottom,right; }
+
+tooltip tip._hidden {
+  display: block;
+  visibility: hidden; }
+
+tooltip.active:not(._force-hidden) tip {
+  display: block;
+  opacity: 1;
+  z-index: 999; }
+
+tooltip tip-tip {
+  font-size: .95em; }
+
+tooltip tip-tip._large {
+  font-size: 1.1em; }
+
+tooltip tip-tip._small {
+  font-size: .8em; }
+
+tooltip._top tip {
+  left: 50%;
+  top: -9px;
+  -webkit-transform: translateX(-50%) translateY(-100%);
+  transform: translateX(-50%) translateY(-100%); }
+
+tooltip._top tip tip-arrow {
+  border-top: 6px solid rgba(0, 0, 0, 0.85);
+  content: '';
+  height: 0;
+  position: absolute;
+  top: 100%;
+  width: 0; }
+
+tooltip._bottom tip {
+  right: 50%;
+  top: 100%;
+  -webkit-transform: translateX(50%) translateY(9px);
+  transform: translateX(50%) translateY(9px); }
+
+tooltip._bottom tip tip-arrow {
+  border-bottom: 6px solid rgba(0, 0, 0, 0.85);
+  bottom: 100%;
+  content: '';
+  height: 0;
+  position: absolute;
+  width: 0; }
+
+tooltip._left tip tip-arrow, tooltip._right tip tip-arrow {
+  border-bottom: 6px solid transparent;
+  border-top: 6px solid transparent;
+  content: '';
+  height: 0;
+  margin-top: -6px;
+  position: absolute;
+  top: 50%;
+  width: 0; }
+
+tooltip._right tip {
+  left: 100%;
+  top: 50%;
+  -webkit-transform: translateX(9px) translateY(-50%);
+  transform: translateX(9px) translateY(-50%); }
+
+tooltip._right tip tip-arrow {
+  border-right: 6px solid rgba(0, 0, 0, 0.85);
+  right: 100%; }
+
+tooltip._left tip {
+  left: -9px;
+  top: 50%;
+  -webkit-transform: translateX(-100%) translateY(-50%);
+  transform: translateX(-100%) translateY(-50%); }
+
+tooltip._left tip tip-arrow {
+  border-left: 6px solid rgba(0, 0, 0, 0.85);
+  left: 100%; }
+
+tip-tip #close-button {
+  cursor: pointer;
+  float: right;
+  left: 8%;
+  margin-top: -7%;
+  padding: 3px;
+  position: relative; }
+#logo {
+  background: url("../assets/images/logo.png") center no-repeat;
+  background-size: contain;
+  display: block;
+  width: 129px;
+  height: 33px;
+  margin-right: 47px;
+  /* This margin further pushes the menu to the right */ }
+
+.type-select {
+  width: 60px; }
+
+.vgspec, .vlspec {
+  min-height: 100px; }
+
+#dataset-select {
+  width: 90px; }
+
+null-filter-directive {
+  display: block;
+  margin-bottom: 10px; }
+
+/** panes **/
+.pane.encoding-pane {
+  width: 235px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+  .pane.encoding-pane .card {
+    background-color: #E2E9F3; }
+  .pane.encoding-pane h2, .pane.encoding-pane h3 {
+    color: #38425D; }
+
+.pane.data-pane {
+  width: 200px;
+  -ms-flex-negative: 0;
+      flex-shrink: 0; }
+
+.pane.vis-pane {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  margin-top: 1px; }
+
+.pane.config-pane {
+  -webkit-box-flex: 0.6;
+      -ms-flex-positive: 0.6;
+          flex-grow: 0.6; }
+
+.pane.vl-pane {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+
+.pane.vg-pane {
+  -webkit-box-flex: 1.2;
+      -ms-flex-positive: 1.2;
+          flex-grow: 1.2; }
+
+#vis {
+  overflow: scroll; }

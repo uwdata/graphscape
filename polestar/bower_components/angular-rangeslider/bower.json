@@ -1,0 +1,13 @@
+{
+  "name": "angular-rangeslider",
+  "version": "0.0.14",
+  "license": "MIT",
+  "main": [
+    "./angular.rangeSlider.js",
+    "./angular.rangeSlider.css"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7",
+    "angular": ">=1.0.*"
+  }
+}

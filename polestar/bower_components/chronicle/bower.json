@@ -1,0 +1,26 @@
+{
+  "name": "chronicle",
+  "main": "chronicle.js",
+  "version": "1.0.10",
+  "authors": [
+    "Sam Maier <sam@sammaier.ca>"
+  ],
+  "description": "An undo/redo service for AngularJS",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "AngularJS",
+    "undo",
+    "redo"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Blitzen/Angular-Chronicle",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
