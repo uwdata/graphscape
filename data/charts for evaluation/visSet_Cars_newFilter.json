@@ -1,0 +1,187 @@
+[{
+  "description": "Cars in 1980",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1980}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+},
+{
+  "description": "USA Cars in 1980",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1980}, { "field":"Origin", "in": ["USA"]}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+},
+{
+  "description": "Europe Cars in 1980",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1980}, { "field":"Origin", "in": ["Europe"]}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+},
+{
+  "description": "Cars in 1976",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1976}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+},
+{
+  "description": "USA Cars in 1976",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1976}, { "field":"Origin", "in": ["USA"]}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+},
+{
+  "description": "Europe Cars in 1976",
+  "data": {"url": "data/cars.json"},
+  "transform": {
+    "filter": [{ "field":"Year", "equal": 1976}, { "field":"Origin", "in": ["Europe"]}]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Horsepower",
+      "type": "quantitative",
+      "bin": true,
+      "scale": {"domain": [0,240]},
+      "axis": {"title": "Horsepower"}
+    },
+    "y": {
+      "field": "Weight_in_lbs",
+      "type": "quantitative",
+      "aggregate": "mean",
+      "scale": {"domain": [0,5000]},
+      "axis": {"title": "Avg. Weight (lbs)"}
+    },
+    "size": {
+      "field": "*",
+      "type": "quantitative",
+      "aggregate": "count",
+      "scale": {"domain": [0,15]},
+      "legend": {"title": "# of Cars"}
+    }
+  }
+}
+]
