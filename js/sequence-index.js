@@ -31,15 +31,19 @@ $(document).on('ready page:load', function () {
         results = e.data;
         $('#sorted-result').children().remove();
         for (var i = 0; i < results.length; i++) {
-          var link = $('<button href="#" data-id="'+i+'"></button>').html(results[i].sequence.join(',') + ' | ' + Math.round(results[i].distance*100)/100 );
+          var link = $('<button href="#" data-id="'+i+'"></button>')
+                      .html(results[i].sequence.join(',') + ' | ' + Math.round(results[i].globalScore*100)/100 );
           link.addClass('result btn btn-default btn-xs');
+          link.data('result', results[i]);
+          
           $('#sorted-result').append(link);
 
           
         };
 
         $('.result').on('click', function(){
-          drawingByOrder(results[$(this).data('id')].specs);
+          drawingByOrder(results[$(this).data('id')]);
+          console.log(results[$(this).data('id')]);
         });
       }
       worker.postMessage({specs: specs, ruleSets: ruleSets, options: {"fixFirst": fixFirst}}); // Start the worker.
@@ -50,21 +54,34 @@ $(document).on('ready page:load', function () {
 
 
 
-  function drawingByOrder(specs){
-    var specsDiv  = $('#detail');
+  function drawingByOrder(result){
+    var specs = result.specs;
+
+    var metaInfo = "Sum of distances : " + result.distance + "<br/>"
+                 + "Pattern Score    : " + result.patternScore + "<br/>"
+                 + "Global  Score    : " + result.globalScore + "<br/>"
+    $('#sequence-meta-info').html(metaInfo)
+
+
+    var specsDiv  = $('#sequence');
     specsDiv.children().remove();
     if (!isEmpty(specsDiv)) {
       for (var i = 0; i < specs.length; i++) {
-        var VLdiv  = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-md-12 col-xs-12");
-
-        VLdiv.remove("span");
-        specsDiv.append(VLdiv);
+        var newRowDiv = $("<div class='row'></div>");
+        var VLdiv  = $("<div id='vega-lite-" + i + "'></div>").attr("class","col-xs-6");
+        newRowDiv.append(VLdiv);
         draw("#vega-lite-" + i, specs[i]);
-        // var distSpan = $("<span></span>");
-        // if (i>0) {
-        //    distSpan.html( "cost from the upper to lower : " +  dist(order[i-1],order[i],'rank') );
-        // }
-        // VLdiv.append(distSpan);
+        if (i>0) {
+          var TRdiv = $("<div></div>").attr("class","col-xs-6");
+          var TRinfo = "Distance : " + result.transitionSet[i-1].cost + "<br/>"
+                      + "Marktype  Transitions : " + JSON.stringify(result.transitionSet[i-1].marktype) + "<br/>"
+                      + "Encoding  Transitions : " + JSON.stringify(result.transitionSet[i-1].encoding) + "<br/>"
+                      + "Transform Transitions : " + JSON.stringify(result.transitionSet[i-1].transform); 
+          TRdiv.html(TRinfo);
+          newRowDiv.append(TRdiv);
+          
+        };
+        specsDiv.append(newRowDiv);  
       }
     }
   }
