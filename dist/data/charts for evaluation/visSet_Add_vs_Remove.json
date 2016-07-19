@@ -1,0 +1,5 @@
+[
+{ "data": {"url": "/data/admission.json"}, "mark": "bar", "encoding": { "x": {"field": "Status","type": "nominal"}, "y": { "field": "Count", "type": "quantitative", "aggregate": "sum", "axis":{"title":"Number of Applicants"} }, "color": { "field": "Gender", "type": "nominal" } }},
+{ "data": {"url": "/data/admission.json"}, "mark": "bar", "encoding": { "x": {"field": "Status","type": "nominal"}, "column": {"field": "Department","type": "nominal"}, "y": { "field": "Count", "type": "quantitative", "aggregate": "sum", "axis":{"title":"Number of Applicants"} }, "color": { "field": "Gender", "type": "nominal" } } },
+{ "data": {"url": "/data/admission.json"}, "mark": "bar", "encoding": { "x": {"field": "Status","type": "nominal"}, "y": { "field": "Count", "type": "quantitative", "aggregate": "sum", "axis":{"title":"Number of Applicants"} } } }
+]
