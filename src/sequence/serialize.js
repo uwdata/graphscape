@@ -27,7 +27,8 @@ function serialize(specs, ruleSet, options, callback){
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
       transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
@@ -65,7 +66,7 @@ function serialize(specs, ruleSet, options, callback){
       break; 
     }
   }
-
+ var returnValue = { all : TSPResultAll, best : serializedSpecs};
 
   // if (options.fixFirst) {
   //   var startingSpec = { "mark":"point", "encoding": {} };
@@ -85,8 +86,8 @@ function serialize(specs, ruleSet, options, callback){
   //   console.log(transitionSet.destination);
   //   return specs[transitionSet.destination];
   // });
-  callback(serializedSpecs);
-  return serializedSpecs;
+  callback(returnValue);
+  return returnValue;
 }
 
 function getTransitionSets(specs, ruleSet){
