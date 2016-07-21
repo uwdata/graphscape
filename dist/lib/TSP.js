@@ -50,6 +50,7 @@ function TSP(matrix, value, fixFirst){
     for (var j = 0; j < sequences[i].length-1; j++) {
       distance += matrix[sequences[i][j]][sequences[i][j+1]][value];
     }
+    distance = Math.round(distance*10000)/10000;
     all.push({sequence: sequences[i], distance: distance});
 
     if (distance <= minDistance ) {
