@@ -8,3 +8,7 @@ textarea {
 .result {
   margin: 3 10px;
 }
+
+#control-result{
+	margin: 5px 0;
+}
