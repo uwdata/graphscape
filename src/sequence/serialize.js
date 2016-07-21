@@ -60,13 +60,14 @@ function serialize(specs, ruleSet, options, callback){
   var maxGlobalScore = TSPResultAll[0].globalScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].globalScore === maxGlobalScore){
-      serializedSpecs.push(TSPResultAll[i]);
+      TSPResultAll[i].isOptimum = true;
+      // serializedSpecs.push(TSPResultAll[i]);
     }
     else { 
       break; 
     }
   }
- var returnValue = { all : TSPResultAll, best : serializedSpecs};
+ var returnValue = TSPResultAll;
 
   // if (options.fixFirst) {
   //   var startingSpec = { "mark":"point", "encoding": {} };

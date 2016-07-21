@@ -42,7 +42,20 @@
         </div>
         <div class="col-xs-12">
           <label>Sorted results</label>
-          <div id='sorted-result'></div>
+          <div id='control-result' class="hidden">
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-primary" id="toggle-show-all">
+                <input type="checkbox" autocomplete="off" > Show All
+              </label>
+              <label class="btn btn-primary active" id="toggle-pattern-score">
+                <input type="checkbox" autocomplete="off" checked> Off Pattern Score
+              </label>
+            </div>
+          </div>
+          <div id='sorted-result'>
+            <div class='optimum'></div>
+            <div class='not optimum hidden' ></div>
+          </div>
         </div>
       </div>
       <div class="row">
