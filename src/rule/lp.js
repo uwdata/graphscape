@@ -87,7 +87,7 @@ var  ruleSet = [
       [ ['MODIFY_ROW_ADD_COUNT', 'MODIFY_COLUMN_ADD_COUNT'],['MODIFY_ROW_REMOVE_COUNT', 'MODIFY_COLUMN_REMOVE_COUNT'],['MODIFY_ROW', 'MODIFY_COLUMN'],['MODIFY_X_ADD_COUNT', 'MODIFY_Y_ADD_COUNT']],
       [ ['MODIFY_X_ADD_COUNT', 'MODIFY_Y_ADD_COUNT'],['MODIFY_X_REMOVE_COUNT', 'MODIFY_Y_REMOVE_COUNT'],['MODIFY_X', 'MODIFY_Y']]
     ],
-    ceiling: { depth: 3 } //more than 3 encoding transitions are too far to be measured.
+    ceiling: { depth: 10 } //more than 3 encoding transitions are too far to be measured.
 
   }
 ];
