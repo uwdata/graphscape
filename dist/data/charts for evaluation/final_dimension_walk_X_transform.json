@@ -1,0 +1,109 @@
+[
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Major_Genre",
+        "type": "nominal",
+        "sort": {
+          "op": "mean",
+          "field": "Worldwide_Gross",
+          "order": "descending"
+        }
+      },
+      "y": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "scale": {
+          "type": "log"
+        }
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Source",
+        "type": "nominal"
+      },
+      "y": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Source",
+        "type": "nominal",
+        "sort": {
+          "op": "mean",
+          "field": "Worldwide_Gross",
+          "order": "descending"
+        }
+      },
+      "y": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "scale": {
+          "type": "log"
+        }
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "transform": {"filter": "datum.Source !== 'Disney Ride' && datum.Source !== 'Based on Toy'"},
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Source",
+        "type": "nominal"
+      },
+      "y": {
+        "field": "Major_Genre",
+        "type": "nominal"
+      },
+      "color": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      },
+      "size": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean"
+      }
+    }
+  }
+]

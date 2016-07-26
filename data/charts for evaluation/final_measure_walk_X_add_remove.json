@@ -1,0 +1,66 @@
+[
+  {
+    "data": {"url": "/data/cameras.json"},
+    "mark": "point",
+    "transform": {
+      "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
+    },
+    "encoding": {
+      "y": {"field": "Price","type": "quantitative"}
+    }
+  },
+  {
+    "data": {"url": "/data/cameras.json"},
+    "transform": {
+      "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {"field": "Weight","type": "quantitative"},
+      "y": {"field": "Price","type": "quantitative"}
+    }
+  },
+  {
+    "data": {"url": "/data/cameras.json"},
+    "mark": "point",
+    "transform": {
+      "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
+    },
+    "encoding": {
+      "x": {"field": "Weight","type": "quantitative"},
+      "y": {"field": "Price","type": "quantitative"},
+      "row": {
+        "field": "Dimensions",
+        "type": "quantitative",
+        "bin": {"maxbins": 3}
+      }
+    }
+  },
+  {
+    "data": {"url": "/data/cameras.json"},
+    "mark": "point",
+    "transform": {
+      "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
+    },
+    "encoding": {
+      "x": {"field": "Max_resolution","type": "quantitative"},
+      "y": {"field": "Price","type": "quantitative"}
+    }
+  },
+  {
+    "data": {"url": "/data/cameras.json"},
+    "mark": "bar",
+    "transform": {
+        "filter": "datum.Storage_included >= 32 && datum.Zoom_wide>0 && datum.Dimensions < 100 && datum.Max_resolution >= 4000"
+    },
+    "encoding": {
+      "x": {
+        "field": "Model",
+        "type": "nominal",
+        "sort": {"field": "Price","op": "mean","order": "ascending"}
+      },
+      "y": {"field": "Price","type": "quantitative"},
+      "color": {"field": "Maker","type": "nominal"}
+    }
+  }
+]
