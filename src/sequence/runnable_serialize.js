@@ -1,11 +1,12 @@
 'use strict';
 var fs = require('fs');
 // If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
-var cp = require('./../../bower_components/viscompass')
-// var cp = require('./lib/compass.js');
+// var cp = require('./../../bower_components/viscompass')
+var cp = require('./lib/compass.js');
 var BEA = require('./lib/BEA.js');
 var LRP = require('./lib/LRP.js');
 var TSP = require('./lib/TSP.js');
+var tb = require('./lib/TieBreaker.js');
 var d3 = require('./js/d3.min.js');
 var cpTrans = cp.trans;
 var specs, ruleSet, specMap;
@@ -39,6 +40,11 @@ else {
 
 function serialize(specs, ruleSet, options){
 
+
+  function point(dist, patternScore){
+    return 1 / ( dist * (1 - patternScore + 0.0001) );
+  }
+
   //Brute force version
 
   if (!options.fixFirst) {
@@ -46,78 +52,64 @@ function serialize(specs, ruleSet, options){
     specs = [ startingSpec ].concat(specs);
   }
 
-  fs.writeFileSync('result/specs.json',JSON.stringify(specs));  
   var transitionSets = getTransitionSets(specs, ruleSet);
-
-  
-  fs.writeFileSync('result/'+transitionSetsFileName, JSON.stringify(transitionSets));
   transitionSets = extendTransitionSets(transitionSets);
-
-  fs.writeFileSync('result/specs.json',JSON.stringify(specs));
-  
-  var TSPResults = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
-  var TSPResult = TSPResults.out;
-  TSPResults.all = TSPResults.all.filter(function(seqWithDist){
+  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
+  var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
     return seqWithDist.sequence[0] === 0;
-  }).sort(function(a,b){
-    if (a.distance > b.distance) {
-      return 1;
-    }
-    if (a.distance < b.distance) {
-      return -1;
-    }
-    return 0;
-  }).map(function(seqWithDist){
-    var sequence = seqWithDist.sequence.splice(1,seqWithDist.sequence.length-1)
+  }).map(function(tspR){
+    // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
       transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
     };
-
-    return { 
-              sequence : sequence.map(function(val){ return specMap[val-1];}),
-              transitionSet : transitionSet,
-              distance : seqWithDist.distance 
+    var pattern = transitionSet.map(function(r){ return r.id; });
+    var LRPResult = LRP.LRP(pattern,'coverage');
+    var result = { 
+              "sequence" : sequence,
+              "transitionSet" : transitionSet,
+              "distance" : tspR.distance,
+              "patternScore" : !!LRPResult[0] ? LRPResult[0].coverage : 0,
+              "specs" : sequence.map(function(index){
+                          return specs[index];
+                        })
            };
+    result.tiebreakScore = tb.TieBreaker(result);
+    result.globalScore = point(result.distance, result.patternScore);
+    return result;
+  }).sort(function(a,b){
+    if (a.globalScore < b.globalScore) {
+      return 1;
+    }
+    if (a.globalScore > b.globalScore) {
+      return -1;
+    } else {
+      if (a.tiebreakScore < b.tiebreakScore) {
+      return 1;
+      }
+      if (a.tiebreakScore > b.tiebreakScore) {
+        return -1;
+      } 
+    }
+    return 0;
   });
   
+  var serializedSpecs = [];
+  var maxGlobalScore = TSPResultAll[0].globalScore;
+  var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
+  for (var i = 0; i < TSPResultAll.length; i++) {
+    if(TSPResultAll[i].globalScore === maxGlobalScore && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
+      TSPResultAll[i].isOptimum = true;
+      // serializedSpecs.push(TSPResultAll[i]);
+    }
+    else { 
+      break; 
+    }
+  }
+  var returnValue = TSPResultAll;
 
-
-  TSPResults.all.forEach(function(tspR){
-    var pattern = tspR.transitionSet.map(function(r){ return r.id; });
-    console.log(pattern, LRP.LRP(pattern,'coverage')[0], tspR.sequence );
-  })
-  
-
-  fs.writeFileSync('result/TSPResult.json',JSON.stringify(TSPResult));
-
-  var serializedSpecs = TSPResult.map(function(optSequence){
-    // console.log(optSequence);
-    return optSequence.sequence.map(function(index){
-      return specs[index];
-    });
-  });
-
-  // if (options.fixFirst) {
-  //   var startingSpec = { "mark":"point", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
-  // fs.writeFileSync('result/specs.json',JSON.stringify(specs));
-
-  // var transitionSets = getTransitionSets(specs, ruleSet);
-  // transitionSets = extendTransitionSets(transitionSets);
-  // fs.writeFileSync(transitionSetsFileNameresult/, JSON.stringify(transitionSets));
-  
-  // var transitionCostMatrix = new BEA.Matrix("rank");
-  // transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  // var sortedTransitionSetsByRank = BEA.BEA(transitionCostMatrix, options).rows;
-
-  // var serializedSpecs = sortedTransitionSetsByRank[0].map(function(transitionSet){
-  //   console.log(transitionSet.destination);
-  //   return specs[transitionSet.destination];
-  // });
-
-  return serializedSpecs;
+  return returnValue;
 }
 
 function getTransitionSets(specs, ruleSet){
@@ -171,4 +163,7 @@ function extendTransitionSets(transitionSets){
 var serializedSpecs = serialize(specs, ruleSet, {"fixFirst": fixFirst});
 
 fs.writeFileSync('result/serialized_specs.json',JSON.stringify(serializedSpecs));
-// console.log(serializedSpecs);
+console.log(serializedSpecs[0]);
+console.log(serializedSpecs[1]);
+console.log(serializedSpecs[3]);
+// console.log(serializedSpecs[186].transitionSet[5].transform);

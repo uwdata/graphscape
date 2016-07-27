@@ -7,6 +7,7 @@ var BEA = require('./lib/BEA.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
 var LRP = require('./lib/LRP.js');
+var tb = require('./lib/TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
 
@@ -44,6 +45,9 @@ function serialize(specs, ruleSet, options, callback){
                           return specs[index];
                         })
            };
+    var tbResult = tb.TieBreaker(result);
+    result.tiebreakScore = tbResult.tiebreakScore;
+    result.tiebreakReasons = tbResult.reasons;
     result.globalScore = point(result.distance, result.patternScore);
     return result;
   }).sort(function(a,b){
@@ -52,14 +56,22 @@ function serialize(specs, ruleSet, options, callback){
     }
     if (a.globalScore > b.globalScore) {
       return -1;
+    } else {
+      if (a.tiebreakScore < b.tiebreakScore) {
+      return 1;
+      }
+      if (a.tiebreakScore > b.tiebreakScore) {
+        return -1;
+      } 
     }
     return 0;
   });
   
   var serializedSpecs = [];
   var maxGlobalScore = TSPResultAll[0].globalScore;
+  var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].globalScore === maxGlobalScore){
+    if(TSPResultAll[i].globalScore === maxGlobalScore && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
       TSPResultAll[i].isOptimum = true;
       // serializedSpecs.push(TSPResultAll[i]);
     }
@@ -67,7 +79,7 @@ function serialize(specs, ruleSet, options, callback){
       break; 
     }
   }
- var returnValue = TSPResultAll;
+  var returnValue = TSPResultAll;
 
   // if (options.fixFirst) {
   //   var startingSpec = { "mark":"point", "encoding": {} };

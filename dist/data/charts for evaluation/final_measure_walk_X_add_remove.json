@@ -1,6 +1,6 @@
 [
   {
-    "data": {"url": "/data/cameras.json"},
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -10,7 +10,7 @@
     }
   },
   {
-    "data": {"url": "/data/cameras.json"},
+    "data": {"url": "data/cameras.json"},
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
     },
@@ -21,7 +21,7 @@
     }
   },
   {
-    "data": {"url": "/data/cameras.json"},
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -37,7 +37,7 @@
     }
   },
   {
-    "data": {"url": "/data/cameras.json"},
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -48,7 +48,7 @@
     }
   },
   {
-    "data": {"url": "/data/cameras.json"},
+    "data": {"url": "data/cameras.json"},
     "mark": "bar",
     "transform": {
         "filter": "datum.Storage_included >= 32 && datum.Zoom_wide>0 && datum.Dimensions < 100 && datum.Max_resolution >= 4000"

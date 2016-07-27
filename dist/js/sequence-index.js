@@ -135,9 +135,12 @@ $(document).on('ready page:load', function () {
     var specs = result.specs;
 
     var metaInfo = "Sum of distances : " + result.distance + "<br/>"
-                 + "Pattern Score    : " + result.patternScore + "<br/>"
-                 + "Global  Score    : " + result.globalScore + "<br/>"
-    $('#sequence-meta-info').html(metaInfo)
+                 + "Pattern  Score    : " + result.patternScore + "<br/>"
+                 + "Global   Score    : " + result.globalScore + "<br/>"
+                 + "TieBreak Score    : " + result.tiebreakScore + "<br/>"
+                 + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
+
+    $('#sequence-meta-info').html(metaInfo);
 
 
     var specsDiv  = $('#sequence');
