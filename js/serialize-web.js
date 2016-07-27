@@ -316,7 +316,45 @@ module.exports = {
   TSP: TSP
 };
 
-},{"fs":6}],5:[function(require,module,exports){
+},{"fs":7}],5:[function(require,module,exports){
+'use strict'
+//Longest Repeated Pattern
+
+
+function TieBreaker(result) {
+	var TBScore = 0;
+	var reasons = {};
+  //rule#1 FILTER_MODIFY, same field, same op, ascending numeric values > descending
+  result.transitionSet.forEach(function(transitions){
+  	// console.log('--');
+  	transitions.transform.forEach(function(transformTr){
+  		// console.log(transformTr.name);
+  		if (transformTr.name === "MODIFY_FILTER" && !!transformTr.detail && !transformTr.detail.op && !!transformTr.detail.value ) {
+  			let values = transformTr.detail.value.split(', ').map(function(v){ return Number(v)}); 
+  			if ( !isNaN(values[0]) && !isNaN(values[1]) && values[0] < values[1]) {
+  				TBScore += 1;
+  				if (!reasons["FILTER_MODIFY with ascending numeric values"]) {
+  					reasons["FILTER_MODIFY with ascending numeric values"] = 1;
+  				} else {
+  					reasons["FILTER_MODIFY with ascending numeric values"] += 1;	
+  				}				
+  			}
+  		}
+  		
+  	})
+  })
+  return { 'tiebreakScore' : TBScore, 'reasons': reasons };
+}
+
+
+// var result = {"sequence":[0,6,2,3,4,5,1],"transitionSet":[{"marktype":[],"transform":[{"name":"SCALE","cost":0.6,"details":[{"type":"added","channel":"x"},{"type":"added","channel":"y"},{"type":"added","channel":"size"}]},{"name":"BIN","cost":0.62,"details":[{"type":"added","channel":"x"},null]},{"name":"AGGREGATE","cost":0.63,"details":[{"type":"added","channel":"y"},{"type":"added","channel":"size"}]},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Year","op":"===","value":"1976"}},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Origin","op":"!==","value":"'Japan'"}}],"encoding":[{"name":"ADD_SIZE_COUNT","cost":4.52},{"name":"ADD_X","cost":4.59},{"name":"ADD_Y","cost":4.59}],"cost":16.85,"id":6,"start":0,"destination":6,"rank":5},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1976, 1980"}},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Origin","op":"===","value":"'USA'"}}],"encoding":[],"cost":1.29,"id":31,"start":6,"destination":2,"rank":4},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'USA', 'Europe'"}}],"encoding":[],"cost":0.64,"id":15,"start":2,"destination":3,"rank":1},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1980, 1976"}},{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'Europe', 'USA'"}}],"encoding":[],"cost":1.28,"id":21,"start":3,"destination":4,"rank":3},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'USA', 'Europe'"}}],"encoding":[],"cost":0.64,"id":15,"start":4,"destination":5,"rank":1},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1976, 1980"}},{"name":"REMOVE_FILTER","cost":0.65,"detail":{"field":"Origin","op":"===","value":"'Europe'"}}],"encoding":[],"cost":1.29,"id":28,"start":5,"destination":1,"rank":4}],"distance":21.99,"patternScore":0.3333333333333333,"specs":[{"mark":"point","encoding":{},"distance":0,"prev":[]},{"description":"Cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"USA cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && datum.Origin === 'USA' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"European cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && datum.Origin === 'Europe' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"USA cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && datum.Origin === 'USA' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"European cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && datum.Origin === 'Europe' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"Cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]}],"globalScore":0.06820259362187077}
+// console.log(TieBreaker(result));
+
+module.exports = {
+  TieBreaker: TieBreaker
+};
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 // If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
@@ -326,6 +364,7 @@ var BEA = require('./lib/BEA.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
 var LRP = require('./lib/LRP.js');
+var tb = require('./lib/TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
 
@@ -363,6 +402,9 @@ function serialize(specs, ruleSet, options, callback){
                           return specs[index];
                         })
            };
+    var tbResult = tb.TieBreaker(result);
+    result.tiebreakScore = tbResult.tiebreakScore;
+    result.tiebreakReasons = tbResult.reasons;
     result.globalScore = point(result.distance, result.patternScore);
     return result;
   }).sort(function(a,b){
@@ -371,14 +413,22 @@ function serialize(specs, ruleSet, options, callback){
     }
     if (a.globalScore > b.globalScore) {
       return -1;
+    } else {
+      if (a.tiebreakScore < b.tiebreakScore) {
+      return 1;
+      }
+      if (a.tiebreakScore > b.tiebreakScore) {
+        return -1;
+      } 
     }
     return 0;
   });
   
   var serializedSpecs = [];
   var maxGlobalScore = TSPResultAll[0].globalScore;
+  var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].globalScore === maxGlobalScore){
+    if(TSPResultAll[i].globalScore === maxGlobalScore && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
       TSPResultAll[i].isOptimum = true;
       // serializedSpecs.push(TSPResultAll[i]);
     }
@@ -386,7 +436,7 @@ function serialize(specs, ruleSet, options, callback){
       break; 
     }
   }
- var returnValue = TSPResultAll;
+  var returnValue = TSPResultAll;
 
   // if (options.fixFirst) {
   //   var startingSpec = { "mark":"point", "encoding": {} };
@@ -463,7 +513,7 @@ module.exports = {
   serialize: serialize
 };
 
-},{"./js/d3.min.js":1,"./lib/BEA.js":2,"./lib/LRP.js":3,"./lib/TSP.js":4}],6:[function(require,module,exports){
+},{"./js/d3.min.js":1,"./lib/BEA.js":2,"./lib/LRP.js":3,"./lib/TSP.js":4,"./lib/TieBreaker.js":5}],7:[function(require,module,exports){
 
-},{}]},{},[5])(5)
+},{}]},{},[6])(6)
 });
