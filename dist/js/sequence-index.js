@@ -93,22 +93,27 @@ $(document).on('ready page:load', function () {
           $('#current-status').hide(500);  
         }, 1);
         results = e.data;
-        listButtons(results);
+        listButtons(results, fixFirst);
         
       }
       worker.postMessage({specs: specs, ruleSets: ruleSets, options: {"fixFirst": fixFirst}}); // Start the worker.
     });
   
   })
-  function listButtons(results){
+  function listButtons(results, fixFirst){
 
     $('#sorted-result .optimum').children().remove();
     $('#sorted-result .not.optimum').children().remove();
     $('#control-result').removeClass("hidden");
 
     for (var i = 0; i < results.length; i++) {
+      var  sequence = results[i].sequence;
+      if (!fixFirst) {
+        sequence = sequence.map(function(chart){ return chart - 1;}).splice(1);
+      };
+
       var link = $('<button href="#" data-id="'+i+'"></button>')
-                  .html(results[i].sequence.join(',') + ' | ' + Math.round(results[i].globalScore*100)/100 )
+                  .html(sequence.join(',') + ' | ' + Math.round(results[i].globalScore*100)/100 )
                   .addClass('result btn btn-xs')
                   .data('result', results[i]);
       
