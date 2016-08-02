@@ -35,6 +35,8 @@ $(document).on('ready page:load', function () {
         }
         if (a.distance < b.distance) {
           return -1;
+        } else {
+          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
         }
         return 0;
       });
@@ -53,17 +55,19 @@ $(document).on('ready page:load', function () {
       
     } else {
       results = results.sort(function(a,b){
-        if (a.globalScore < b.globalScore) {
+        if (a.distanceWithPattern > b.distanceWithPattern) {
           return 1;
         }
-        if (a.globalScore > b.globalScore) {
+        if (a.distanceWithPattern < b.distanceWithPattern) {
           return -1;
+        } else {
+          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
         }
         return 0;
       });
-      var maxGlobalScore = results[0].globalScore;
+      var maxdistanceWithPattern = results[0].distanceWithPattern;
       for (var i = 0; i < results.length; i++) {
-        if(results[i].globalScore === maxGlobalScore){
+        if(results[i].distanceWithPattern === maxdistanceWithPattern){
           results[i].isOptimum = true;
         }
         else { 
@@ -93,6 +97,14 @@ $(document).on('ready page:load', function () {
           $('#current-status').hide(500);  
         }, 1);
         results = e.data;
+        if (!$('#toggle-pattern-score').hasClass('active')) {
+          $('#toggle-pattern-score').addClass('active');
+          $('#toggle-pattern-score').text('Off Pattern Score');
+        }
+        if ($('#toggle-show-all').hasClass('active')) {
+          $('#toggle-show-all').removeClass('active');
+          $('#toggle-show-all').text('Show All');
+        }
         listButtons(results, fixFirst);
         
       }
@@ -113,7 +125,7 @@ $(document).on('ready page:load', function () {
       };
 
       var link = $('<button href="#" data-id="'+i+'"></button>')
-                  .html(sequence.join(',') + ' | ' + Math.round(results[i].globalScore*100)/100 )
+                  .html(sequence.join(',') + ' | ' + Math.round(results[i].distanceWithPattern*100)/100 )
                   .addClass('result btn btn-xs')
                   .data('result', results[i]);
       
@@ -139,10 +151,10 @@ $(document).on('ready page:load', function () {
   function drawingByOrder(result){
     var specs = result.specs;
 
-    var metaInfo = "Sum of distances : " + result.distance + "<br/>"
-                 + "Pattern  Score    : " + result.patternScore + "<br/>"
-                 + "Global   Score    : " + result.globalScore + "<br/>"
-                 + "TieBreak Score    : " + result.tiebreakScore + "<br/>"
+    var metaInfo = "Sum of distances\t\t: " + result.distance + "<br/>"
+                 + "Pattern  Score\t\t: " + result.patternScore + "<br/>"
+                 + "Distance with Pattern Score\t\t: " + result.distanceWithPattern + "<br/>"
+                 + "TieBreak Score\t\t: " + result.tiebreakScore + "<br/>"
                  + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
 
     $('#sequence-meta-info').html(metaInfo);

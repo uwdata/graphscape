@@ -1,8 +1,8 @@
 [{
-  "description": "Cars in 1980",
+  "description": "Cars in 1982",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1980}]
+    "filter": [{ "field":"Year", "equal": 1982}]
   },
   "mark": "point",
   "encoding": {
@@ -23,16 +23,16 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }
 },
 {
-  "description": "USA Cars in 1980",
+  "description": "USA Cars in 1982",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1980}, { "field":"Origin", "in": ["USA"]}]
+    "filter": [{ "field":"Year", "equal": 1982}, { "field":"Origin", "in": ["USA"]}]
   },
   "mark": "point",
   "encoding": {
@@ -53,16 +53,16 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }
 },
 {
-  "description": "Europe Cars in 1980",
+  "description": "Japan Cars in 1982",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1980}, { "field":"Origin", "in": ["Europe"]}]
+    "filter": [{ "field":"Year", "equal": 1982}, { "field":"Origin", "in": ["Japan"]}]
   },
   "mark": "point",
   "encoding": {
@@ -83,16 +83,16 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }
 },
 {
-  "description": "Cars in 1976",
+  "description": "Cars in 1978",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1976}]
+    "filter": [{ "field":"Year", "equal": 1978}]
   },
   "mark": "point",
   "encoding": {
@@ -113,16 +113,16 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }
 },
 {
-  "description": "USA Cars in 1976",
+  "description": "USA Cars in 1978",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1976}, { "field":"Origin", "in": ["USA"]}]
+    "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["USA"]}]
   },
   "mark": "point",
   "encoding": {
@@ -143,16 +143,16 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }
 },
 {
-  "description": "Europe Cars in 1976",
+  "description": "Europe Cars in 1978",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1976}, { "field":"Origin", "in": ["Europe"]}]
+    "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["Europe"]}]
   },
   "mark": "point",
   "encoding": {
@@ -173,7 +173,7 @@
       "field": "*",
       "type": "quantitative",
       "aggregate": "count",
-      "scale": {"domain": [0,5]},
+      "scale": {"domain": [0,10]},
       "legend": {"title": "# of Cars"}
     }
   }

@@ -12,6 +12,7 @@ var costs = JSON.parse(fs.readFileSync('./../../temp/costs.json','utf8'));
 //Generated from lp_yh01.js
 var map = JSON.parse(fs.readFileSync('./../../temp/idMap.json','utf8'));
 var encodingCeiling = JSON.parse(fs.readFileSync('./../../temp/encodingCeiling.json','utf8'));
+// var encodingExceptions = JSON.parse(fs.readFileSync('./../../temp/encodingExceptions.json','utf8'));
 
 var maxEncodingCost = 0;
 //Imports the lp result
@@ -41,5 +42,9 @@ ruleSet.encodingTransitions['ceiling'] = {
   cost: maxEncodingCost * encodingCeiling.depth,
   alternatingCost: maxEncodingCost * ( encodingCeiling.depth + 1 )
 };
+// for (var i = 0; i < encodingExceptions.length; i++) {
+//   ruleSet.encodingTransitions[encodingExceptions[i].name] = encodingExceptions[i];
+// };
+
 fs.writeFileSync('./../../ruleSet.json', JSON.stringify(ruleSet));
 fs.writeFileSync('./../../data/ruleSet.json', JSON.stringify(ruleSet));

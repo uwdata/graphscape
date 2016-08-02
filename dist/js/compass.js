@@ -3776,12 +3776,13 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
         var newNeighbor = util.duplicate(spec);
         var transitionType = "REMOVE_" + channel.toUpperCase();
         transitionType += (spec.encoding[channel].field === "*") ? "_COUNT" : "";
-        var transition = encodingTransitions[transitionType];
+        var transition = util.duplicate(encodingTransitions[transitionType]);
         var newAdditionalFields = util.duplicate(additionalFields);
         if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
             newAdditionalFields.push(newNeighbor.encoding[channel]);
         }
         var newAdditionalChannels = util.duplicate(additionalChannels);
+        transition.detail = { "field": newNeighbor.encoding[channel].field, "channel": channel };
         newAdditionalChannels.push(channel);
         delete newNeighbor.encoding[channel];
         if (validate(newNeighbor)) {
@@ -3800,7 +3801,7 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
             else if (spec.encoding[channel].field !== "*" && field.field === "*") {
                 transitionType += "_ADD_COUNT";
             }
-            transition = encodingTransitions[transitionType];
+            transition = util.duplicate(encodingTransitions[transitionType]);
             newAdditionalFields = util.duplicate(additionalFields);
             newAdditionalFields.splice(index, 1);
             if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
@@ -3808,6 +3809,7 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
             }
             newAdditionalChannels = util.duplicate(additionalChannels);
             newNeighbor.encoding[channel] = field;
+            transition.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
             if (validate(newNeighbor)) {
                 newNeighbor.transition = transition;
                 newNeighbor.additionalFields = newAdditionalFields;
@@ -3822,12 +3824,13 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
                 return;
             }
             newNeighbor = util.duplicate(spec);
-            transition = encodingTransitions["SWAP_X_Y"];
+            transition = util.duplicate(encodingTransitions["SWAP_X_Y"]);
             newAdditionalFields = util.duplicate(additionalFields);
             newAdditionalChannels = util.duplicate(additionalChannels);
             var tempChannel = util.duplicate(newNeighbor.encoding[channel]);
             newNeighbor.encoding[channel] = newNeighbor.encoding[anotherChannel];
             newNeighbor.encoding[anotherChannel] = tempChannel;
+            transition.detail = { "field": [spec.encoding["x"].field, spec.encoding["y"].field].join(','), "channel": "x,y" };
             if (validate(newNeighbor)) {
                 newNeighbor.transition = transition;
                 newNeighbor.additionalFields = newAdditionalFields;
@@ -3839,13 +3842,14 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
         exChannels.forEach(function (exChannel, index) {
             newNeighbor = util.duplicate(spec);
             var newNeighborChannels = (channel + "_" + exChannel).toUpperCase();
-            transition = encodingTransitions["MOVE_" + newNeighborChannels];
+            transition = util.duplicate(encodingTransitions["MOVE_" + newNeighborChannels]);
             newAdditionalFields = util.duplicate(additionalFields);
             newAdditionalChannels = util.duplicate(additionalChannels);
             newAdditionalChannels.splice(index, 1);
             newAdditionalChannels.push(channel);
             newNeighbor.encoding[exChannel] = util.duplicate(newNeighbor.encoding[channel]);
             delete newNeighbor.encoding[channel];
+            transition.detail = { "field": spec.encoding[channel].field, "channel": [channel, exChannel].join(',') };
             if (validate(newNeighbor)) {
                 newNeighbor.transition = transition;
                 newNeighbor.additionalFields = newAdditionalFields;
@@ -3860,12 +3864,13 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
             var newNeighbor = util.duplicate(spec);
             var transitionType = "ADD_" + channel.toUpperCase();
             transitionType += (field.field === "*") ? "_COUNT" : "";
-            var transition = encodingTransitions[transitionType];
+            var transition = util.duplicate(encodingTransitions[transitionType]);
             var newAdditionalFields = util.duplicate(additionalFields);
             var newAdditionalChannels = util.duplicate(additionalChannels);
             newAdditionalFields.splice(index, 1);
             newNeighbor.encoding[channel] = field;
             newAdditionalChannels.splice(chIndex, 1);
+            transition.detail = { "field": field.field, "channel": channel };
             if (validate(newNeighbor)) {
                 newNeighbor.transition = transition;
                 newNeighbor.additionalFields = newAdditionalFields;
@@ -3912,29 +3917,12 @@ exports.sameEncoding = sameEncoding;
 },{"../util":20,"./def":17}],19:[function(require,module,exports){
 "use strict";
 var filter_1 = require('vega-lite/src/filter');
+var type_1 = require('vega-lite/src/type');
 var channel_1 = require('vega-lite/src/channel');
 var expr = require('vega-expression');
 var util = require('../util');
 var def = require('./def');
 var nb = require('./neighbor');
-function transitionCost(s, d, importedTransitionCosts) {
-    var transitions = transitionSet(s, d, importedTransitionCosts);
-    var cost = 0;
-    cost = transitions.marktype.reduce(function (prev, transition) {
-        prev += transition.cost;
-        return prev;
-    }, cost);
-    cost = transitions.transform.reduce(function (prev, transition) {
-        prev += transition.cost;
-        return prev;
-    }, cost);
-    cost = transitions.encoding.reduce(function (prev, transition) {
-        prev += transition.cost;
-        return prev;
-    }, cost);
-    return cost;
-}
-exports.transitionCost = transitionCost;
 function transitionSet(s, d, importedTransitionCosts, transOptions) {
     var importedMarktypeTransitions = importedTransitionCosts ? importedTransitionCosts.marktypeTransitions : def.DEFAULT_MARKTYPE_TRANSITIONS;
     var importedTransformTransitions = importedTransitionCosts ? importedTransitionCosts.transformTransitions : def.DEFAULT_TRANSFORM_TRANSITIONS;
@@ -3945,15 +3933,33 @@ function transitionSet(s, d, importedTransitionCosts, transOptions) {
         encoding: encodingTransitionSet(s, d, importedEncodingTransitions)
     };
     var cost = 0;
+    cost = transitions.encoding.reduce(function (prev, transition) {
+        if (transition.name.indexOf('_COUNT') >= 0) {
+            var channel_2 = transition.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
+            var aggTr = transitions.transform.filter(function (tr) { return tr.name === "AGGREGATE"; })[0];
+            if (aggTr && aggTr.detail.length === 1 && aggTr.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel_2; }).length) {
+                aggTr.cost = 0;
+            }
+            var binTr = transitions.transform.filter(function (tr) { return tr.name === "BIN"; })[0];
+            if (binTr && binTr.detail.filter(function (dt) {
+                if (dt.type === "added") {
+                    return d.encoding[dt.channel].type === type_1.Type.QUANTITATIVE;
+                }
+                else {
+                    return s.encoding[dt.channel].type === type_1.Type.QUANTITATIVE;
+                }
+            }).length > 0) {
+                binTr.cost = 0;
+            }
+        }
+        prev += transition.cost;
+        return prev;
+    }, cost);
     cost = transitions.marktype.reduce(function (prev, transition) {
         prev += transition.cost;
         return prev;
     }, cost);
     cost = transitions.transform.reduce(function (prev, transition) {
-        prev += transition.cost;
-        return prev;
-    }, cost);
-    cost = transitions.encoding.reduce(function (prev, transition) {
         prev += transition.cost;
         return prev;
     }, cost);
@@ -3964,12 +3970,17 @@ exports.transitionSet = transitionSet;
 function marktypeTransitionSet(s, d, importedMarktypeTransitions) {
     var transSet = [];
     var marktypeTransitions = importedMarktypeTransitions || def.DEFAULT_MARKTYPE_TRANSITIONS;
+    var newTr;
     if (s.mark === d.mark) {
         return transSet;
     }
     else {
         var trName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
-        transSet.push(util.duplicate(marktypeTransitions[trName]));
+        if (marktypeTransitions[trName]) {
+            newTr = util.duplicate(marktypeTransitions[trName]);
+            newTr.detail = { "from": s.mark.toUpperCase(), "to": d.mark.toUpperCase() };
+            transSet.push(newTr);
+        }
     }
     return transSet;
 }
@@ -3977,10 +3988,10 @@ exports.marktypeTransitionSet = marktypeTransitionSet;
 function transformTransitionSet(s, d, importedTransformTransitions, transOptions) {
     var transformTransitions = importedTransformTransitions || def.DEFAULT_TRANSFORM_TRANSITIONS;
     var transSet = [];
-    var trans;
-    var already;
     channel_1.CHANNELS.forEach(function (channel) {
         ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
+            var trans;
+            var already;
             if (transformType === "SETTYPE" && transformTransitions[transformType]) {
                 trans = transformSettype(s, d, channel, transformTransitions);
             }
@@ -3990,15 +4001,13 @@ function transformTransitionSet(s, d, importedTransformTransitions, transOptions
                 }
             }
             if (trans) {
-                already = util.find(transSet, function (item) { return item.name; }, trans);
+                already = util.find(transSet, function (tr) { return tr.name; }, trans);
                 if (already >= 0) {
-                    transSet[already].details.push(trans.detail);
+                    transSet[already].detail.push(util.duplicate(trans.detail));
                 }
                 else {
+                    trans.detail = [util.duplicate(trans.detail)];
                     transSet.push(trans);
-                    transSet[transSet.length - 1].details = [];
-                    transSet[transSet.length - 1].details.push(trans.detail);
-                    delete transSet[transSet.length - 1].detail;
                 }
             }
         });
@@ -4075,7 +4084,7 @@ function filterTransitionSet(s, d, filterTransitions) {
         for (var j = 0; j < sOnly.length; j++) {
             if (util.rawEqual(dOnly[i].field, sOnly[j].field)) {
                 var newTr = util.duplicate(filterTransitions["MODIFY_FILTER"]);
-                newTr.detail = {};
+                newTr.detail = { field: sOnly[j].field };
                 if (sOnly[j].op !== dOnly[j].op) {
                     newTr.detail.op = sOnly[j].op + ', ' + dOnly[j].op;
                 }
@@ -4265,7 +4274,7 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
 }
 exports.encodingTransitionSet = encodingTransitionSet;
 
-},{"../util":20,"./def":17,"./neighbor":18,"vega-expression":5,"vega-lite/src/channel":31,"vega-lite/src/filter":35}],20:[function(require,module,exports){
+},{"../util":20,"./def":17,"./neighbor":18,"vega-expression":5,"vega-lite/src/channel":31,"vega-lite/src/filter":35,"vega-lite/src/type":40}],20:[function(require,module,exports){
 "use strict";
 exports.isArray = Array.isArray || function (obj) {
     return {}.toString.call(obj) === '[object Array]';

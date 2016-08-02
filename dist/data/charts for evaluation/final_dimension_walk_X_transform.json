@@ -1,35 +1,5 @@
 [
-  {
-    "data": {
-      "url": "data/movies.json",
-      "formatType": "json"
-    },
-    "mark": "point",
-    "encoding": {
-      "x": {
-        "field": "Major_Genre",
-        "type": "nominal",
-        "sort": {
-          "op": "mean",
-          "field": "Worldwide_Gross",
-          "order": "descending"
-        }
-      },
-      "y": {
-        "field": "Worldwide_Gross",
-        "type": "quantitative",
-        "aggregate": "mean",
-        "scale": {
-          "type": "log"
-        }
-      },
-      "size": {
-        "field": "*",
-        "type": "quantitative",
-        "aggregate": "count"
-      }
-    }
-  },
+  
   {
     "data": {
       "url": "data/movies.json",
@@ -56,6 +26,37 @@
     "encoding": {
       "x": {
         "field": "Source",
+        "type": "nominal",
+        "sort": {
+          "op": "mean",
+          "field": "Worldwide_Gross",
+          "order": "descending"
+        }
+      },
+      "y": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "scale": {
+          "type": "log"
+        }
+      },
+      "size": {
+        "field": "*",
+        "type": "quantitative",
+        "aggregate": "count"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Major_Genre",
         "type": "nominal",
         "sort": {
           "op": "mean",

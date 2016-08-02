@@ -6,7 +6,8 @@
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
     },
     "encoding": {
-      "y": {"field": "Price","type": "quantitative"}
+      "y": {"field": "Price","type": "quantitative"},
+      "x": {"field": "Maker","type": "nominal"}
     }
   },
   {
@@ -16,7 +17,7 @@
     },
     "mark": "point",
     "encoding": {
-      "x": {"field": "Weight","type": "quantitative"},
+      "x": {"field": "Zoom_wide","type": "quantitative"},
       "y": {"field": "Price","type": "quantitative"}
     }
   },

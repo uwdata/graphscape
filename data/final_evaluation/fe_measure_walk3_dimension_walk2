@@ -1,0 +1,106 @@
+[
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Major_Genre",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "IMDB_Rating",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Major_Genre",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "Production_Budget",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Major_Genre",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Source",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "IMDB_Rating",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Source",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/movies.json",
+      "formatType": "json"
+    },
+    "mark": "tick",
+    "encoding": {
+      "x": {
+        "field": "Production_Budget",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Source",
+        "type": "nominal"
+      }
+    }
+  }
+]
+
+  

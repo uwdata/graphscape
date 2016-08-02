@@ -1,8 +1,8 @@
 [{
-  "description": "Cars in 1982",
+  "description": "Cars in 1973",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1982}]
+    "filter": [{ "field":"Year", "equal": 1973}]
   },
   "mark": "point",
   "encoding": {
@@ -29,10 +29,10 @@
   }
 },
 {
-  "description": "USA Cars in 1982",
+  "description": "USA Cars in 1973",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1982}, { "field":"Origin", "in": ["USA"]}]
+    "filter": [{ "field":"Year", "equal": 1973}, { "field":"Origin", "in": ["USA"]}]
   },
   "mark": "point",
   "encoding": {
@@ -89,10 +89,10 @@
   }
 },
 {
-  "description": "Cars in 1978",
+  "description": "Cars in 1982",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1978}]
+    "filter": [{ "field":"Year", "equal": 1982}]
   },
   "mark": "point",
   "encoding": {
@@ -119,10 +119,10 @@
   }
 },
 {
-  "description": "USA Cars in 1978",
+  "description": "Cars in 1978",
   "data": {"url": "data/cars.json"},
   "transform": {
-    "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["USA"]}]
+    "filter": [{ "field":"Year", "equal": 1978}]
   },
   "mark": "point",
   "encoding": {

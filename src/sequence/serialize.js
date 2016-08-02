@@ -6,19 +6,19 @@
 var BEA = require('./lib/BEA.js');
 var TSP = require('./lib/TSP.js');
 var d3 = require('./js/d3.min.js');
-var LRP = require('./lib/LRP.js');
+var PO = require('./lib/PatternOptimizer.js');
 var tb = require('./lib/TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
 
   
-  function point(dist, patternScore){
-    return 1 / ( dist * (1 - patternScore + 0.0001) );
+  function distanceWithPattern(dist, patternScore){
+    return dist * ( 1 - patternScore);
   }
 
   //Brute force version
   if (!options.fixFirst) {
-    var startingSpec = { "mark":"point", "encoding": {} };
+    var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
   }
 
@@ -35,26 +35,26 @@ function serialize(specs, ruleSet, options, callback){
       transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
     };
     var pattern = transitionSet.map(function(r){ return r.id; });
-    var LRPResult = LRP.LRP(pattern,'coverage');
+    var POResult = PO.PatternOptimizer(pattern,transitionSets.flatten.map(function(transitionSetSH){ return transitionSetSH.length; }));
     var result = { 
               "sequence" : sequence,
               "transitionSet" : transitionSet,
               "distance" : tspR.distance,
-              "patternScore" : !!LRPResult[0] ? LRPResult[0].coverage : 0,
+              "patternScore" : !!POResult[0] ? POResult[0].patternScore : 0,
               "specs" : sequence.map(function(index){
                           return specs[index];
                         })
            };
-    var tbResult = tb.TieBreaker(result);
+    var tbResult = tb.TieBreaker(result, transitionSets);
     result.tiebreakScore = tbResult.tiebreakScore;
     result.tiebreakReasons = tbResult.reasons;
-    result.globalScore = point(result.distance, result.patternScore);
+    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore);
     return result;
   }).sort(function(a,b){
-    if (a.globalScore < b.globalScore) {
+    if (a.distanceWithPattern > b.distanceWithPattern) {
       return 1;
     }
-    if (a.globalScore > b.globalScore) {
+    if (a.distanceWithPattern < b.distanceWithPattern) {
       return -1;
     } else {
       if (a.tiebreakScore < b.tiebreakScore) {
@@ -62,16 +62,18 @@ function serialize(specs, ruleSet, options, callback){
       }
       if (a.tiebreakScore > b.tiebreakScore) {
         return -1;
-      } 
-    }
+      } else {
+        return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
+      }
+    } 
     return 0;
   });
   
   var serializedSpecs = [];
-  var maxGlobalScore = TSPResultAll[0].globalScore;
+  var minDistanceWithPattern = TSPResultAll[0].distanceWithPattern;
   var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].globalScore === maxGlobalScore && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
+    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
       TSPResultAll[i].isOptimum = true;
       // serializedSpecs.push(TSPResultAll[i]);
     }
@@ -120,10 +122,10 @@ function extendTransitionSets(transitionSets){
   var flatCosts = transitionSets.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
       prev.push(curr[i].cost);
-      var transitionSetString = JSON.stringify(curr[i]);
-      var index = flatTransitionSets.indexOf(transitionSetString);
+      var transitionSetSH = transitionShorthand(curr[i]);
+      var index = flatTransitionSets.indexOf(transitionSetSH.join('|'));
       if ( index === -1) {
-        curr[i]["id"] = flatTransitionSets.push(transitionSetString) - 1;  
+        curr[i]["id"] = flatTransitionSets.push(transitionSetSH.join('|')) - 1;  
       } else {
         curr[i]["id"] = index;
       }
@@ -148,9 +150,22 @@ function extendTransitionSets(transitionSets){
       transitionSets[i][j]["rank"] = Math.floor(rank(transitionSets[i][j].cost));
     }
   }
+  transitionSets.flatten = flatTransitionSets.map(function(fltr){ return fltr.split('|'); });
   return transitionSets
 }
-
+function transitionShorthand(transition){
+  return transition.marktype
+                    .concat(transition.transform)
+                    .concat(transition.encoding)
+                    .map(function(tr){ 
+                      if (tr.detail) {
+                        return tr.name + '(' + JSON.stringify(tr.detail) + ')';
+                      };
+                      return tr.name;
+                    })
+                    .sort();
+                    
+}
 
 module.exports = {
   serialize: serialize
