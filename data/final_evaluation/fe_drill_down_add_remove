@@ -1,0 +1,116 @@
+[
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      }
+    }
+  },
+
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      },
+      "color": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+  {
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      },
+      "color": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  }
+]

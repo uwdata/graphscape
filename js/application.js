@@ -4,7 +4,10 @@ function draw(selector, spec, specAdjustment, callback){
       spec[specAdjustment[i].key] = specAdjustment[i].value
     }
   }
-
+  if (spec.mark === "null") {
+    $(selector).append("<svg></svg id='null-vis'>");
+    return;
+  };
   var vgSpec = vl.compile(spec).spec;
   vgSpec.description = spec.description
   
