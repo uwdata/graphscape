@@ -121,7 +121,7 @@ $(document).on('ready page:load', function () {
     for (var i = 0; i < results.length; i++) {
       var  sequence = results[i].sequence;
       if (!fixFirst) {
-        sequence = sequence.map(function(chart){ return chart - 1;}).splice(1);
+        // sequence = sequence.map(function(chart){ return chart - 1;}).splice(1);
       };
 
       var link = $('<button href="#" data-id="'+i+'"></button>')
