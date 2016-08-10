@@ -16,20 +16,17 @@ function serialize(specs, ruleSet, options, callback){
     return dist * ( 1 - patternScore);
   }
 
-  var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
   //Brute force version
-  // if (!options.fixFirst) {
-  //   var startingSpec = { "mark":"null", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
+  if (!options.fixFirst) {
+    var startingSpec = { "mark":"null", "encoding": {} };
+    specs = [ startingSpec ].concat(specs);
+  }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
-  console.log(transitionSets);
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    return true;
-    // return seqWithDist.sequence[0] === 0;
+    return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
     // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
     var sequence = tspR.sequence;
@@ -38,19 +35,17 @@ function serialize(specs, ruleSet, options, callback){
       transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
     };
     var pattern = transitionSet.map(function(r){ return r.id; });
-    var POResult = PO.PatternOptimizer(pattern, transitionSets.uniq);
-
+    var POResult = PO.PatternOptimizer(pattern,transitionSets.flatten.map(function(transitionSetSH){ return transitionSetSH.length; }));
     var result = { 
               "sequence" : sequence,
               "transitionSet" : transitionSet,
               "distance" : tspR.distance,
-              "POResult" : POResult,
               "patternScore" : !!POResult[0] ? POResult[0].patternScore : 0,
               "specs" : sequence.map(function(index){
                           return specs[index];
                         })
            };
-    var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
+    var tbResult = tb.TieBreaker(result, transitionSets);
     result.tiebreakScore = tbResult.tiebreakScore;
     result.tiebreakReasons = tbResult.reasons;
     result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore);
@@ -109,13 +104,6 @@ function serialize(specs, ruleSet, options, callback){
   callback(returnValue);
   return returnValue;
 }
-function getTransitionSetsFromSpec( spec, specs, ruleSet){
-  var transitionSets = [];
-  for (var i = 0; i < specs.length; i++) {
-    transitionSets.push(cp.trans.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
-  }
-  return transitionSets;
-}
 
 function getTransitionSets(specs, ruleSet){
   var transitionSets = [];
@@ -130,15 +118,14 @@ function getTransitionSets(specs, ruleSet){
 }
 
 function extendTransitionSets(transitionSets){
-  var uniqTransitionSets = [];
+  var flatTransitionSets = [];
   var flatCosts = transitionSets.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
-      var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      // var index = uniqTransitionSets.indexOf(transitionSetSH.join('|'));
+      var index = flatTransitionSets.indexOf(transitionSetSH.join('|'));
       if ( index === -1) {
-        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
+        curr[i]["id"] = flatTransitionSets.push(transitionSetSH.join('|')) - 1;  
       } else {
         curr[i]["id"] = index;
       }
@@ -163,7 +150,7 @@ function extendTransitionSets(transitionSets){
       transitionSets[i][j]["rank"] = Math.floor(rank(transitionSets[i][j].cost));
     }
   }
-  transitionSets.uniq = uniqTransitionSets;
+  transitionSets.flatten = flatTransitionSets.map(function(fltr){ return fltr.split('|'); });
   return transitionSets
 }
 function transitionShorthand(transition){
@@ -176,8 +163,7 @@ function transitionShorthand(transition){
                       };
                       return tr.name;
                     })
-                    .sort()
-                    .join('|');
+                    .sort();
                     
 }
 

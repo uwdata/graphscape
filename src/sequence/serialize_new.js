@@ -16,20 +16,18 @@ function serialize(specs, ruleSet, options, callback){
     return dist * ( 1 - patternScore);
   }
 
-  var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
   //Brute force version
-  // if (!options.fixFirst) {
-  //   var startingSpec = { "mark":"null", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
+  if (!options.fixFirst) {
+    var startingSpec = { "mark":"null", "encoding": {} };
+    specs = [ startingSpec ].concat(specs);
+  }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
   console.log(transitionSets);
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    return true;
-    // return seqWithDist.sequence[0] === 0;
+    return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
     // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
     var sequence = tspR.sequence;
@@ -39,18 +37,16 @@ function serialize(specs, ruleSet, options, callback){
     };
     var pattern = transitionSet.map(function(r){ return r.id; });
     var POResult = PO.PatternOptimizer(pattern, transitionSets.uniq);
-
     var result = { 
               "sequence" : sequence,
               "transitionSet" : transitionSet,
               "distance" : tspR.distance,
-              "POResult" : POResult,
               "patternScore" : !!POResult[0] ? POResult[0].patternScore : 0,
               "specs" : sequence.map(function(index){
                           return specs[index];
                         })
            };
-    var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
+    var tbResult = tb.TieBreaker(result, transitionSets);
     result.tiebreakScore = tbResult.tiebreakScore;
     result.tiebreakReasons = tbResult.reasons;
     result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore);
@@ -108,13 +104,6 @@ function serialize(specs, ruleSet, options, callback){
   // });
   callback(returnValue);
   return returnValue;
-}
-function getTransitionSetsFromSpec( spec, specs, ruleSet){
-  var transitionSets = [];
-  for (var i = 0; i < specs.length; i++) {
-    transitionSets.push(cp.trans.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
-  }
-  return transitionSets;
 }
 
 function getTransitionSets(specs, ruleSet){
