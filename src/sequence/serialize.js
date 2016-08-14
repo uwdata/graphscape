@@ -17,19 +17,21 @@ function serialize(specs, ruleSet, options, callback){
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
+  console.log(transitionSetsFromEmptyVis);
+  
   //Brute force version
-  // if (!options.fixFirst) {
-  //   var startingSpec = { "mark":"null", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
+  if (!options.fixFirst) {
+    var startingSpec = { "mark":"null", "encoding": {} };
+    specs = [ startingSpec ].concat(specs);
+  }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
   console.log(transitionSets);
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    return true;
-    // return seqWithDist.sequence[0] === 0;
+    // return true;
+    return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
     // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
     var sequence = tspR.sequence;

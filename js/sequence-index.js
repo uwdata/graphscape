@@ -121,7 +121,7 @@ $(document).on('ready page:load', function () {
     for (var i = 0; i < results.length; i++) {
       var  sequence = results[i].sequence;
       if (!fixFirst) {
-        // sequence = sequence.map(function(chart){ return chart - 1;}).splice(1);
+        sequence = sequence.map(function(chart){ return chart - 1;}).splice(1);
       };
 
       var link = $('<button href="#" data-id="'+i+'"></button>')
@@ -151,10 +151,11 @@ $(document).on('ready page:load', function () {
   function drawingByOrder(result){
     var specs = result.specs;
 
-    var metaInfo = "Sum of distances\t\t: " + result.distance + "<br/>"
-                 + "Pattern  Score\t\t: " + result.patternScore + "<br/>"
-                 + "Distance with Pattern Score\t\t: " + result.distanceWithPattern + "<br/>"
-                 + "TieBreak Score\t\t: " + result.tiebreakScore + "<br/>"
+    var metaInfo = "Sum of distances : " + result.distance + "<br/>"
+                 + "Pattern  Score : " + result.patternScore + "<br/>"
+                 + "POResult :" + JSON.stringify(result.POResult) + "<br/>"
+                 + "Distance with Pattern Score : " + result.distanceWithPattern + "<br/>"
+                 + "TieBreak Score : " + result.tiebreakScore + "<br/>"
                  + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
 
     $('#sequence-meta-info').html(metaInfo);
