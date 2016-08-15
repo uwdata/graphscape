@@ -169,6 +169,7 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
         }
       }
       var overlap = false;
+      
       var rythmic = true;
       var period = 0;
       for (var k = 0; k < appear.length-1; k++) {
@@ -176,14 +177,15 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
           overlap = true;
           break;
         }
-        if(period !== 0 && period !== appear[k+1] - appear[k]){
-          rythmic = false;
-          break;
-        }
-        period = appear[k+1] - appear[k];
+        // if(period !== 0 && period !== appear[k+1] - appear[k]){
+        //   rythmic = false;
+        //   break;
+        // }
+        // period = appear[k+1] - appear[k];
       }
       
-      if (appear.length > 1 && !overlap && rythmic ){
+      // if (appear.length > 1 && !overlap && rythmic ){
+      if (appear.length > 1 && !overlap){
 
         var newPattern = dup(inputArray).splice(i,l);
         var RPcoverage = coverage(inputArray, l, appear);
@@ -364,22 +366,26 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   	})
   })
 
-  //rule#2 Simpler charts should be placed earlier.
-  var costsFromEmpty = transitionSetsFromEmptyVis.map(function(tr){ return tr.cost;});
-  var sortedCostsFromEmpty = costsFromEmpty.slice(0).sort();
-  function closenessRankFromEmpty(specIndex){
-    var result = sortedCostsFromEmpty.indexOf(costsFromEmpty[specIndex]);
-    sortedCostsFromEmpty[result] = -1;
-    return result+1;
-  }
-  var N = result.sequence.length;
-  var rule2TBScore = 0;
-  result.sequence.forEach(function(specIndex, index){
-    rule2TBScore += closenessRankFromEmpty(specIndex) * (index+1);
-  });
-  rule2TBScore = rule2TBScore / ( (N * (N + 1) * (2*N + 1)) / 6 );
-  TBScore += rule2TBScore * weights[1];
-  reasons["Simpler charts should be placed front."] = rule2TBScore;
+  // //rule#2 Simpler charts should be placed earlier.
+  // var costsFromEmpty = transitionSetsFromEmptyVis.map(function(tr){ return tr.cost;});
+  // function sortNumber(a,b) {
+  //     return a - b;
+  // }
+  // var sortedCostsFromEmpty = costsFromEmpty.slice(0).sort(sortNumber);
+  // function closenessRankFromEmpty(specIndex){
+  //   var result = sortedCostsFromEmpty.indexOf(costsFromEmpty[specIndex]);
+  //   sortedCostsFromEmpty[result] = -1;
+  //   return result+1;
+  // }
+  // var N = result.sequence.length;
+  // var rule2TBScore = 0;
+  // result.sequence.forEach(function(specIndex, index){
+  //   var ri = closenessRankFromEmpty(specIndex);
+  //   rule2TBScore += ri * (index+1);
+  // });
+  // rule2TBScore = rule2TBScore / ( (N * (N + 1) * (2*N + 1)) / 6 );
+  // TBScore += rule2TBScore * weights[1];
+  // reasons["Simpler charts should be placed front."] = rule2TBScore;
 
   return { 'tiebreakScore' : TBScore, 'reasons': reasons };
 }
@@ -413,19 +419,21 @@ function serialize(specs, ruleSet, options, callback){
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
+  console.log(transitionSetsFromEmptyVis);
+  
   //Brute force version
-  // if (!options.fixFirst) {
-  //   var startingSpec = { "mark":"null", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
+  if (!options.fixFirst) {
+    var startingSpec = { "mark":"null", "encoding": {} };
+    specs = [ startingSpec ].concat(specs);
+  }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
   console.log(transitionSets);
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    return true;
-    // return seqWithDist.sequence[0] === 0;
+    // return true;
+    return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
     // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
     var sequence = tspR.sequence;
