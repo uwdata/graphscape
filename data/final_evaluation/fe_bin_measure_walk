@@ -14,7 +14,8 @@
   "encoding": {
     "x": {
       "field": "Release_Year",
-      "scale": {"domain": [1940,2010],"zero": false}
+      "scale": {"domain": [1940,2010],"zero": false},
+      "axis": {"title": "Release Year"}
     },
     "y": {
       "field": "IMDB_Rating",
@@ -41,13 +42,14 @@
     "x": {
       "field": "Release_Year",
       "scale": {"domain": [1940,2010],"zero": false},
+      "axis": {"title": "Release Decade"},
       "bin":true
     },
     "y": {
       "field": "IMDB_Rating",
       "type": "quantitative",
       "scale": {"domain": [0,10]},
-      "axis": {"title": "IMDB Rating Per Year"},
+      "axis": {"title": "IMDB Rating Per Decade"},
       "aggregate":"mean"
     }
   }
@@ -73,7 +75,7 @@
       "field": "Rotten_Tomatoes_Rating",
       "type": "quantitative",
       "scale": {"domain": [0,100]},
-      "axis": {"title": "IMDB Rating Per Year"},
+      "axis": {"title": "Rotten Tomatoes Rating Per Year"},
       "aggregate":"mean"
     }
   }
@@ -94,13 +96,14 @@
     "x": {
       "field": "Release_Year",
       "scale": {"domain": [1940,2010],"zero": false},
+      "axis": {"title": "Release Decade"},
       "bin":true
     },
     "y": {
       "field": "Rotten_Tomatoes_Rating",
       "type": "quantitative",
       "scale": {"domain": [0,100]},
-      "axis": {"title": "IMDB Rating Per Year"},
+      "axis": {"title": "Rotten Tomatoes Rating Per Decade"},
       "aggregate":"mean"
     }
   }
@@ -123,12 +126,47 @@
       "field": "IMDB_Rating",
       "type": "quantitative",
       "scale": {"domain": [0,10]},
+      "axis": {"title": "IMDB Rating"},
       "bin":true
     },
     "y": {
       "field": "Rotten_Tomatoes_Rating",
       "type": "quantitative",
       "scale": {"domain": [0,100]},
+      "axis": {"title": "Rotten Tomatoes Rating"},
+      "bin":true
+    },
+    "size":{
+      "field":"*",
+      "aggregate":"count"
+    }
+  }
+},
+{
+  "data": {"url": "data/movies.json"},
+  "transform": {
+    "filter": "datum.Release_Year < 2010 && datum.Release_Year >1900",
+    "calculate": [
+      {
+        "field": "Release_Year",
+        "expr": "year(datum.Release_Date)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "y": {
+      "field": "IMDB_Rating",
+      "type": "quantitative",
+      "scale": {"domain": [0,10]},
+      "axis": {"title": "IMDB Rating"},
+      "bin":true
+    },
+    "x": {
+      "field": "Rotten_Tomatoes_Rating",
+      "type": "quantitative",
+      "scale": {"domain": [0,100]},
+      "axis": {"title": "Rotten Tomatoes Rating"},
       "bin":true
     },
     "size":{
