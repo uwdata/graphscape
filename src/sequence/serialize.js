@@ -174,8 +174,11 @@ function transitionShorthand(transition){
                     .concat(transition.encoding)
                     .map(function(tr){ 
                       if (tr.detail) {
+                        if (tr.name === "MODIFY_FILTER") {
+                          return tr.name + '(' + JSON.stringify(tr.detail.field) + ')';
+                        }
                         return tr.name + '(' + JSON.stringify(tr.detail) + ')';
-                      };
+                      }
                       return tr.name;
                     })
                     .sort()
