@@ -8,7 +8,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -23,7 +22,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }
@@ -42,7 +41,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -57,7 +55,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }
@@ -76,7 +74,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -91,7 +88,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }
@@ -105,7 +102,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -120,7 +116,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }
@@ -139,7 +135,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -154,7 +149,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }
@@ -173,7 +168,6 @@
       "x": {
         "field": "Horsepower",
         "type": "quantitative",
-        "bin": true,
         "scale": {"domain": [0,240]},
         "axis": {"title": "Horsepower"}
       },
@@ -188,7 +182,7 @@
         "field": "*",
         "type": "quantitative",
         "aggregate": "count",
-        "scale": {"domain": [0,15]},
+        "scale": {"domain": [0,10]},
         "legend": {"title": "# of Cars"}
       }
     }

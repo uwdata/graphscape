@@ -1,0 +1,206 @@
+[
+{
+  "data": {
+    "url": "data/admission.json",
+    "formatType": "json"
+  },
+  "transform": {
+    "filter": "datum.Status==='Admit'",
+    "calculate": [
+      {
+        "field": "femaleCount",
+        "expr": "if(datum.Gender =='Female', datum.Count, 0)"
+      },
+      {
+        "field": "femaleRate",
+        "expr": "if(datum.Gender =='Female', datum.Rate, 0)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Department",
+      "type": "nominal"
+    },
+    "y": {
+      "field": "Rate",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "color": {
+      "field": "Gender",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Female","Male"],
+        "range": ["#EA98D2","#659CCA"]
+      }
+    }
+  }
+},
+{
+  "data": {
+    "url": "data/admission.json",
+    "formatType": "json"
+  },
+  "transform": {
+    "filter": "datum.Status==='Admit'",
+    "calculate": [
+      {
+        "field": "femaleCount",
+        "expr": "if(datum.Gender =='Female', datum.Count, 0)"
+      },
+      {
+        "field": "femaleRate",
+        "expr": "if(datum.Gender =='Female', datum.Rate, 0)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Department",
+      "type": "nominal"
+    },
+    "y": {
+      "field": "Count",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "color": {
+      "field": "Gender",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Female","Male"],
+        "range": ["#EA98D2","#659CCA"]
+      }
+    }
+  }
+},
+{
+  "data": {
+    "url": "data/admission.json",
+    "formatType": "json"
+  },
+  "transform": {
+    "filter": "datum.Status==='Admit'",
+    "calculate": [
+      {
+        "field": "femaleCount",
+        "expr": "if(datum.Gender =='Female', datum.Count, 0)"
+      },
+      {
+        "field": "femaleRate",
+        "expr": "if(datum.Gender =='Female', datum.Rate, 0)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Department",
+      "type": "nominal",
+      "sort": {"field": "femaleCount","op": "sum","order": "descending"}
+    },
+    "y": {
+      "field": "Count",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "color": {
+      "field": "Gender",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Female","Male"],
+        "range": ["#EA98D2","#659CCA"]
+      }
+    }
+  }
+},
+{
+  "data": {
+    "url": "data/admission.json",
+    "formatType": "json"
+  },
+  "transform": {
+    "filter": "datum.Status==='Admit'",
+    "calculate": [
+      {
+        "field": "femaleCount",
+        "expr": "if(datum.Gender =='Female', datum.Count, 0)"
+      },
+      {
+        "field": "femaleRate",
+        "expr": "if(datum.Gender =='Female', datum.Rate, 0)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Department",
+      "type": "nominal",
+      "sort": {"field": "femaleRate","op": "sum","order": "descending"}
+    },
+    "y": {
+      "field": "Count",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "color": {
+      "field": "Gender",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Female","Male"],
+        "range": ["#EA98D2","#659CCA"]
+      }
+    }
+  }
+},
+
+{
+  "data": {
+    "url": "data/admission.json",
+    "formatType": "json"
+  },
+  "transform": {
+    "filter": "datum.Status==='Admit'",
+    "calculate": [
+      {
+        "field": "femaleCount",
+        "expr": "if(datum.Gender =='Female', datum.Count, 0)"
+      },
+      {
+        "field": "femaleRate",
+        "expr": "if(datum.Gender =='Female', datum.Rate, 0)"
+      }
+    ]
+  },
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Department",
+      "type": "nominal"
+    },
+    
+    "y": {
+      "field": "Count",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "size":{
+      "field": "Rate",
+      "type": "quantitative",
+      "aggregate": "sum"
+    },
+    "color": {
+      "field": "Gender",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Female","Male"],
+        "range": ["#EA98D2","#659CCA"]
+      }
+    }
+  }
+}
+]
