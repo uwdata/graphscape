@@ -19,7 +19,7 @@ var  ruleSet = [
         [['BAR_POINT', 'BAR_TICK'], 'AREA_BAR', 'BAR_LINE', 'BAR_TEXT'],
         ['AREA_LINE', ['LINE_POINT', 'LINE_TICK'], 'BAR_LINE', 'LINE_TEXT'],
         ['POINT_TICK', 'BAR_POINT', 'LINE_POINT', 'AREA_POINT', 'POINT_TEXT'],
-        [['POINT_TEXT', 'TEXT_TICK'], 'LINE_TEXT', 'BAR_TEXT', 'AREA_TEXT'],
+        [['POINT_TEXT', 'TEXT_TICK'], 'BAR_TEXT', 'LINE_TEXT', 'AREA_TEXT'],
         ['POINT_TICK', 'BAR_TICK', 'LINE_TICK', 'AREA_TICK', 'TEXT_TICK']
       ]
   },

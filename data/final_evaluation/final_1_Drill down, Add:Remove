@@ -1,7 +1,6 @@
-[
-  {
+[{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -17,9 +16,9 @@
       }
     }
   },
-  {
+{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -36,9 +35,9 @@
       }
     }
   },
-  {
+{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -54,9 +53,9 @@
       }
     }
   },
-  {
+{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -73,10 +72,9 @@
       }
     }
   },
-
-  {
+{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -96,9 +94,9 @@
       }
     }
   },
-  {
+{
     "data": {
-      "url": "/data/cars.json",
+      "url": "data/cars.json",
       "formatType": "json"
     },
     "mark": "point",
@@ -118,5 +116,4 @@
         "type": "nominal"
       }
     }
-  }
-]
+  }]

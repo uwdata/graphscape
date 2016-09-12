@@ -1,0 +1,69 @@
+#seq 1 0,2,1,5,4,3
+
+Rank(Pattern) : 1
+Rank(Simple Sum) : 1
+Rank(Pattern inc. ties) : 1
+Rank(Simple Sum inc. ties) : 1
+Distance with Pattern Score : 12.526666666666667
+Sum of distances : 18.79
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 2.1
+TieBreak Reasons : {"Filter values are sorted.":2.1}
+
+
+
+#seq 2 0,1,5,4,3,2
+
+Rank(Pattern) : 10
+Rank(Simple Sum) : 3
+Rank(Pattern inc. ties) : 37
+Rank(Simple Sum inc. ties) : 37
+Distance with Pattern Score : 12.960000000000003
+Sum of distances : 19.44
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[20],"appear":[3,4],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 4
+TieBreak Reasons : {"Filter values are sorted.":4}
+
+
+#seq 3 0,1,2,5,4,3
+
+Rank(Pattern) : 4
+Rank(Simple Sum) : 2
+Rank(Pattern inc. ties) : 13
+Rank(Simple Sum inc. ties) : 13
+Distance with Pattern Score : 12.953333333333335
+Sum of distances : 19.43
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 3.1
+TieBreak Reasons : {"Filter values are sorted.":3.1}
+
+
+#seq 4 : 5,4,3,0,1,2
+
+Rank(Pattern) : 16
+Rank(Simple Sum) : 5
+Rank(Pattern inc. ties) : 97
+Rank(Simple Sum inc. ties) : 121
+Distance with Pattern Score : 13.386666666666667
+Sum of distances : 20.08
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[20],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[8],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 3.1
+TieBreak Reasons : {"Filter values are sorted.":3.1}
+
+#seq 5 : 3,2,4,1,5,0
+
+Rank(Pattern) : 52
+Rank(Simple Sum) : 13
+Rank(Pattern inc. ties) : 697
+Rank(Simple Sum inc. ties) : 685
+Distance with Pattern Score : 21.4
+Sum of distances : 21.4
+Pattern Score : 0
+POResult :[]
+TieBreak Score : 0.8
+TieBreak Reasons : {"Filter values are sorted.":0.8}
+

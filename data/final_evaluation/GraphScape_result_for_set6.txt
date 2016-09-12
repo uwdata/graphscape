@@ -1,0 +1,68 @@
+#seq 1 0,1,2,3,4,5
+
+Rank(Pattern) : 1
+Rank(Simple Sum) : 2
+Rank(Pattern inc. ties) : 1
+Rank(Simple Sum inc. ties) : 61
+Distance with Pattern Score : 13.360000000000001
+Sum of distances : 40.08
+Pattern Score : 0.6666666666666666
+POResult :[{"pattern":[8,15],"appear":[1,4],"coverage":0.6666666666666666,"patternScore":0.6666666666666666}]
+TieBreak Score : 0
+TieBreak Reasons : {"Filter values are sorted.":0}
+
+
+#seq 2 0,3,1,4,2,5
+
+Rank(Pattern) : 2
+Rank(Simple Sum) : 3
+Rank(Pattern inc. ties) : 13
+Rank(Simple Sum inc. ties) : 241
+Distance with Pattern Score : 22.4
+Sum of distances : 44.8
+Pattern Score : 0.5
+POResult :[{"pattern":[10],"appear":[1,3,5],"coverage":0.5,"patternScore":0.5}]
+TieBreak Score : 0
+TieBreak Reasons : {"Filter values are sorted.":0}
+
+
+#seq 3 3,0,1,4,2,5
+
+Rank(Pattern) : 4
+Rank(Simple Sum) : 2
+Rank(Pattern inc. ties) : 49
+Rank(Simple Sum inc. ties) : 61
+Distance with Pattern Score : 26.720000000000002
+Sum of distances : 40.08
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[10],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 0
+TieBreak Reasons : {"Filter values are sorted.":0}
+
+
+#seq 4 : 0,1,2,5,3,4
+
+Rank(Pattern) : 3
+Rank(Simple Sum) : 1
+Rank(Pattern inc. ties) : 25
+Rank(Simple Sum inc. ties) : 1
+Distance with Pattern Score : 23.573333333333334
+Sum of distances : 35.36
+Pattern Score : 0.3333333333333333
+POResult :[{"pattern":[8],"appear":[1,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+TieBreak Score : 0
+TieBreak Reasons : {"Filter values are sorted.":0}
+
+#seq 5 : 0,5,1,3,2,4
+
+Rank(Pattern) : 12
+Rank(Simple Sum) : 6
+Rank(Pattern inc. ties) : 709
+Rank(Simple Sum inc. ties) : 709
+Distance with Pattern Score : 58.96
+Sum of distances : 58.96
+Pattern Score : 0
+POResult :[]
+TieBreak Score : 0
+TieBreak Reasons : {"Filter values are sorted.":0}
+

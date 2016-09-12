@@ -1,6 +1,6 @@
 [
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -26,46 +26,18 @@
             "Based on Tody",
             "Based on Book/Short Story"
           ]
-        }
-      ]
-    },
-    "mark": "bar",
-    "encoding": {
-      "x": {
-        "field": "Worldwide_Gross",
-        "type": "quantitative",
-        "aggregate": "mean",
-        "axis": {"title": "Avg. Worldwide Gross"}
-      },
-      "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
-    }
-  },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
-    "transform": {
-      "filter": [
-        {
-          "field": "Major_Genre",
-          "in": [
-            "Action",
-            "Adventure",
-            "Comedy",
-            "Documentary",
-            "Drama",
-            "Horror",
-            "Thriller/Suspense"
-          ]
         },
         {
-          "field": "Source",
+          "field": "Creative_Type",
           "in": [
-            "Disney Ride",
-            "Based on Game",
-            "Remake",
-            "Spin-Off",
-            "Based on TV",
-            "Based on Tody",
-            "Based on Book/Short Story"
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
           ]
         }
       ]
@@ -76,13 +48,13 @@
         "field": "IMDB_Rating",
         "type": "quantitative",
         "aggregate": "mean",
-        "axis": {"title": "Avg. IMDB Rating"}
+        "axis":{"title":"Avg. IMDB Rating"}
       },
-      "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
+      "y": {"field": "Creative_Type","type": "nominal", "axis":{"title":"Creative Type"}}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -108,87 +80,18 @@
             "Based on Tody",
             "Based on Book/Short Story"
           ]
-        }
-      ]
-    },
-    "mark": "bar",
-    "encoding": {
-      "x": {
-        "field": "Production_Budget",
-        "type": "quantitative",
-        "aggregate": "mean",
-        "axis": {"title": "Avg. Production Budget ($)"}
-      },
-      "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
-    }
-  },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
-    "transform": {
-      "filter": [
-        {
-          "field": "Major_Genre",
-          "in": [
-            "Action",
-            "Adventure",
-            "Comedy",
-            "Documentary",
-            "Drama",
-            "Horror",
-            "Thriller/Suspense"
-          ]
         },
         {
-          "field": "Source",
+          "field": "Creative_Type",
           "in": [
-            "Disney Ride",
-            "Based on Game",
-            "Remake",
-            "Spin-Off",
-            "Based on TV",
-            "Based on Tody",
-            "Based on Book/Short Story"
-          ]
-        }
-      ]
-    },
-    "mark": "bar",
-    "encoding": {
-      "x": {
-        "field": "Worldwide_Gross",
-        "type": "quantitative",
-        "aggregate": "mean",
-        "axis": {"title": "Avg. Worldwide Gross"}
-      },
-      "y": {"field": "Source","type": "nominal"}
-    }
-  },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
-    "transform": {
-      "filter": [
-        {
-          "field": "Major_Genre",
-          "in": [
-            "Action",
-            "Adventure",
-            "Comedy",
-            "Documentary",
-            "Drama",
-            "Horror",
-            "Thriller/Suspense"
-          ]
-        },
-        {
-          "field": "Source",
-          "in": [
-            "Disney Ride",
-            "Based on Game",
-            "Remake",
-            "Spin-Off",
-            "Based on TV",
-            "Based on Tody",
-            "Based on Book/Short Story"
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
           ]
         }
       ]
@@ -199,13 +102,13 @@
         "field": "IMDB_Rating",
         "type": "quantitative",
         "aggregate": "mean",
-        "axis": {"title": "Avg. IMDB Rating"}
+        "axis":{"title":"Avg. IMDB Rating"}
       },
-      "y": {"field": "Source","type": "nominal"}
+      "y": {"field": "Major_Genre","type": "nominal", "axis":{"title":"Major Genre"}}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -231,18 +134,193 @@
             "Based on Tody",
             "Based on Book/Short Story"
           ]
+        },
+        {
+          "field": "Creative_Type",
+          "in": [
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
+          ]
         }
       ]
     },
     "mark": "bar",
     "encoding": {
       "x": {
-        "field": "Production_Budget",
+        "field": "IMDB_Rating",
         "type": "quantitative",
         "aggregate": "mean",
-        "axis": {"title": "Avg. Production Budget ($)"}
+        "axis":{"title":"Avg. IMDB Rating"}
+      },
+      "y": {"field": "Source","type": "nominal"}
+    }
+  },
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
+    "transform": {
+      "filter": [
+        {
+          "field": "Major_Genre",
+          "in": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Documentary",
+            "Drama",
+            "Horror",
+            "Thriller/Suspense"
+          ]
+        },
+        {
+          "field": "Source",
+          "in": [
+            "Disney Ride",
+            "Based on Game",
+            "Remake",
+            "Spin-Off",
+            "Based on TV",
+            "Based on Tody",
+            "Based on Book/Short Story"
+          ]
+        },
+        {
+          "field": "Creative_Type",
+          "in": [
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
+          ]
+        }
+      ]
+    },
+    "mark": "bar",
+    "encoding": {
+      "x": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "axis":{"title":"Avg. Worldwide Gross"}
+      },
+      "y": {"field": "Creative_Type","type": "nominal", "axis":{"title":"Creative Type"}}
+    }
+  },
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
+    "transform": {
+      "filter": [
+        {
+          "field": "Major_Genre",
+          "in": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Documentary",
+            "Drama",
+            "Horror",
+            "Thriller/Suspense"
+          ]
+        },
+        {
+          "field": "Source",
+          "in": [
+            "Disney Ride",
+            "Based on Game",
+            "Remake",
+            "Spin-Off",
+            "Based on TV",
+            "Based on Tody",
+            "Based on Book/Short Story"
+          ]
+        },
+        {
+          "field": "Creative_Type",
+          "in": [
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
+          ]
+        }
+      ]
+    },
+    "mark": "bar",
+    "encoding": {
+      "x": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "axis":{"title":"Avg. Worldwide Gross"}
+      },
+      "y": {"field": "Major_Genre","type": "nominal", "axis":{"title":"Major Genre"}}
+    }
+  },
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
+    "transform": {
+      "filter": [
+        {
+          "field": "Major_Genre",
+          "in": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Documentary",
+            "Drama",
+            "Horror",
+            "Thriller/Suspense"
+          ]
+        },
+        {
+          "field": "Source",
+          "in": [
+            "Disney Ride",
+            "Based on Game",
+            "Remake",
+            "Spin-Off",
+            "Based on TV",
+            "Based on Tody",
+            "Based on Book/Short Story"
+          ]
+        },
+        {
+          "field": "Creative_Type",
+          "in": [
+            "Contemporary Fiction",
+            "Dramatization",
+            "Factual",
+            "Fantasy",
+            "Historical Fiction",
+            "Kids Fiction",
+            "Science Fiction",
+            "Super Hero"
+          ]
+        }
+      ]
+    },
+    "mark": "bar",
+    "encoding": {
+      "x": {
+        "field": "Worldwide_Gross",
+        "type": "quantitative",
+        "aggregate": "mean",
+        "axis":{"title":"Avg. Worldwide Gross"}
       },
       "y": {"field": "Source","type": "nominal"}
     }
   }
-]
+  ]

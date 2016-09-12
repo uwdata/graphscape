@@ -1,6 +1,5 @@
-[
-  {
-    "data": {"url": "/data/cameras.json"},
+[{
+    "data": {"url": "data/cameras.json"},
     "mark": "bar",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -20,8 +19,8 @@
       }
     }
   },
-  {
-    "data": {"url": "/data/cameras.json"},
+{
+    "data": {"url": "data/cameras.json"},
     "mark": "bar",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -41,8 +40,8 @@
       }
     }
   },
-  {
-    "data": {"url": "/data/cameras.json"},
+{
+    "data": {"url": "data/cameras.json"},
     "mark": "bar",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -58,8 +57,8 @@
       }
     }
   },
-  {
-    "data": {"url": "/data/cameras.json"},
+{
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -77,8 +76,8 @@
       }
     }
   },
-  {
-    "data": {"url": "/data/cameras.json"},
+{
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -93,8 +92,8 @@
         "axis": {"title": "Weight (g)","format":",.3d"}}
     }
   },
-  {
-    "data": {"url": "/data/cameras.json"},
+{
+    "data": {"url": "data/cameras.json"},
     "mark": "point",
     "transform": {
       "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -108,5 +107,4 @@
       "x": {"field": "Weight","type": "quantitative",
         "axis": {"title": "Weight (g)","format":",.3d"}}
     }
-  }
-]
+  }]

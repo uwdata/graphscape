@@ -1,6 +1,5 @@
-[
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+[{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -35,13 +34,13 @@
         "field": "Worldwide_Gross",
         "type": "quantitative",
         "aggregate": "mean",
-        "axis": {"title": "Avg. Worldwide Gross"}
+        "axis": {"title": "Avg. Worldwide Gross ($)"}
       },
       "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -81,8 +80,8 @@
       "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -122,8 +121,8 @@
       "y": {"field": "Major_Genre","type": "nominal", "axis": {"title": "Major Genre"}}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -158,13 +157,13 @@
         "field": "Worldwide_Gross",
         "type": "quantitative",
         "aggregate": "mean",
-        "axis": {"title": "Avg. Worldwide Gross"}
+        "axis": {"title": "Avg. Worldwide Gross ($)"}
       },
       "y": {"field": "Source","type": "nominal"}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -204,8 +203,8 @@
       "y": {"field": "Source","type": "nominal"}
     }
   },
-  {
-    "data": {"url": "/data/movies.json","formatType": "json"},
+{
+    "data": {"url": "data/movies.json","formatType": "json"},
     "transform": {
       "filter": [
         {
@@ -244,5 +243,4 @@
       },
       "y": {"field": "Source","type": "nominal"}
     }
-  }
-]
+  }]

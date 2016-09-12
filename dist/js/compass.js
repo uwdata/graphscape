@@ -3793,30 +3793,32 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
         }
         ;
         additionalFields.forEach(function (field, index) {
-            newNeighbor = util.duplicate(spec);
-            transitionType = "MODIFY_" + channel.toUpperCase();
-            if (spec.encoding[channel].field === "*" && field.field !== "*") {
-                transitionType += "_REMOVE_COUNT";
+            if (field.field !== spec.encoding[channel].field) {
+                newNeighbor = util.duplicate(spec);
+                transitionType = "MODIFY_" + channel.toUpperCase();
+                if (spec.encoding[channel].field === "*" && field.field !== "*") {
+                    transitionType += "_REMOVE_COUNT";
+                }
+                else if (spec.encoding[channel].field !== "*" && field.field === "*") {
+                    transitionType += "_ADD_COUNT";
+                }
+                transition = util.duplicate(encodingTransitions[transitionType]);
+                newAdditionalFields = util.duplicate(additionalFields);
+                newAdditionalFields.splice(index, 1);
+                if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
+                    newAdditionalFields.push(newNeighbor.encoding[channel]);
+                }
+                newAdditionalChannels = util.duplicate(additionalChannels);
+                newNeighbor.encoding[channel] = field;
+                transition.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
+                if (validate(newNeighbor)) {
+                    newNeighbor.transition = transition;
+                    newNeighbor.additionalFields = newAdditionalFields;
+                    newNeighbor.additionalChannels = newAdditionalChannels;
+                    neighbors.push(newNeighbor);
+                }
+                ;
             }
-            else if (spec.encoding[channel].field !== "*" && field.field === "*") {
-                transitionType += "_ADD_COUNT";
-            }
-            transition = util.duplicate(encodingTransitions[transitionType]);
-            newAdditionalFields = util.duplicate(additionalFields);
-            newAdditionalFields.splice(index, 1);
-            if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
-                newAdditionalFields.push(newNeighbor.encoding[channel]);
-            }
-            newAdditionalChannels = util.duplicate(additionalChannels);
-            newNeighbor.encoding[channel] = field;
-            transition.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
-            if (validate(newNeighbor)) {
-                newNeighbor.transition = transition;
-                newNeighbor.additionalFields = newAdditionalFields;
-                newNeighbor.additionalChannels = newAdditionalChannels;
-                neighbors.push(newNeighbor);
-            }
-            ;
         });
         inChannels.forEach(function (anotherChannel) {
             if (anotherChannel === channel
@@ -4234,7 +4236,7 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
         if (u.distance >= importedEncodingTransitions.ceiling.cost) {
             return [{ name: 'OVER_THE_CEILING', cost: importedEncodingTransitions.ceiling.alternatingCost }];
         }
-        var newNodes = nb.neighbors(u, u.additionalFields, u.additionalChannels, importedEncodingTransitions);
+        var newNodes = nb.neighbors(u, additionalFields, u.additionalChannels, importedEncodingTransitions);
         newNodes.forEach(function (newNode) {
             var node;
             for (var i = 0; i < doneNodes.length; i += 1) {
@@ -6575,30 +6577,42 @@ exports.aggregate = {
 };
 function field(fieldDef, opt) {
     if (opt === void 0) { opt = {}; }
-    var prefix = (opt.datum ? 'datum.' : '') + (opt.prefn || '');
-    var suffix = opt.suffix || '';
     var field = fieldDef.field;
+    var prefix = opt.prefix;
+    var suffix = opt.suffix;
     if (isCount(fieldDef)) {
-        return prefix + 'count' + suffix;
-    }
-    else if (opt.fn) {
-        return prefix + opt.fn + '_' + field + suffix;
-    }
-    else if (!opt.nofn && fieldDef.bin) {
-        var binSuffix = opt.binSuffix || (opt.scaleType === scale_1.ScaleType.ORDINAL ?
-            '_range' :
-            '_start');
-        return prefix + 'bin_' + field + binSuffix;
-    }
-    else if (!opt.nofn && !opt.noAggregate && fieldDef.aggregate) {
-        return prefix + fieldDef.aggregate + '_' + field + suffix;
-    }
-    else if (!opt.nofn && fieldDef.timeUnit) {
-        return prefix + fieldDef.timeUnit + '_' + field + suffix;
+        field = 'count';
     }
     else {
-        return prefix + field;
+        var fn = opt.fn;
+        if (!opt.nofn) {
+            if (fieldDef.bin) {
+                fn = 'bin';
+                suffix = opt.binSuffix || (opt.scaleType === scale_1.ScaleType.ORDINAL ?
+                    'range' :
+                    'start');
+            }
+            else if (!opt.noAggregate && fieldDef.aggregate) {
+                fn = String(fieldDef.aggregate);
+            }
+            else if (fieldDef.timeUnit) {
+                fn = String(fieldDef.timeUnit);
+            }
+        }
+        if (!!fn) {
+            field = fn + "_" + field;
+        }
     }
+    if (!!suffix) {
+        field = field + "_" + suffix;
+    }
+    if (!!prefix) {
+        field = prefix + "_" + field;
+    }
+    if (opt.datum) {
+        field = "datum[\"" + field + "\"]";
+    }
+    return field;
 }
 exports.field = field;
 function _isFieldDimension(fieldDef) {
@@ -6678,6 +6692,9 @@ exports.title = title;
 
 },{"./aggregate":30,"./scale":37,"./timeunit":39,"./type":40,"./util":41}],35:[function(require,module,exports){
 "use strict";
+var datetime_1 = require('./datetime');
+var fielddef_1 = require('./fielddef');
+var timeunit_1 = require('./timeunit');
 var util_1 = require('./util');
 function isEqualFilter(filter) {
     return filter && !!filter.field && filter.equal !== undefined;
@@ -6696,8 +6713,56 @@ function isInFilter(filter) {
     return filter && !!filter.field && util_1.isArray(filter.in);
 }
 exports.isInFilter = isInFilter;
+function expression(filter) {
+    if (util_1.isString(filter)) {
+        return filter;
+    }
+    else {
+        var fieldExpr = filter.timeUnit ?
+            ('time(' + timeunit_1.fieldExpr(filter.timeUnit, filter.field) + ')') :
+            fielddef_1.field(filter, { datum: true });
+        if (isEqualFilter(filter)) {
+            return fieldExpr + '===' + valueExpr(filter.equal, filter.timeUnit);
+        }
+        else if (isInFilter(filter)) {
+            return 'indexof([' +
+                filter.in.map(function (v) { return valueExpr(v, filter.timeUnit); }).join(',') +
+                '], ' + fieldExpr + ') !== -1';
+        }
+        else if (isRangeFilter(filter)) {
+            var lower = filter.range[0];
+            var upper = filter.range[1];
+            if (lower !== null && upper !== null) {
+                return 'inrange(' + fieldExpr + ', ' +
+                    valueExpr(lower, filter.timeUnit) + ', ' +
+                    valueExpr(upper, filter.timeUnit) + ')';
+            }
+            else if (lower !== null) {
+                return fieldExpr + ' >= ' + lower;
+            }
+            else if (upper !== null) {
+                return fieldExpr + ' <= ' + upper;
+            }
+        }
+    }
+    return undefined;
+}
+exports.expression = expression;
+function valueExpr(v, timeUnit) {
+    if (datetime_1.isDateTime(v)) {
+        var expr = datetime_1.dateTimeExpr(v, true);
+        return 'time(' + expr + ')';
+    }
+    if (timeunit_1.isSingleTimeUnit(timeUnit)) {
+        var datetime = {};
+        datetime[timeUnit] = v;
+        var expr = datetime_1.dateTimeExpr(datetime, true);
+        return 'time(' + expr + ')';
+    }
+    return JSON.stringify(v);
+}
 
-},{"./util":41}],36:[function(require,module,exports){
+},{"./datetime":32,"./fielddef":34,"./timeunit":39,"./util":41}],36:[function(require,module,exports){
 "use strict";
 (function (Mark) {
     Mark[Mark["AREA"] = 'area'] = "AREA";
@@ -6906,6 +6971,43 @@ function isSingleTimeUnit(timeUnit) {
     return !!SINGLE_TIMEUNIT_INDEX[timeUnit];
 }
 exports.isSingleTimeUnit = isSingleTimeUnit;
+function convert(unit, date) {
+    var result = new Date(0, 0, 1, 0, 0, 0, 0);
+    exports.SINGLE_TIMEUNITS.forEach(function (singleUnit) {
+        if (containsTimeUnit(unit, singleUnit)) {
+            switch (singleUnit) {
+                case TimeUnit.DAY:
+                    throw new Error('Cannot convert to TimeUnits containing \'day\'');
+                case TimeUnit.YEAR:
+                    result.setFullYear(date.getFullYear());
+                    break;
+                case TimeUnit.QUARTER:
+                    result.setMonth((Math.floor(date.getMonth() / 3)) * 3);
+                    break;
+                case TimeUnit.MONTH:
+                    result.setMonth(date.getMonth());
+                    break;
+                case TimeUnit.DATE:
+                    result.setDate(date.getDate());
+                    break;
+                case TimeUnit.HOURS:
+                    result.setHours(date.getHours());
+                    break;
+                case TimeUnit.MINUTES:
+                    result.setMinutes(date.getMinutes());
+                    break;
+                case TimeUnit.SECONDS:
+                    result.setSeconds(date.getSeconds());
+                    break;
+                case TimeUnit.MILLISECONDS:
+                    result.setMilliseconds(date.getMilliseconds());
+                    break;
+            }
+        }
+    });
+    return result;
+}
+exports.convert = convert;
 exports.MULTI_TIMEUNITS = [
     TimeUnit.YEARQUARTER,
     TimeUnit.YEARQUARTERMONTH,
@@ -6951,7 +7053,7 @@ function defaultScaleType(timeUnit) {
 }
 exports.defaultScaleType = defaultScaleType;
 function fieldExpr(fullTimeUnit, field) {
-    var fieldRef = 'datum.' + field;
+    var fieldRef = 'datum["' + field + '"]';
     function func(timeUnit) {
         if (timeUnit === TimeUnit.QUARTER) {
             return 'floor(month(' + fieldRef + ')' + '/3)';
@@ -7065,7 +7167,8 @@ function template(timeUnit, field, shortTimeLabels) {
     }
     if (out.length > 0) {
         var template_1 = '{{' + field + ' | time:\'' + out.join(' ') + '\'}}';
-        return template_1.replace(new RegExp('{{' + field + ' \\| time:\'\'}}', 'g'), '');
+        var escapedField = field.replace(/(\[|\])/g, '\\$1');
+        return template_1.replace(new RegExp('{{' + escapedField + ' \\| time:\'\'}}', 'g'), '');
     }
     else {
         return undefined;
