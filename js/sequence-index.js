@@ -1,6 +1,6 @@
 $(document).on('ready page:load', function () {
   var ruleSets;  
-  var results;
+  var results,uniqDP,uniqD, rankDistanceWithPattern, rankDistance, rankDistanceWithPatternTie, rankDistanceTie;
 
   $.ajax({
     url: "data/ruleSet.json",
@@ -14,6 +14,7 @@ $(document).on('ready page:load', function () {
 
   var worker = new Worker('js/sequence-worker.js');
   
+
 
   $('#toggle-show-all').on('click',function(e){
     if (!$(this).hasClass('active')) {
@@ -93,10 +94,40 @@ $(document).on('ready page:load', function () {
     $('#current-status').show(500, function(){
 
       worker.onmessage = function(e) {
+
+        
+
+
         setTimeout(function(){ 
           $('#current-status').hide(500);  
         }, 1);
         results = e.data;
+
+        allDP = results.map(overallDP).sort(function(a,b){ return a-b;});
+        uniqDP = d3.set(results.map(overallDP))
+                      .values()
+                      .map(function(val){ return Number(val); })
+                      .sort(function(a,b){ return a-b;});
+                      
+
+        allD = results.map(overallD).sort(function(a,b){ return a-b;});
+        uniqD = d3.set(results.map(overallD))
+                      .values()
+                      .map(function(val){ return Number(val); })
+                      .sort(function(a,b){ return a-b;});
+                      
+
+
+
+        rankDistanceWithPattern = d3.scale.ordinal()
+          .domain(uniqDP)
+          .rangePoints([1, uniqDP.length]);
+
+        rankDistance = d3.scale.ordinal()
+          .domain(uniqD)
+          .rangePoints([1, uniqD.length]);
+
+
         if (!$('#toggle-pattern-score').hasClass('active')) {
           $('#toggle-pattern-score').addClass('active');
           $('#toggle-pattern-score').text('Off Pattern Score');
@@ -151,10 +182,15 @@ $(document).on('ready page:load', function () {
   function drawingByOrder(result){
     var specs = result.specs;
 
-    var metaInfo = "Sum of distances : " + result.distance + "<br/>"
+    var metaInfo =  "Rank(Pattern) : " + rankDistanceWithPattern(overallDP(result)) + "<br/>"
+                 + "Rank(Simple Sum) : " + rankDistance(overallD(result)) + "<br/>"
+                 + "Rank(Pattern inc. ties) : " + (allDP.indexOf(overallDP(result))+1) + "<br/>"
+                 + "Rank(Simple Sum inc. ties) : " + (allD.indexOf(overallD(result))+1) + "<br/>"
+                 + "Distance with Pattern Score : " + result.distanceWithPattern + "<br/>"
+                 + "Sum of distances : " + result.distance + "<br/>"
                  + "Pattern  Score : " + result.patternScore + "<br/>"
                  + "POResult :" + JSON.stringify(result.POResult) + "<br/>"
-                 + "Distance with Pattern Score : " + result.distanceWithPattern + "<br/>"
+                 
                  + "TieBreak Score : " + result.tiebreakScore + "<br/>"
                  + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
 
@@ -184,3 +220,10 @@ $(document).on('ready page:load', function () {
     }
   }
 });
+
+function overallDP(d){
+  return d.distanceWithPattern * 1000 - d.tiebreakScore;
+}
+function overallD(d){
+  return d.distance;
+}
