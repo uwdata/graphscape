@@ -186,12 +186,12 @@ $(document).on('ready page:load', function () {
                  + "Rank(Simple Sum) : " + rankDistance(overallD(result)) + "<br/>"
                  + "Rank(Pattern inc. ties) : " + (allDP.indexOf(overallDP(result))+1) + "<br/>"
                  + "Rank(Simple Sum inc. ties) : " + (allD.indexOf(overallD(result))+1) + "<br/>"
-                 + "Distance with Pattern Score : " + result.distanceWithPattern + "<br/>"
+                 + "Distance with Pattern Distance : " + result.distanceWithPattern + "<br/>"
                  + "Sum of distances : " + result.distance + "<br/>"
                  + "Pattern  Score : " + result.patternScore + "<br/>"
                  + "POResult :" + JSON.stringify(result.POResult) + "<br/>"
                  
-                 + "TieBreak Score : " + result.tiebreakScore + "<br/>"
+                 + "TieBreak Cost : " + result.tiebreakCost + "<br/>"
                  + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
 
     $('#sequence-meta-info').html(metaInfo);
@@ -222,7 +222,7 @@ $(document).on('ready page:load', function () {
 });
 
 function overallDP(d){
-  return d.distanceWithPattern * 1000 - d.tiebreakScore;
+  return d.distanceWithPattern;
 }
 function overallD(d){
   return d.distance;

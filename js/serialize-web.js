@@ -347,52 +347,51 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   var weights = [1, 10];
   //rule#1 FILTER_MODIFY, same field, same op, ascending numeric values > descending
   var continued = { };
-  var sortingScore = {};
-  result.transitionSet.forEach(function(transitions){
-  	// console.log('--');
-    var filterWalk = false;
-  	transitions.transform.forEach(function(transformTr){
-  		// console.log(transformTr.name);
-  		if (transformTr.name === "MODIFY_FILTER" && !!transformTr.detail && !transformTr.detail.op && !!transformTr.detail.value ) {
+  var filterState = {};
+  var filterScore = [];
+  var filterSequenceCost = 0;
+  for (var i = 0; i < result.specs.length; i++) {
+    let spec = result.specs[i];
+    if (!!spec.transform && !!spec.transform.filter) {
+      let filter;
+      if (Array.isArray(spec.transform.filter)) {
+        for (var j = 0; j < spec.transform.filter.length; j++) {
 
-  			var values = transformTr.detail.value.split(', ').map(function(v){ return isNaN(Number(v)) ? v : Number(v); }); 
-        var field = transformTr.detail.field;
-  			
-        filterWalk = true;
-        if(!sortingScore[field]){
-          sortingScore[field] = 0;
-        } 
-        if ( continued[field] ){
-          if ( continued[field].values[1] <= values[0] && values[0] < values[1] ) {
-            continued[field].values = values;
-            sortingScore[field] += 1;
-          } else if ( continued[field].values[1] >= values[0] && values[0] > values[1] ) {
-            continued[field].values = values;
-            sortingScore[field] -= 0.9;
-          } 
-        } else {
-          if ( values[0] < values[1] ) {
-            continued[field] = {"values": values};
+          filter = spec.transform.filter[j];
+          if (!!filter.field && !!filter.equal ) {
+            if (!!filterState[filter.field]) {
+              filterState[filter.field].push(filter.equal);
+            } else {
+              filterState[filter.field] = [filter.equal] ;
+              filterScore.push({ "field": filter.field, "score": 0});
+            }
+          }
 
-            sortingScore[field] += 1;
-          } else if ( values[0] > values[1] ) {
-            continued[field] = {"values": values};
-            sortingScore[field] -= 0.9;
-          } 
         }
-         
-  		}
-  		
-  	})
-    if(!filterWalk){
-      continued = {};
+      }
     }
-  })
+  }
   
-  Object.keys(sortingScore).forEach(function(key){
-    TBScore += Math.abs(sortingScore[key]);
-  })
-  reasons["Filter values are sorted."] = TBScore;
+  for (var i = 0; i < filterScore.length; i++) {
+    for (var j = 1; j < filterState[filterScore[i].field].length; j++) {
+      if ( filterState[filterScore[i].field][j-1] < filterState[filterScore[i].field][j] ) {
+        filterScore[i].score += 1;  
+      } else if (filterState[filterScore[i].field][j-1] > filterState[filterScore[i].field][j] ){
+        filterScore[i].score -= 1;  
+      }
+    }
+
+    filterSequenceCost += Math.abs(filterScore[i].score + 0.1) / ( filterState[filterScore[i].field].length - 1 + 0.1 );
+  }
+
+  filterSequenceCost = filterScore.length > 0 ? 1 - filterSequenceCost / filterScore.length : 0;
+  
+  console.log(filterSequenceCost);
+  
+  // Object.keys(sortingScore).forEach(function(key){
+  //   TBScore += Math.abs(sortingScore[key]);
+  // })
+  // reasons["Filter values are sorted."] = TBScore;
 
   // //rule#2 Simpler charts should be placed earlier.
   // var costsFromEmpty = transitionSetsFromEmptyVis.map(function(tr){ return tr.cost;});
@@ -415,13 +414,130 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   // TBScore += rule2TBScore * weights[1];
   // reasons["Simpler charts should be placed front."] = rule2TBScore;
 
-  return { 'tiebreakScore' : TBScore, 'reasons': reasons };
+  return { 'tiebreakCost' : filterSequenceCost, 'reasons': filterScore };
 }
 
 
-var result = {"sequence":[0,6,2,3,4,5,1],
-"transitionSet":[{"marktype":[],"transform":[{"name":"SCALE","cost":0.6,"details":[{"type":"added","channel":"x"},{"type":"added","channel":"y"},{"type":"added","channel":"size"}]},{"name":"BIN","cost":0.62,"details":[{"type":"added","channel":"x"},null]},{"name":"AGGREGATE","cost":0.63,"details":[{"type":"added","channel":"y"},{"type":"added","channel":"size"}]},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Year","op":"===","value":"1976"}},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Origin","op":"!==","value":"'Japan'"}}],"encoding":[{"name":"ADD_SIZE_COUNT","cost":4.52},{"name":"ADD_X","cost":4.59},{"name":"ADD_Y","cost":4.59}],"cost":16.85,"id":6,"start":0,"destination":6,"rank":5},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1976, 1980"}},{"name":"ADD_FILTER","cost":0.65,"detail":{"field":"Origin","op":"===","value":"'USA'"}}],"encoding":[],"cost":1.29,"id":31,"start":6,"destination":2,"rank":4},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'USA', 'Europe'"}}],"encoding":[],"cost":0.64,"id":15,"start":2,"destination":3,"rank":1},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1980, 1976"}},{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'Europe', 'USA'"}}],"encoding":[],"cost":1.28,"id":21,"start":3,"destination":4,"rank":3},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"'USA', 'Europe'"}}],"encoding":[],"cost":0.64,"id":15,"start":4,"destination":5,"rank":1},{"marktype":[],"transform":[{"name":"MODIFY_FILTER","cost":0.64,"detail":{"value":"1976, 1980"}},{"name":"REMOVE_FILTER","cost":0.65,"detail":{"field":"Origin","op":"===","value":"'Europe'"}}],"encoding":[],"cost":1.29,"id":28,"start":5,"destination":1,"rank":4}],"distance":21.99,"patternScore":0.3333333333333333,"specs":[{"mark":"point","encoding":{},"distance":0,"prev":[]},{"description":"Cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"USA cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && datum.Origin === 'USA' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"European cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && datum.Origin === 'Europe' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"USA cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && datum.Origin === 'USA' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"European cars in 1976","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1976 && datum.Origin === 'Europe' && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]},{"description":"Cars in 1980","data":{"url":"/data/cars.json"},"transform":{"filter":" datum.Year === 1980 && (datum.Origin !== 'Japan')"},"mark":"point","encoding":{"x":{"field":"Horsepower","type":"quantitative","bin":true,"scale":{"domain":[0,240]},"axis":{"title":"Horsepower"}},"y":{"field":"Weight_in_lbs","type":"quantitative","aggregate":"mean","scale":{"domain":[0,5000]},"axis":{"title":"Avg. Weight (lbs)"}},"size":{"field":"*","type":"quantitative","aggregate":"count","scale":{"domain":[0,15]},"legend":{"title":"# of Cars"}}},"distance":0,"prev":[]}],"globalScore":0.06820259362187077}
-console.log(TieBreaker(result));
+var result = {"specs":[{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Miles per Gallon"},
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Avg. Miles per Gallon"},
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Miles per Gallon"},
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Avg. Miles per Gallon"},
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Miles per Gallon"},
+        "type": "quantitative"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      },
+      "color": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  },
+{
+    "data": {
+      "url": "data/cars.json",
+      "formatType": "json"
+    },
+    "mark": "point",
+    "encoding": {
+      "x": {
+        "field": "Miles_per_Gallon",
+        "axis": {"title": "Avg. Miles per Gallon"},
+        "type": "quantitative",
+        "aggregate": "mean"
+      },
+      "y": {
+        "field": "Cylinders",
+        "type": "nominal"
+      },
+      "color": {
+        "field": "Origin",
+        "type": "nominal"
+      }
+    }
+  }]};
+TieBreaker(result);
 
 module.exports = {
   TieBreaker: TieBreaker
@@ -442,8 +558,8 @@ var tb = require('./lib/TieBreaker.js');
 function serialize(specs, ruleSet, options, callback){
 
   
-  function distanceWithPattern(dist, patternScore){
-    return dist * ( 1 - patternScore);
+  function distanceWithPattern(dist, patternScore, filterCost){
+    return (dist + filterCost / 1000) * ( 1 - patternScore);
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
@@ -483,9 +599,9 @@ function serialize(specs, ruleSet, options, callback){
                         })
            };
     var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
-    result.tiebreakScore = tbResult.tiebreakScore;
+    result.tiebreakCost = tbResult.tiebreakCost;
     result.tiebreakReasons = tbResult.reasons;
-    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore);
+    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore, tbResult.tiebreakCost);
     return result;
   }).sort(function(a,b){
     if (a.distanceWithPattern > b.distanceWithPattern) {
@@ -494,23 +610,15 @@ function serialize(specs, ruleSet, options, callback){
     if (a.distanceWithPattern < b.distanceWithPattern) {
       return -1;
     } else {
-      if (a.tiebreakScore < b.tiebreakScore) {
-      return 1;
-      }
-      if (a.tiebreakScore > b.tiebreakScore) {
-        return -1;
-      } else {
-        return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
-      }
+      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
     } 
     return 0;
   });
   
   var serializedSpecs = [];
   var minDistanceWithPattern = TSPResultAll[0].distanceWithPattern;
-  var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
+    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern ){
       TSPResultAll[i].isOptimum = true;
       // serializedSpecs.push(TSPResultAll[i]);
     }
