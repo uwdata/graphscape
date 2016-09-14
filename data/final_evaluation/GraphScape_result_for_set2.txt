@@ -8,8 +8,7 @@ Distance with Pattern Score : 25.666666666666668
 Sum of distances : 38.5
 Pattern Score : 0.3333333333333333
 POResult :[{"pattern":[15],"appear":[2,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
-TieBreak Score : 0
-TieBreak Reasons : {"Filter values are sorted.":0}
+TieBreak Cost : 0
 
 
 #seq 2 0,1,3,2,4,5
@@ -22,8 +21,7 @@ Distance with Pattern Score : 25.880000000000003
 Sum of distances : 38.82
 Pattern Score : 0.3333333333333333
 POResult :[{"pattern":[16],"appear":[2,4],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
-TieBreak Score : 0
-TieBreak Reasons : {"Filter values are sorted.":0}
+TieBreak Cost : 0
 
 #seq 3 5,4,3,1,0,2
 
@@ -35,8 +33,7 @@ Distance with Pattern Score : 34.09
 Sum of distances : 34.09
 Pattern Score : 0
 POResult :[]
-TieBreak Score : 0
-TieBreak Reasons : {"Filter values are sorted.":0}
+TieBreak Cost : 0
 
 #seq 4 : 0,4,2,5,1,3
 
@@ -48,8 +45,7 @@ Distance with Pattern Score : 43.59
 Sum of distances : 43.59
 Pattern Score : 0
 POResult :[]
-TieBreak Score : 0
-TieBreak Reasons : {"Filter values are sorted.":0}
+TieBreak Cost : 0
 
 #seq 5 : 2,0,1,3,4,5
 
@@ -61,5 +57,4 @@ Distance with Pattern Score : 34.08
 Sum of distances : 34.08
 Pattern Score : 0
 POResult :[]
-TieBreak Score : 0
-TieBreak Reasons : {"Filter values are sorted.":0}
+TieBreak Cost : 0

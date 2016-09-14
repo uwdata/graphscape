@@ -93,7 +93,7 @@
     "description": "USA Cars in 1978",
     "data": {"url": "data/cars.json"},
     "transform": {
-      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["USA"]}]
+      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "USA"}]
     },
     "mark": "point",
     "encoding": {
@@ -123,7 +123,7 @@
     "description": "Japan Cars in 1978",
     "data": {"url": "data/cars.json"},
     "transform": {
-      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["Japan"]}]
+      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "Japan"}]
     },
     "mark": "point",
     "encoding": {
@@ -153,7 +153,7 @@
     "description": "Europe Cars in 1978",
     "data": {"url": "data/cars.json"},
     "transform": {
-      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "in": ["Europe"]}]
+      "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "Europe"}]
     },
     "mark": "point",
     "encoding": {

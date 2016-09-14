@@ -12,8 +12,8 @@ var tb = require('./lib/TieBreaker.js');
 function serialize(specs, ruleSet, options, callback){
 
   
-  function distanceWithPattern(dist, patternScore){
-    return dist * ( 1 - patternScore);
+  function distanceWithPattern(dist, patternScore, filterCost){
+    return (dist + filterCost / 1000) * ( 1 - patternScore);
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
@@ -53,9 +53,9 @@ function serialize(specs, ruleSet, options, callback){
                         })
            };
     var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
-    result.tiebreakScore = tbResult.tiebreakScore;
+    result.tiebreakCost = tbResult.tiebreakCost;
     result.tiebreakReasons = tbResult.reasons;
-    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore);
+    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore, tbResult.tiebreakCost);
     return result;
   }).sort(function(a,b){
     if (a.distanceWithPattern > b.distanceWithPattern) {
@@ -64,23 +64,15 @@ function serialize(specs, ruleSet, options, callback){
     if (a.distanceWithPattern < b.distanceWithPattern) {
       return -1;
     } else {
-      if (a.tiebreakScore < b.tiebreakScore) {
-      return 1;
-      }
-      if (a.tiebreakScore > b.tiebreakScore) {
-        return -1;
-      } else {
-        return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
-      }
+      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
     } 
     return 0;
   });
   
   var serializedSpecs = [];
   var minDistanceWithPattern = TSPResultAll[0].distanceWithPattern;
-  var maxTiebreakScore = TSPResultAll[0].tiebreakScore;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern && TSPResultAll[i].tiebreakScore === maxTiebreakScore  ){
+    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern ){
       TSPResultAll[i].isOptimum = true;
       // serializedSpecs.push(TSPResultAll[i]);
     }
