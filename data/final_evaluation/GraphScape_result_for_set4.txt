@@ -1,39 +1,39 @@
-#seq 1 0,1,3,2,5,4
+#seq 1 : 0,1,3,2,5,4
 
 Rank(Pattern) : 1
 Rank(Simple Sum) : 3
 Rank(Pattern inc. ties) : 1
 Rank(Simple Sum inc. ties) : 3
-Distance with Pattern Score : 7.846666666666668
+Distance with Pattern Distance : 7.846666666666668
 Sum of distances : 11.77
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[22],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[22],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0
 
 
-#seq 2 0,1,2,3,4,5
+#seq 2 : 0,1,2,3,4,5
 
 Rank(Pattern) : 2
 Rank(Simple Sum) : 4
 Rank(Pattern inc. ties) : 2
 Rank(Simple Sum inc. ties) : 5
-Distance with Pattern Score : 7.86
+Distance with Pattern Distance : 7.86
 Sum of distances : 11.79
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[17],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[17],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0
 
 
-#seq 3 0,1,2,4,3,5
+#seq 3 : 0,1,2,4,3,5
 
 Rank(Pattern) : 17
 Rank(Simple Sum) : 21
 Rank(Pattern inc. ties) : 27
 Rank(Simple Sum inc. ties) : 63
-Distance with Pattern Score : 8.620000000000001
+Distance with Pattern Distance : 8.620000000000001
 Sum of distances : 12.93
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[18],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[18],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0
 
 
@@ -43,10 +43,10 @@ Rank(Pattern) : 16
 Rank(Simple Sum) : 20
 Rank(Pattern inc. ties) : 25
 Rank(Simple Sum inc. ties) : 61
-Distance with Pattern Score : 8.606666666666667
+Distance with Pattern Distance : 8.606666666666667
 Sum of distances : 12.91
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[18],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[18],"appear":[3,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0
 
 #seq 5 : 0,1,3,2,4,5
@@ -55,9 +55,9 @@ Rank(Pattern) : 73
 Rank(Simple Sum) : 1
 Rank(Pattern inc. ties) : 193
 Rank(Simple Sum inc. ties) : 1
-Distance with Pattern Score : 11.74
+Distance with Pattern Distance : 11.74
 Sum of distances : 11.74
 Pattern Score : 0
-POResult :[]
+POResult : []
 TieBreak Cost : 0
 

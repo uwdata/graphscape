@@ -1,42 +1,42 @@
-#seq 1 0,2,1,5,4,3
+#seq 1 : 0,2,1,5,4,3
 
 Rank(Pattern) : 1
 Rank(Simple Sum) : 1
 Rank(Pattern inc. ties) : 1
 Rank(Simple Sum inc. ties) : 1
-Distance with Pattern Score : 12.526993464052287
+Distance with Pattern Distance : 12.526993464052287
 Sum of distances : 18.79
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0.4901960784313726
 TieBreak Reasons : [{"field":"Year","score":0},{"field":"Origin","score":2}]
 
 
 
-#seq 2 0,1,5,4,3,2
+#seq 2 : 0,1,5,4,3,2
 
 Rank(Pattern) : 10
 Rank(Simple Sum) : 3
 Rank(Pattern inc. ties) : 37
 Rank(Simple Sum inc. ties) : 37
-Distance with Pattern Score : 12.960196078431375
+Distance with Pattern Distance : 12.960196078431375
 Sum of distances : 19.44
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[20],"appear":[3,4],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[20],"appear":[3,4],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0.2941176470588235
 TieBreak Reasons : [{"field":"Year","score":2},{"field":"Origin","score":2}]
 
 
-#seq 3 0,1,2,5,4,3
+#seq 3 : 0,1,2,5,4,3
 
 Rank(Pattern) : 4
 Rank(Simple Sum) : 2
 Rank(Pattern inc. ties) : 13
 Rank(Simple Sum inc. ties) : 13
-Distance with Pattern Score : 12.95359477124183
+Distance with Pattern Distance : 12.95359477124183
 Sum of distances : 19.43
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[8],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[20],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0.392156862745098
 TieBreak Reasons : [{"field":"Year","score":1},{"field":"Origin","score":2}]
 
@@ -47,10 +47,10 @@ Rank(Pattern) : 19
 Rank(Simple Sum) : 5
 Rank(Pattern inc. ties) : 97
 Rank(Simple Sum inc. ties) : 121
-Distance with Pattern Score : 13.386928104575164
+Distance with Pattern Distance : 13.386928104575164
 Sum of distances : 20.08
 Pattern Score : 0.3333333333333333
-POResult :[{"pattern":[20],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[8],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
+POResult : [{"pattern":[20],"appear":[1,2],"coverage":0.3333333333333333,"patternScore":0.3333333333333333},{"pattern":[8],"appear":[4,5],"coverage":0.3333333333333333,"patternScore":0.3333333333333333}]
 TieBreak Cost : 0.392156862745098
 TieBreak Reasons : [{"field":"Year","score":1},{"field":"Origin","score":2}]
 
@@ -60,10 +60,10 @@ Rank(Pattern) : 76
 Rank(Simple Sum) : 13
 Rank(Pattern inc. ties) : 691
 Rank(Simple Sum inc. ties) : 685
-Distance with Pattern Score : 21.4004593837535
+Distance with Pattern Distance : 21.4004593837535
 Sum of distances : 21.4
 Pattern Score : 0
-POResult :[]
+POResult : []
 TieBreak Cost : 0.4593837535014006
 TieBreak Reasons : [{"field":"Year","score":-1},{"field":"Origin","score":-2}]
 
