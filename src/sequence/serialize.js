@@ -3,11 +3,11 @@
 // If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
 
 // var cp = require('./lib/compass.js');
-var BEA = require('./lib/BEA.js');
-var TSP = require('./lib/TSP.js');
-var d3 = require('./js/d3.min.js');
-var PO = require('./lib/PatternOptimizer.js');
-var tb = require('./lib/TieBreaker.js');
+
+var TSP = require('../../lib/TSP.js');
+var d3 = require('../../lib/d3.min.js');
+var PO = require('./PatternOptimizer.js');
+var tb = require('./TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
 
@@ -82,24 +82,7 @@ function serialize(specs, ruleSet, options, callback){
   }
   var returnValue = TSPResultAll;
 
-  // if (options.fixFirst) {
-  //   var startingSpec = { "mark":"point", "encoding": {} };
-  //   specs = [ startingSpec ].concat(specs);
-  // }
-  // fs.writeFileSync('result/specs.json',JSON.stringify(specs));
-
   
-  // transitionSets = extendTransitionSets(transitionSets);
-  // fs.writeFileSync(transitionSetsFileNameresult/, JSON.stringify(transitionSets));
-  
-  // var transitionCostMatrix = new BEA.Matrix("rank");
-  // transitionCostMatrix.import(JSON.parse(JSON.stringify(transitionSets)));
-  // var sortedTransitionSetsByRank = BEA.BEA(transitionCostMatrix, options).rows;
-
-  // var serializedSpecs = sortedTransitionSetsByRank[0].map(function(transitionSet){
-  //   console.log(transitionSet.destination);
-  //   return specs[transitionSet.destination];
-  // });
   callback(returnValue);
   return returnValue;
 }
