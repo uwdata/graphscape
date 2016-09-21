@@ -189,8 +189,7 @@ $(document).on('ready page:load', function () {
                  + "Distance with Pattern Distance : " + result.distanceWithPattern + "<br/>"
                  + "Sum of distances : " + result.distance + "<br/>"
                  + "Pattern  Score : " + result.patternScore + "<br/>"
-                 + "POResult :" + JSON.stringify(result.POResult) + "<br/>"
-                 
+                 + "POResult : " + JSON.stringify(result.POResult) + "<br/>"
                  + "TieBreak Cost : " + result.tiebreakCost + "<br/>"
                  + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
 
