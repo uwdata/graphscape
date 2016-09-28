@@ -1,7 +1,0 @@
-/node_modules/
-/npm-debug.log
-/benchmark/node_modules/
-/benchmark/npm-debug.log
-/.grunt/
-/coverage/
-.DS_Store

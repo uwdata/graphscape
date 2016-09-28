@@ -1,16 +1,7 @@
 $(document).on('ready page:load', function () {
-  var ruleSets;  
+  
   var results,uniqDP,uniqD, rankDistanceWithPattern, rankDistance, rankDistanceWithPatternTie, rankDistanceTie;
 
-  $.ajax({
-    url: "data/ruleSet.json",
-    dataType: 'json',
-    async: false,
-    success: function(data){
-      ruleSets = data;
-
-    }
-  })
 
   var worker = new Worker('js/sequence-worker.js');
   
@@ -139,7 +130,7 @@ $(document).on('ready page:load', function () {
         listButtons(results, fixFirst);
         
       }
-      worker.postMessage({specs: specs, ruleSets: ruleSets, options: {"fixFirst": fixFirst}}); // Start the worker.
+      worker.postMessage({specs: specs, options: {"fixFirst": fixFirst}}); // Start the worker.
     });
   
   })
