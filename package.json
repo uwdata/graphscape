@@ -23,10 +23,14 @@
   "bugs": {
     "url": "https://github.com/uwdata/GraphScape/issues"
   },
-  "dependencies": {
-    "viscompass": "^0.6.2",
+  "devDependencies": {
     "vega-lite": "^1.0.8",
-    "datalib": "^1.6.3"
+    "vega-expression": "^1.2.0",
+    "mocha": "~3.1.0"
+  },
+  "dependencies": {
+    "vega-lite": "^1.0.8",
+    "vega-expression": "^1.2.0"
   },
   "homepage": "https://github.com/uwdata/GraphScape#readme"
 }

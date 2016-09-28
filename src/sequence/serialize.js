@@ -1,9 +1,6 @@
 'use strict';
 
-// If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
-
-// var cp = require('./lib/compass.js');
-
+var cp = require('./../transition/trans.js');
 var TSP = require('../../lib/TSP.js');
 var d3 = require('../../lib/d3.min.js');
 var PO = require('./PatternOptimizer.js');
@@ -89,7 +86,7 @@ function serialize(specs, ruleSet, options, callback){
 function getTransitionSetsFromSpec( spec, specs, ruleSet){
   var transitionSets = [];
   for (var i = 0; i < specs.length; i++) {
-    transitionSets.push(cp.trans.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
+    transitionSets.push(cp.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
   }
   return transitionSets;
 }
@@ -99,7 +96,7 @@ function getTransitionSets(specs, ruleSet){
   for (var i = 0; i < specs.length; i++) {
     transitionSets.push([]);
     for (var j = 0; j < specs.length; j++) {
-      transitionSets[i].push(cp.trans.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
+      transitionSets[i].push(cp.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
       
     }
   }
@@ -160,7 +157,4 @@ function transitionShorthand(transition){
                     .join('|');
                     
 }
-
-module.exports = {
-  serialize: serialize
-};
+exports.serialize = serialize;
