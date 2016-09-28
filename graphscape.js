@@ -2899,13 +2899,16 @@ module.exports = {
 'use strict';
 
 var cp = require('./../transition/trans.js');
+var rule = require('./../rule/ruleSet.js');
 var TSP = require('../../lib/TSP.js');
 var d3 = require('../../lib/d3.min.js');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
-
+  if (!ruleSet) {
+    ruleSet = rule.DEFAULT_TRANSITIONS;
+  }
   
   function distanceWithPattern(dist, patternScore, filterCost){
     return (dist + filterCost / 1000) * ( 1 - patternScore);
@@ -3057,7 +3060,7 @@ function transitionShorthand(transition){
 }
 exports.serialize = serialize;
 
-},{"../../lib/TSP.js":1,"../../lib/d3.min.js":2,"./../transition/trans.js":14,"./PatternOptimizer.js":10,"./TieBreaker.js":11}],13:[function(require,module,exports){
+},{"../../lib/TSP.js":1,"../../lib/d3.min.js":2,"./../rule/ruleSet.js":9,"./../transition/trans.js":14,"./PatternOptimizer.js":10,"./TieBreaker.js":11}],13:[function(require,module,exports){
 "use strict";
 var util = require('../util');
 var def = require('../rule/ruleSet');

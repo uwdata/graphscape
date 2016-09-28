@@ -1,13 +1,16 @@
 'use strict';
 
 var cp = require('./../transition/trans.js');
+var rule = require('./../rule/ruleSet.js');
 var TSP = require('../../lib/TSP.js');
 var d3 = require('../../lib/d3.min.js');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
 function serialize(specs, ruleSet, options, callback){
-
+  if (!ruleSet) {
+    ruleSet = rule.DEFAULT_TRANSITIONS;
+  }
   
   function distanceWithPattern(dist, patternScore, filterCost){
     return (dist + filterCost / 1000) * ( 1 - patternScore);
