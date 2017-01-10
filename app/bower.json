@@ -1,5 +1,5 @@
 {
-  "name": "Vega-Lite Sequence Recommender",
+  "name": "vega-lite-sequence-recommender",
   "authors": [
     "Younghoon Kim <yhoonkim01@gmail.com>"
   ],
@@ -15,7 +15,7 @@
     "tests"
   ],
   "dependencies": {
-    "vega-lite": "~1.2.0",
+    "vega-lite": "1.2.0",
     "vega": "~2.6.3",
     "d3": "^4.2.6",
     "bootstrap": "^3.3.7",

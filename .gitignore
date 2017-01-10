@@ -1,6 +1,7 @@
 npm-debug.log
 node_modules
 bower_components
+app/bower_components
 temp/*.json
 *.pptx
 temp/
