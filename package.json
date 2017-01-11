@@ -31,11 +31,13 @@
     "browserify": "~13.0.1",
     "browserify-versionify": "~1.0.6",
     "mocha": "~3.1.0",
-    "chai": "~3.5.0"
+    "chai": "~3.5.0",
+    "d3": "^4.2.6"
   },
   "dependencies": {
     "vega-lite": "1.1.4",
-    "vega-expression": "^1.2.0"
+    "vega-expression": "^1.2.0",
+    "d3": "^4.2.6"
   },
   "homepage": "https://github.com/uwdata/GraphScape#readme"
 }

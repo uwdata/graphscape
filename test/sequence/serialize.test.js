@@ -4,7 +4,7 @@ var ruleSet = require('../ruleSetForTest');
 var sr = require('../../src/sequence/serialize');
 var util = require('../../src/util');
 
-describe('sequence.serialize check', function () {
+describe.only('sequence.serialize check', function () {
   this.timeout(60000);
   it('Case 6', function () {
     var charts = [

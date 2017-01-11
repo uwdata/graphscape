@@ -3,7 +3,7 @@
 var cp = require('./../transition/trans.js');
 var rule = require('./../rule/ruleSet.js');
 var TSP = require('../../lib/TSP.js');
-var d3 = require('../../lib/d3.min.js');
+var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
@@ -127,9 +127,9 @@ function extendTransitionSets(transitionSets){
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
 
-  var rank = d3.scale.ordinal()
+  var rank = d3.scaleOrdinal()
     .domain(uniqueCosts)
-    .rangePoints([0,uniqueCosts.length]);
+    .range([0,uniqueCosts.length]);
 
   for (var i = 0; i < transitionSets.length; i++) {
     for (var j = 0; j < transitionSets[i].length; j++) {
