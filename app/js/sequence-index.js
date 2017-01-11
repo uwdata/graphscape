@@ -1,16 +1,7 @@
 $(document).on('ready page:load', function () {
-  var ruleSets;  
-  var results,uniqDP,uniqD, rankDistanceWithPattern, rankDistance, rankDistanceWithPatternTie, rankDistanceTie;
+  
+  var results,uniqDP,uniqD, rankSequenceCost, rankTransitionCosts, rankSequenceCostTie, rankTransitionCostsTie;
 
-  $.ajax({
-    url: "data/ruleSet.json",
-    dataType: 'json',
-    async: false,
-    success: function(data){
-      ruleSets = data;
-
-    }
-  })
 
   var worker = new Worker('js/sequence-worker.js');
   
@@ -31,19 +22,19 @@ $(document).on('ready page:load', function () {
   $('#toggle-pattern-score').on('click',function(e){
     if ($(this).hasClass('active')) {
       results = results.sort(function(a,b){
-        if (a.distance > b.distance) {
+        if (a.sumOfTransitionCosts > b.sumOfTransitionCosts) {
           return 1;
         }
-        if (a.distance < b.distance) {
+        if (a.sumOfTransitionCosts < b.sumOfTransitionCosts) {
           return -1;
         } else {
           return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
         }
         return 0;
       });
-      var minDistance = results[0].distance;
+      var minSumOfTransitionCosts = results[0].sumOfTransitionCosts;
       for (var i = 0; i < results.length; i++) {
-        if(results[i].distance === minDistance){
+        if(results[i].sumOfTransitionCosts === minSumOfTransitionCosts){
           results[i].isOptimum = true;
         }
         else { 
@@ -56,19 +47,19 @@ $(document).on('ready page:load', function () {
       
     } else {
       results = results.sort(function(a,b){
-        if (a.distanceWithPattern > b.distanceWithPattern) {
+        if (a.sequenceCost > b.sequenceCost) {
           return 1;
         }
-        if (a.distanceWithPattern < b.distanceWithPattern) {
+        if (a.sequenceCost < b.sequenceCost) {
           return -1;
         } else {
           return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
         }
         return 0;
       });
-      var maxdistanceWithPattern = results[0].distanceWithPattern;
+      var maxSequenceCost = results[0].sequenceCost;
       for (var i = 0; i < results.length; i++) {
-        if(results[i].distanceWithPattern === maxdistanceWithPattern){
+        if(results[i].sequenceCost === maxSequenceCost){
           results[i].isOptimum = true;
         }
         else { 
@@ -119,11 +110,11 @@ $(document).on('ready page:load', function () {
 
 
 
-        rankDistanceWithPattern = d3.scale.ordinal()
+        rankSequenceCost = d3.scale.ordinal()
           .domain(uniqDP)
           .rangePoints([1, uniqDP.length]);
 
-        rankDistance = d3.scale.ordinal()
+        rankTransitionCosts = d3.scale.ordinal()
           .domain(uniqD)
           .rangePoints([1, uniqD.length]);
 
@@ -139,7 +130,7 @@ $(document).on('ready page:load', function () {
         listButtons(results, fixFirst);
         
       }
-      worker.postMessage({specs: specs, ruleSets: ruleSets, options: {"fixFirst": fixFirst}}); // Start the worker.
+      worker.postMessage({specs: specs, options: {"fixFirst": fixFirst}}); // Start the worker.
     });
   
   })
@@ -156,7 +147,7 @@ $(document).on('ready page:load', function () {
       };
 
       var link = $('<button href="#" data-id="'+i+'"></button>')
-                  .html(sequence.join(',') + ' | ' + Math.round(results[i].distanceWithPattern*100)/100 )
+                  .html(sequence.join(',') + ' | ' + Math.round(results[i].sequenceCost*100)/100 )
                   .addClass('result btn btn-xs')
                   .data('result', results[i]);
       
@@ -180,18 +171,18 @@ $(document).on('ready page:load', function () {
 
 
   function drawingByOrder(result){
-    var specs = result.specs;
+    var specs = result.charts;
 
-    var metaInfo =  "Rank(Pattern) : " + rankDistanceWithPattern(overallDP(result)) + "<br/>"
-                 + "Rank(Simple Sum) : " + rankDistance(overallD(result)) + "<br/>"
+    var metaInfo =  "Rank(Pattern) : " + rankSequenceCost(overallDP(result)) + "<br/>"
+                 + "Rank(Simple Sum) : " + rankTransitionCosts(overallD(result)) + "<br/>"
                  + "Rank(Pattern inc. ties) : " + (allDP.indexOf(overallDP(result))+1) + "<br/>"
                  + "Rank(Simple Sum inc. ties) : " + (allD.indexOf(overallD(result))+1) + "<br/>"
-                 + "Distance with Pattern Distance : " + result.distanceWithPattern + "<br/>"
-                 + "Sum of distances : " + result.distance + "<br/>"
-                 + "Pattern  Score : " + result.patternScore + "<br/>"
-                 + "POResult : " + JSON.stringify(result.POResult) + "<br/>"
-                 + "TieBreak Cost : " + result.tiebreakCost + "<br/>"
-                 + (Object.keys(result.tiebreakReasons).length > 0 ? "TieBreak Reasons    : " + JSON.stringify(result.tiebreakReasons) + "<br/>" : "" );
+                 + "Sequence Cost : " + result.sequenceCost + "<br/>"
+                 + "Sum of Transition Costs : " + result.sumOfTransitionCosts + "<br/>"
+                 + "Global Weighting Term : " + result.globalWeightingTerm + "<br/>"
+                 + "Patterns : " + JSON.stringify(result.patterns) + "<br/>"
+                 + "Filter Sequence Cost : " + result.filterSequenceCost + "<br/>"
+                 + (Object.keys(result.filterSequenceCostReasons).length > 0 ? "Filter Sequence Cost Details    : " + JSON.stringify(result.filterSequenceCostReasons) + "<br/>" : "" );
 
     $('#sequence-meta-info').html(metaInfo);
 
@@ -206,10 +197,10 @@ $(document).on('ready page:load', function () {
         draw("#vega-lite-" + i, specs[i]);
         if (i>0) {
           var TRdiv = $("<div></div>").attr("class","col-xs-6");
-          var TRinfo = "Distance : " + result.transitionSet[i-1].cost + "<br/>"
-                      + "Marktype  Transitions : " + JSON.stringify(result.transitionSet[i-1].marktype) + "<br/>"
-                      + "Encoding  Transitions : " + JSON.stringify(result.transitionSet[i-1].encoding) + "<br/>"
-                      + "Transform Transitions : " + JSON.stringify(result.transitionSet[i-1].transform); 
+          var TRinfo = "Distance : " + result.transitions[i-1].cost + "<br/>"
+                      + "Marktype  Transitions : " + JSON.stringify(result.transitions[i-1].marktype) + "<br/>"
+                      + "Encoding  Transitions : " + JSON.stringify(result.transitions[i-1].encoding) + "<br/>"
+                      + "Transform Transitions : " + JSON.stringify(result.transitions[i-1].transform); 
           TRdiv.html(TRinfo);
           newRowDiv.append(TRdiv);
           
@@ -221,8 +212,8 @@ $(document).on('ready page:load', function () {
 });
 
 function overallDP(d){
-  return d.distanceWithPattern;
+  return d.sequenceCost;
 }
 function overallD(d){
-  return d.distance;
+  return d.sumOfTransitionCosts;
 }

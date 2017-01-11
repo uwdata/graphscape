@@ -1,58 +1,97 @@
-# Guide to use *GrapeScape*
-(last updated 2016-03-14)
+# GraphScape
+
+A directed graph model of the visualization design space that supports automated reasoning about visualization similarity and sequencing.
 
 
-### Purpose
-Sorting *Vega-Lite* visualizations to have the smallest transition cost.  
+## Main API
 
-### Prerequisite
+The main method is `graphscape.sequence.serialize`, in `src/seqeunce/serialize.js`.
 
-- MATLAB
+#### Input
 
-### Minimal tutorial
+| Parameter  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) charts. |
+| options | Object | `{ "fixFirst" : true/false }` <br> fixFirst :  whether first chart should be at first(`true`) or not(`false`). <br> (Currently, there is only "fixFirst" in the options.) |
+| ruleSet | Object | (*Optional*) Specifying a rule to calculate sequence costs |
+| callback | Function | (*Optional*) `function(result){ ... }` <br> A function that called after it results. |
+
+
+#### Output
+
+Output is an array where each item corresponds to a possible sequence of given charts. 
+
+| Property  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| charts | Array | Given charts as an input. <br> If `options.fixFirst` was `false`, *null specification* is placed at first. |
+| sequence | Array | Order of indexes of input charts.   |
+| transitions | Array | Transitions between each pair of two adjacent charts.<br> Each transition is consist of `id`, `marktype`, `transform`, `encoding`, and `cost` properties. <br> `id` : Transition identifier.<br> `marktype` : Edit operations in *mark* category.<br> `transform` : Edit operations in *transform* category.<br> `encoding` : Edit operations in *encoding* category.<br> `cost` : Sum of all costs of edit operations in this transition. | 
+| sequenceCost | Number| Final GraphScape sequence cost. |
+| sumOfTransitionCosts | Number | Sum of transition costs. |
+| patterns | Array | Observed patterns of the sequence. <br> Each pattern is consist of `pattern`, `appear`, `coverage`, and `patternScore`. <br> `pattern` : An array of transition `id`s composing the pattern.<br> `appear` : An array of indexes of `transitions` where the pattern appears in the sequence. <br>`coverage` : How much the pattern cover the sequence.<br>`patternScore` : Final pattern score, which is the same as coverage now. |
+| globalWeightingTerm | Number | Global weighting term. |
+| filterSequenceCost | Number | Filter sequence cost. |
+| filterSequenceCostReasons | Array | Sum of filter value change score <br> Increment of value : +1 <br> Decrement of value : -1 <br> Otherwise : 0|
+
+
+#### Sample Code
+
+```js
+var gs = require('./graphscape.js')
+var charts = []; // an array of Vega-Lite charts
+charts.push({
+  "data": {"url": "data/cars.json"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative"},
+  }
+});
+charts.push({
+  "data": {"url": "data/cars.json"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative"},
+    "y": {"field": "Miles_per_Gallon","type": "quantitative"}
+  }
+});
+var options = { "fixFirst": false };
+console.log(gs.sequence.serialize(charts, options));
+```
+
+
+## Development Instruction
+1. MATLAB is required to solve `lp.m`
+
+2. You can install npm dependencies with:
+```console
+$ npm install
+```
+
+3. You can customize rankings of edit operations by modifying `lp.js` and use yours by :
 
 ```console
-// Generating Transition Rule
 $ cd src/rule
 $ node lp.js
 $ matlab < lp.m
-$ node gen_ruleSet.js
+$ node gen_ruleSet.js //It will generate ruleSet.js.
 
-// Apply the rule to serialize sampled visualizations
-$ cd ../sequence
-$ node cal_transSampled.js
+// After creating your ranking, you should re-build `graphscape.js` to apply yours.
 
-// And open sequence.html
+$ cd
+$ npm run test
+$ npm run build
 ```
 
-### Customizing
-1. You can (or should) edit `lp.js` to match rule with your rationales.
-2. You can (or should) edit `data/sampled_specs.json` to run with other *Vega-Lite* visualizations you collected. Default specs are sampled by Younghoon with *Polestar*.
-
-
----
-
-### Miscellaneous
-1. If you want to generate all kinds of specs and see their distances, run `cal_transAll.js` with editing generating options and open `specs.html` and `transitions.html`. (It require you to link bower module. see *To Develop* )
-
-2. `sequence.html` and `transitions_sampled.html` are using BEA with an option fixing a starting spec as an empty point visualization.
-
-3. You can also use `serialize.js` to simply serialize visualization specs.
+### Application : Sequence Recommender
+`app/`  contains *sequence recommender* which is a web app that recommends a sequence of input [Vega-Lite](https://vega.github.io/vega-lite/) visualization specifications. To run this app, first you should install bower components with :
+```console
+$ cd app
+$ bower install
+```
+Then, you can run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
 
 ```console
-$ node serialize.js path/to/specs.json path/to/ruleSet.json
+$ python -m SimpleHTTPServer 9000
 ```
-Here, `specs.json` is an array of visualization specs, and `ruleSet.json` can be created by `gen_ruleSet.js`.
- 
----
 
-### To Develop
-
-- Link to *Compass* [yh/neighbors](https://github.com/vega/compass/tree/yh/neighbors) branch.
-```console
-// at Compass directory.
-$ bower link
-
-// at GraphScape directory
-$ bower link viscompass
-```
+*To apply a newly built `graphscape.js`, you should copy the new `graphscape.js` and paste on `app/js`.

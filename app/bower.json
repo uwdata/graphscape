@@ -1,0 +1,24 @@
+{
+  "name": "vega-lite-sequence-recommender",
+  "authors": [
+    "Younghoon Kim <yhoonkim01@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "vega-lite": "1.2.0",
+    "vega": "~2.6.3",
+    "d3": "3.*",
+    "bootstrap": "^3.3.7",
+    "jquery": "^1.12.4"
+  }
+}

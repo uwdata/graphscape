@@ -1,39 +1,36 @@
 'use strict';
 
-// If you linked to yh/neighbors branch, then you can activate this line instead of using compas.js
-
-// var cp = require('./lib/compass.js');
-
+var cp = require('./../transition/trans.js');
+var rule = require('./../rule/ruleSet.js');
 var TSP = require('../../lib/TSP.js');
-var d3 = require('../../lib/d3.min.js');
+var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function serialize(specs, ruleSet, options, callback){
-
+function serialize(specs, options, ruleSet, callback){
+  if (!ruleSet) {
+    ruleSet = rule.DEFAULT_TRANSITIONS;
+  }
   
-  function distanceWithPattern(dist, patternScore, filterCost){
-    return (dist + filterCost / 1000) * ( 1 - patternScore);
+  function distanceWithPattern(dist, globalWeightingTerm, filterCost){
+    return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
-  console.log(transitionSetsFromEmptyVis);
-  
-  //Brute force version
-  if (!options.fixFirst) {
+    
+    if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
   }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
-  console.log(transitionSets);
+  
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    // return true;
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    
     var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
@@ -44,24 +41,24 @@ function serialize(specs, ruleSet, options, callback){
 
     var result = { 
               "sequence" : sequence,
-              "transitionSet" : transitionSet,
-              "distance" : tspR.distance,
-              "POResult" : POResult,
-              "patternScore" : !!POResult[0] ? POResult[0].patternScore : 0,
-              "specs" : sequence.map(function(index){
+              "transitions" : transitionSet,
+              "sumOfTransitionCosts" : tspR.distance,
+              "patterns" : POResult,
+              "globalWeightingTerm" : !!POResult[0] ? 1 - POResult[0].patternScore : 1,
+              "charts" : sequence.map(function(index){
                           return specs[index];
                         })
            };
     var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
-    result.tiebreakCost = tbResult.tiebreakCost;
-    result.tiebreakReasons = tbResult.reasons;
-    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore, tbResult.tiebreakCost);
+    result.filterSequenceCost = tbResult.tiebreakCost;
+    result.filterSequenceCostReasons = tbResult.reasons;
+    result.sequenceCost = distanceWithPattern(result.sumOfTransitionCosts, result.globalWeightingTerm, tbResult.tiebreakCost);
     return result;
   }).sort(function(a,b){
-    if (a.distanceWithPattern > b.distanceWithPattern) {
+    if (a.sequenceCost > b.sequenceCost) {
       return 1;
     }
-    if (a.distanceWithPattern < b.distanceWithPattern) {
+    if (a.sequenceCost < b.sequenceCost) {
       return -1;
     } else {
       return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
@@ -70,11 +67,10 @@ function serialize(specs, ruleSet, options, callback){
   });
   
   var serializedSpecs = [];
-  var minDistanceWithPattern = TSPResultAll[0].distanceWithPattern;
+  var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern ){
+    if(TSPResultAll[i].sequenceCost === minSequenceCost ){
       TSPResultAll[i].isOptimum = true;
-      // serializedSpecs.push(TSPResultAll[i]);
     }
     else { 
       break; 
@@ -83,13 +79,15 @@ function serialize(specs, ruleSet, options, callback){
   var returnValue = TSPResultAll;
 
   
-  callback(returnValue);
+  if(callback){
+    callback(returnValue);
+  }
   return returnValue;
 }
 function getTransitionSetsFromSpec( spec, specs, ruleSet){
   var transitionSets = [];
   for (var i = 0; i < specs.length; i++) {
-    transitionSets.push(cp.trans.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
+    transitionSets.push(cp.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
   }
   return transitionSets;
 }
@@ -99,7 +97,7 @@ function getTransitionSets(specs, ruleSet){
   for (var i = 0; i < specs.length; i++) {
     transitionSets.push([]);
     for (var j = 0; j < specs.length; j++) {
-      transitionSets[i].push(cp.trans.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
+      transitionSets[i].push(cp.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
       
     }
   }
@@ -113,7 +111,7 @@ function extendTransitionSets(transitionSets){
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
       var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      // var index = uniqTransitionSets.indexOf(transitionSetSH.join('|'));
+      
       if ( index === -1) {
         curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
       } else {
@@ -129,9 +127,9 @@ function extendTransitionSets(transitionSets){
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
 
-  var rank = d3.scale.ordinal()
+  var rank = d3.scaleOrdinal()
     .domain(uniqueCosts)
-    .rangePoints([0,uniqueCosts.length]);
+    .range([0,uniqueCosts.length]);
 
   for (var i = 0; i < transitionSets.length; i++) {
     for (var j = 0; j < transitionSets[i].length; j++) {
@@ -160,7 +158,4 @@ function transitionShorthand(transition){
                     .join('|');
                     
 }
-
-module.exports = {
-  serialize: serialize
-};
+exports.serialize = serialize;

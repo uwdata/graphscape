@@ -6,8 +6,8 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   var filterState = {};
   var filterScore = [];
   var filterSequenceCost = 0;
-  for (var i = 0; i < result.specs.length; i++) {
-    let spec = result.specs[i];
+  for (var i = 0; i < result.charts.length; i++) {
+    let spec = result.charts[i];
     if (!!spec.transform && !!spec.transform.filter) {
       let filter;
       if (Array.isArray(spec.transform.filter)) {
