@@ -1,31 +1,38 @@
 # GraphScape
 
-A directed graph model of the visualization design space that supports automated reasoning about visualization similarity and sequencing.
+GraphScape is a directed graph model of the visualization design space that supports automated reasoning about visualization similarity and sequencing. It uses the [Vega-Lite](https://vega.github.io/vega-lite) language to model individual charts. This repository contains source code for building GraphScape models and automatically recommending sequences of charts.
 
+- [Sequence Recommender API](#sequence-recommender-api)
+- [Sequence Recommender Web Application](#sequence-recommender-web-application)
+- [Development Instructions](#development-instructions)
 
-## Main API
+## Sequence Recommender API
 
-The main method is `graphscape.sequence.serialize`, in `src/seqeunce/serialize.js`.
+<a name="serialize" href="#serialize">#</a>
+graphscape.sequence.<b>serialize</b>(<i>charts</i>, <i>options</i>[, <i>ruleSet</i>, <i>callback</i>])
+[<>](https://github.com/uwdata/graphscape/blob/master/src/sequence/serialize.js "Source")
 
-#### Input
+Generate recommended sequence orders for a collection of Vega-Lite *charts*. The return value is a ranked array of potential sequences and associated metadata.
+
+### Input
 
 | Parameter  | Type          | Description    |
 | :-------- |:-------------:| :------------- |
-| charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) charts. |
-| options | Object | `{ "fixFirst" : true/false }` <br> fixFirst :  whether first chart should be at first(`true`) or not(`false`). <br> (Currently, there is only `"fixFirst"` in the options.) |
-| ruleSet | Object | (*Optional*) Specifying a rule to calculate sequence costs |
-| callback | Function | (*Optional*) `function(result){ ... }` <br> A function that called after it results. |
+| charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) unit charts. |
+| options | Object | `{ "fixFirst": true|false }` <br> *fixFirst*: indicates whether the first chart in *charts* should be pinned as the first chart of the recommended sequence (`true`) or not (`false`).|
+| ruleSet | Object | (*Optional*) Specifies custom rules for calculating sequence costss |
+| callback | Function | (*Optional*) `function(result) { ... }` <br> A callback function to invoke with the results. |
 
 
-#### Output
+### Output
 
-Output is an array where each item corresponds to a possible sequence of given charts. 
+The output is a ranked array of objects, each containing a sequence ordering and related metadata.
 
 | Property  | Type          | Description    |
 | :-------- |:-------------:| :------------- |
-| charts | Array | Given charts as an input. <br> If `options.fixFirst` was `false`, *null specification* is placed at first. |
+| charts | Array | The given input charts. <br> If `options.fixFirst` was `false`, a *null specification* for an empty chart is included as the first entry. |
 | sequence | Array | Order of indexes of input charts.   |
-| transitions | Array | Transitions between each pair of two adjacent charts.<br> Each transition is consist of `id`, `marktype`, `transform`, `encoding`, and `cost` properties. <br> `id` : Transition identifier.<br> `marktype` : Edit operations in *mark* category.<br> `transform` : Edit operations in *transform* category.<br> `encoding` : Edit operations in *encoding* category.<br> `cost` : Sum of all costs of edit operations in this transition. | 
+| transitions | Array | Transitions between each pair of two adjacent charts.<br> Each transition is consist of `id`, `marktype`, `transform`, `encoding`, and `cost` properties. <br> `id` : Transition identifier.<br> `marktype` : Edit operations in *mark* category.<br> `transform` : Edit operations in *transform* category.<br> `encoding` : Edit operations in *encoding* category.<br> `cost` : Sum of all costs of edit operations in this transition. |
 | sequenceCost | Number| Final GraphScape sequence cost. |
 | sumOfTransitionCosts | Number | Sum of transition costs. |
 | patterns | Array | Observed patterns of the sequence. <br> Each pattern is consist of `pattern`, `appear`, `coverage`, and `patternScore`. <br> `pattern` : An array of transition `id`s composing the pattern.<br> `appear` : An array of indexes of `transitions` where the pattern appears in the sequence. <br>`coverage` : How much the pattern cover the sequence.<br>`patternScore` : Final pattern score, which is the same as coverage now. |
@@ -34,7 +41,7 @@ Output is an array where each item corresponds to a possible sequence of given c
 | filterSequenceCostReasons | Array | Sum of filter value change score <br> Increment of value : +1 <br> Decrement of value : -1 <br> Otherwise : 0|
 
 
-#### Sample Code
+### Sample Code (node.js)
 
 ```js
 var gs = require('./graphscape.js')
@@ -58,41 +65,36 @@ var options = { "fixFirst": false };
 console.log(gs.sequence.serialize(charts, options));
 ```
 
+## Sequence Recommender Web Application
 
-## Development Instruction
-1) MATLAB is required to solve `lp.m`
-
-2) You can install npm dependencies with:
+The `app/` folder contains a *sequence recommender* web application. Given a set of input [Vega-Lite](https://vega.github.io/vega-lite/) specifications, it produces a recommended sequence intended to improve chart reading and comprehension. To run this app, first you should install bower components:
+```console
+$ cd app
+$ bower install
+```
+Next, launch a local webserver to run the application. For example:
 
 ```console
-$ npm install
+$ python -m SimpleHTTPServer 9000 # for Python 2
+$ python -m http.server 9000 # for Python 3
 ```
 
-3) You can customize rankings of edit operations by modifying `lp.js` and use yours by :
+To use a custom build of `graphscape.js`, copy your new `graphscape.js` file and paste it into the `app/js` folder.
+
+## Development Instructions
+
+1. MATLAB is required to solve `lp.m`.
+2. Install npm dependencies via `npm install`.
+3. You can customize rankings of edit operations by modifying `lp.js` and running the following commands:
 
 ```console
 $ cd src/rule
 $ node lp.js
 $ matlab < lp.m
-$ node gen_ruleSet.js //It will generate ruleSet.js.
+$ node gen_ruleSet.js # This will generate ruleSet.js.
 
-// After creating your ranking, you should re-build `graphscape.js` to apply yours.
-
+# After creating your rankings, you must re-build `graphscape.js` to apply changes.
 $ cd
 $ npm run test
 $ npm run build
 ```
-
-### Application : Sequence Recommender
-`app/`  contains *sequence recommender* which is a web app that recommends a sequence of input [Vega-Lite](https://vega.github.io/vega-lite/) visualization specifications. To run this app, first you should install bower components with :
-```console
-$ cd app
-$ bower install
-```
-Then, you can run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
-
-```console
-$ python -m SimpleHTTPServer 9000
-```
-
-*To apply a newly built `graphscape.js`, you should copy the new `graphscape.js` and paste on `app/js`.
