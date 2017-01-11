@@ -17,7 +17,7 @@
   "dependencies": {
     "vega-lite": "1.2.0",
     "vega": "~2.6.3",
-    "d3": "^4.2.6",
+    "d3": "3.*",
     "bootstrap": "^3.3.7",
     "jquery": "^1.12.4"
   }
