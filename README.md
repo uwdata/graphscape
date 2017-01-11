@@ -12,7 +12,7 @@ The main method is `graphscape.sequence.serialize`, in `src/seqeunce/serialize.j
 | Parameter  | Type          | Description    |
 | :-------- |:-------------:| :------------- |
 | charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) charts. |
-| options | Object | `{ "fixFirst" : true/false }` <br> fixFirst :  whether first chart should be at first(`true`) or not(`false`). <br> (Currently, there is only "fixFirst" in the options.) |
+| options | Object | `{ "fixFirst" : true/false }` <br> fixFirst :  whether first chart should be at first(`true`) or not(`false`). <br> (Currently, there is only `"fixFirst"` in the options.) |
 | ruleSet | Object | (*Optional*) Specifying a rule to calculate sequence costs |
 | callback | Function | (*Optional*) `function(result){ ... }` <br> A function that called after it results. |
 
@@ -60,14 +60,15 @@ console.log(gs.sequence.serialize(charts, options));
 
 
 ## Development Instruction
-1. MATLAB is required to solve `lp.m`
+1) MATLAB is required to solve `lp.m`
 
-2. You can install npm dependencies with:
+2) You can install npm dependencies with:
+
 ```console
 $ npm install
 ```
 
-3. You can customize rankings of edit operations by modifying `lp.js` and use yours by :
+3) You can customize rankings of edit operations by modifying `lp.js` and use yours by :
 
 ```console
 $ cd src/rule
