@@ -1,6 +1,6 @@
 "use strict";
 var expect = require('chai').expect;
-var ruleSet = require('../../src/rule/ruleSet');
+var ruleSet = require('../ruleSetForTest');
 var trans = require('../../src/transition/trans');
 var util = require('../../src/util');
 

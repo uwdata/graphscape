@@ -5673,8 +5673,8 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   var filterState = {};
   var filterScore = [];
   var filterSequenceCost = 0;
-  for (var i = 0; i < result.specs.length; i++) {
-    let spec = result.specs[i];
+  for (var i = 0; i < result.charts.length; i++) {
+    let spec = result.charts[i];
     if (!!spec.transform && !!spec.transform.filter) {
       let filter;
       if (Array.isArray(spec.transform.filter)) {
@@ -5728,33 +5728,30 @@ var d3 = require('../../lib/d3.min.js');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function serialize(specs, ruleSet, options, callback){
+function serialize(specs, options, ruleSet, callback){
   if (!ruleSet) {
     ruleSet = rule.DEFAULT_TRANSITIONS;
   }
   
-  function distanceWithPattern(dist, patternScore, filterCost){
-    return (dist + filterCost / 1000) * ( 1 - patternScore);
+  function distanceWithPattern(dist, globalWeightingTerm, filterCost){
+    return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
-  console.log(transitionSetsFromEmptyVis);
-  
-  //Brute force version
-  if (!options.fixFirst) {
+    
+    if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
   }
 
   var transitionSets = getTransitionSets(specs, ruleSet);
   transitionSets = extendTransitionSets(transitionSets);
-  console.log(transitionSets);
+  
   var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
-    // return true;
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    // var sequence = tspR.sequence.splice(1,tspR.sequence.length-1)
+    
     var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
@@ -5765,24 +5762,24 @@ function serialize(specs, ruleSet, options, callback){
 
     var result = { 
               "sequence" : sequence,
-              "transitionSet" : transitionSet,
-              "distance" : tspR.distance,
-              "POResult" : POResult,
-              "patternScore" : !!POResult[0] ? POResult[0].patternScore : 0,
-              "specs" : sequence.map(function(index){
+              "transitions" : transitionSet,
+              "sumOfTransitionCosts" : tspR.distance,
+              "patterns" : POResult,
+              "globalWeightingTerm" : !!POResult[0] ? 1 - POResult[0].patternScore : 1,
+              "charts" : sequence.map(function(index){
                           return specs[index];
                         })
            };
     var tbResult = tb.TieBreaker(result, transitionSetsFromEmptyVis);
-    result.tiebreakCost = tbResult.tiebreakCost;
-    result.tiebreakReasons = tbResult.reasons;
-    result.distanceWithPattern = distanceWithPattern(result.distance, result.patternScore, tbResult.tiebreakCost);
+    result.filterSequenceCost = tbResult.tiebreakCost;
+    result.filterSequenceCostReasons = tbResult.reasons;
+    result.sequenceCost = distanceWithPattern(result.sumOfTransitionCosts, result.globalWeightingTerm, tbResult.tiebreakCost);
     return result;
   }).sort(function(a,b){
-    if (a.distanceWithPattern > b.distanceWithPattern) {
+    if (a.sequenceCost > b.sequenceCost) {
       return 1;
     }
-    if (a.distanceWithPattern < b.distanceWithPattern) {
+    if (a.sequenceCost < b.sequenceCost) {
       return -1;
     } else {
       return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
@@ -5791,11 +5788,10 @@ function serialize(specs, ruleSet, options, callback){
   });
   
   var serializedSpecs = [];
-  var minDistanceWithPattern = TSPResultAll[0].distanceWithPattern;
+  var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
-    if(TSPResultAll[i].distanceWithPattern === minDistanceWithPattern ){
+    if(TSPResultAll[i].sequenceCost === minSequenceCost ){
       TSPResultAll[i].isOptimum = true;
-      // serializedSpecs.push(TSPResultAll[i]);
     }
     else { 
       break; 
@@ -5804,7 +5800,9 @@ function serialize(specs, ruleSet, options, callback){
   var returnValue = TSPResultAll;
 
   
-  callback(returnValue);
+  if(callback){
+    callback(returnValue);
+  }
   return returnValue;
 }
 function getTransitionSetsFromSpec( spec, specs, ruleSet){
@@ -5834,7 +5832,7 @@ function extendTransitionSets(transitionSets){
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
       var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      // var index = uniqTransitionSets.indexOf(transitionSetSH.join('|'));
+      
       if ( index === -1) {
         curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
       } else {
