@@ -1,26 +1,26 @@
 "use strict";
 var util = require('../util');
-var def = require('../rule/ruleSet');
-function neighbors(spec, additionalFields, additionalChannels, importedEncodingTransitions) {
+var def = require('../editOp/editOpSet');
+function neighbors(spec, additionalFields, additionalChannels, importedEncodingEditOps) {
     var neighbors = [];
-    var encodingTransitions = importedEncodingTransitions || def.DEFAULT_ENCODING_TRANSITIONS;
+    var encodingEditOps = importedEncodingEditOps || def.DEFAULT_ENCODING_EDIT_OPS;
     var inChannels = util.keys(spec.encoding);
     var exChannels = additionalChannels;
     inChannels.forEach(function (channel) {
         var newNeighbor = util.duplicate(spec);
-        var transitionType = "REMOVE_" + channel.toUpperCase();
-        transitionType += (spec.encoding[channel].field === "*") ? "_COUNT" : "";
-        var transition = util.duplicate(encodingTransitions[transitionType]);
+        var editOpType = "REMOVE_" + channel.toUpperCase();
+        editOpType += (spec.encoding[channel].field === "*") ? "_COUNT" : "";
+        var editOp = util.duplicate(encodingEditOps[editOpType]);
         var newAdditionalFields = util.duplicate(additionalFields);
         if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
             newAdditionalFields.push(newNeighbor.encoding[channel]);
         }
         var newAdditionalChannels = util.duplicate(additionalChannels);
-        transition.detail = { "field": newNeighbor.encoding[channel].field, "channel": channel };
+        editOp.detail = { "field": newNeighbor.encoding[channel].field, "channel": channel };
         newAdditionalChannels.push(channel);
         delete newNeighbor.encoding[channel];
         if (validate(newNeighbor)) {
-            newNeighbor.transition = transition;
+            newNeighbor.editOp = editOp;
             newNeighbor.additionalFields = newAdditionalFields;
             newNeighbor.additionalChannels = newAdditionalChannels;
             neighbors.push(newNeighbor);
@@ -29,14 +29,14 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
         additionalFields.forEach(function (field, index) {
             if (field.field !== spec.encoding[channel].field) {
                 newNeighbor = util.duplicate(spec);
-                transitionType = "MODIFY_" + channel.toUpperCase();
+                editOpType = "MODIFY_" + channel.toUpperCase();
                 if (spec.encoding[channel].field === "*" && field.field !== "*") {
-                    transitionType += "_REMOVE_COUNT";
+                    editOpType += "_REMOVE_COUNT";
                 }
                 else if (spec.encoding[channel].field !== "*" && field.field === "*") {
-                    transitionType += "_ADD_COUNT";
+                    editOpType += "_ADD_COUNT";
                 }
-                transition = util.duplicate(encodingTransitions[transitionType]);
+                editOp = util.duplicate(encodingEditOps[editOpType]);
                 newAdditionalFields = util.duplicate(additionalFields);
                 newAdditionalFields.splice(index, 1);
                 if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
@@ -44,9 +44,9 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
                 }
                 newAdditionalChannels = util.duplicate(additionalChannels);
                 newNeighbor.encoding[channel] = field;
-                transition.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
+                editOp.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
                 if (validate(newNeighbor)) {
-                    newNeighbor.transition = transition;
+                    newNeighbor.editOp = editOp;
                     newNeighbor.additionalFields = newAdditionalFields;
                     newNeighbor.additionalChannels = newAdditionalChannels;
                     neighbors.push(newNeighbor);
@@ -60,15 +60,15 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
                 return;
             }
             newNeighbor = util.duplicate(spec);
-            transition = util.duplicate(encodingTransitions["SWAP_X_Y"]);
+            editOp = util.duplicate(encodingEditOps["SWAP_X_Y"]);
             newAdditionalFields = util.duplicate(additionalFields);
             newAdditionalChannels = util.duplicate(additionalChannels);
             var tempChannel = util.duplicate(newNeighbor.encoding[channel]);
             newNeighbor.encoding[channel] = newNeighbor.encoding[anotherChannel];
             newNeighbor.encoding[anotherChannel] = tempChannel;
-            transition.detail = { "field": [spec.encoding["x"].field, spec.encoding["y"].field].join(','), "channel": "x,y" };
+            editOp.detail = { "field": [spec.encoding["x"].field, spec.encoding["y"].field].join(','), "channel": "x,y" };
             if (validate(newNeighbor)) {
-                newNeighbor.transition = transition;
+                newNeighbor.editOp = editOp;
                 newNeighbor.additionalFields = newAdditionalFields;
                 newNeighbor.additionalChannels = newAdditionalChannels;
                 neighbors.push(newNeighbor);
@@ -78,16 +78,16 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
         exChannels.forEach(function (exChannel, index) {
             newNeighbor = util.duplicate(spec);
             var newNeighborChannels = (channel + "_" + exChannel).toUpperCase();
-            transition = util.duplicate(encodingTransitions["MOVE_" + newNeighborChannels]);
+            editOp = util.duplicate(encodingEditOps["MOVE_" + newNeighborChannels]);
             newAdditionalFields = util.duplicate(additionalFields);
             newAdditionalChannels = util.duplicate(additionalChannels);
             newAdditionalChannels.splice(index, 1);
             newAdditionalChannels.push(channel);
             newNeighbor.encoding[exChannel] = util.duplicate(newNeighbor.encoding[channel]);
             delete newNeighbor.encoding[channel];
-            transition.detail = { "field": spec.encoding[channel].field, "channel": [channel, exChannel].join(',') };
+            editOp.detail = { "field": spec.encoding[channel].field, "channel": [channel, exChannel].join(',') };
             if (validate(newNeighbor)) {
-                newNeighbor.transition = transition;
+                newNeighbor.editOp = editOp;
                 newNeighbor.additionalFields = newAdditionalFields;
                 newNeighbor.additionalChannels = newAdditionalChannels;
                 neighbors.push(newNeighbor);
@@ -98,17 +98,17 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingT
     exChannels.forEach(function (channel, chIndex) {
         additionalFields.forEach(function (field, index) {
             var newNeighbor = util.duplicate(spec);
-            var transitionType = "ADD_" + channel.toUpperCase();
-            transitionType += (field.field === "*") ? "_COUNT" : "";
-            var transition = util.duplicate(encodingTransitions[transitionType]);
+            var editOpType = "ADD_" + channel.toUpperCase();
+            editOpType += (field.field === "*") ? "_COUNT" : "";
+            var editOp = util.duplicate(encodingEditOps[editOpType]);
             var newAdditionalFields = util.duplicate(additionalFields);
             var newAdditionalChannels = util.duplicate(additionalChannels);
             newAdditionalFields.splice(index, 1);
             newNeighbor.encoding[channel] = field;
             newAdditionalChannels.splice(chIndex, 1);
-            transition.detail = { "field": field.field, "channel": channel };
+            editOp.detail = { "field": field.field, "channel": channel };
             if (validate(newNeighbor)) {
-                newNeighbor.transition = transition;
+                newNeighbor.editOp = editOp;
                 newNeighbor.additionalFields = newAdditionalFields;
                 newNeighbor.additionalChannels = newAdditionalChannels;
                 neighbors.push(newNeighbor);

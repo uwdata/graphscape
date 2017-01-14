@@ -16,36 +16,36 @@ var encodingCeiling = JSON.parse(fs.readFileSync('encodingCeiling.json','utf8'))
 
 var maxEncodingCost = 0;
 //Imports the lp result
-var ruleNames = keys(map);
-var ruleSet = {
-                marktypeTransitions: {},
-                transformTransitions: {},
-                encodingTransitions: {}
+var editOpNames = keys(map);
+var editOpSet = {
+                markEditOps: {},
+                transformEditOps: {},
+                encodingEditOps: {}
               };
 
-for (var i = 0; i < ruleNames.length; i++) {
+for (var i = 0; i < editOpNames.length; i++) {
   if ( i <= 14 ) {
-    ruleSet.marktypeTransitions[ruleNames[i]] = { name: ruleNames[i], cost: costs[i] };
+    editOpSet.markEditOps[editOpNames[i]] = { name: editOpNames[i], cost: costs[i] };
   }
   else if( i <= 21 ){
-    ruleSet.transformTransitions[ruleNames[i]] = { name: ruleNames[i], cost: costs[i] };
+    editOpSet.transformEditOps[editOpNames[i]] = { name: editOpNames[i], cost: costs[i] };
   }
   else{
     if (maxEncodingCost < costs[i] ) {
       maxEncodingCost = costs[i];
     }
-    ruleSet.encodingTransitions[ruleNames[i]] = { name: ruleNames[i], cost: costs[i] };
+    editOpSet.encodingEditOps[editOpNames[i]] = { name: editOpNames[i], cost: costs[i] };
   }
 };
 
-ruleSet.encodingTransitions['ceiling'] = {
+editOpSet.encodingEditOps['ceiling'] = {
   cost: maxEncodingCost * encodingCeiling.depth,
   alternatingCost: maxEncodingCost * ( encodingCeiling.depth + 1 )
 };
 // for (var i = 0; i < encodingExceptions.length; i++) {
-//   ruleSet.encodingTransitions[encodingExceptions[i].name] = encodingExceptions[i];
+//   editOpSet.encodingEditOps[encodingExceptions[i].name] = encodingExceptions[i];
 // };
 
 
-fs.writeFileSync('ruleSet.js', 'exports.DEFAULT_TRANSITIONS = ' + JSON.stringify(ruleSet));
+fs.writeFileSync('editOpSet.js', 'exports.DEFAULT_EDIT_OPS = ' + JSON.stringify(editOpSet));
 

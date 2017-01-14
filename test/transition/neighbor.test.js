@@ -1,6 +1,6 @@
 "use strict";
 var expect = require('chai').expect;
-var ruleSet = require('../ruleSetForTest');
+var editOpSet = require('../editOpSetForTest');
 var trans = require('../../src/transition/trans');
 var util = require('../../src/util');
 
@@ -19,11 +19,11 @@ describe('transition.neighbor', function () {
         };
         var additionalFields = [{ "field": "Origin", "type": Type.ORDINAL }];
         var additionalChannels = ["y"];
-        console.log(ruleSet.DEFAULT_TRANSITIONS.encodingTransitions);
-        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, ruleSet.DEFAULT_TRANSITIONS.encodingTransitions);
+        
+        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
         expect(result.length).to.eq(4);
     });
-    it('should return neighbors with _COUNT transitions correctly', function () {
+    it('should return neighbors with _COUNT edit operations correctly', function () {
         var testVL = {
             "data": { "url": "data/cars.json" },
             "mark": "tick",
@@ -33,11 +33,11 @@ describe('transition.neighbor', function () {
         };
         var additionalFields = [{ "field": "*", "type": Type.QUANTITATIVE, "aggregate": AggregateOp.COUNT }];
         var additionalChannels = ["y"];
-        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, ruleSet.DEFAULT_TRANSITIONS.encodingTransitions);
-        expect(result[0].transition.name).to.eq("REMOVE_X_COUNT");
-        expect(result[2].transition.name).to.eq("ADD_Y_COUNT");
+        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
+        expect(result[0].editOp.name).to.eq("REMOVE_X_COUNT");
+        expect(result[2].editOp.name).to.eq("ADD_Y_COUNT");
     });
-    it('should return only a neighbor with SWAP_X_Y transitions', function () {
+    it('should return only a neighbor with SWAP_X_Y edit operations', function () {
         var testVL = {
             "encoding": {
                 "column": { "field": "Cylinders", "type": "ordinal" },
@@ -50,8 +50,8 @@ describe('transition.neighbor', function () {
         };
         var additionalFields = [];
         var additionalChannels = [];
-        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, ruleSet.DEFAULT_TRANSITIONS.encodingTransitions);
-        expect(result[2].transition.name).to.eq("SWAP_X_Y");
+        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
+        expect(result[2].editOp.name).to.eq("SWAP_X_Y");
         expect(result.length).to.eq(4);
     });
     it('should return neighbors regardless redundant additionalFields', function () {
@@ -74,7 +74,7 @@ describe('transition.neighbor', function () {
             { "field": "Acceleration", "type": Type.QUANTITATIVE },
             { "field": "Horsepower", "type": Type.QUANTITATIVE }];
         var additionalChannels = [];
-        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, ruleSet.DEFAULT_TRANSITIONS.encodingTransitions);
+        var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
         expect(result.length).to.eq(6);
     });
 });

@@ -1,156 +1,156 @@
 "use strict";
-var filter_1 = require('vega-lite/src/filter');
-var type_1 = require('vega-lite/src/type');
+var vlFilter = require('vega-lite/src/filter');
+var type = require('vega-lite/src/type');
 var channel_1 = require('vega-lite/src/channel');
 var expr = require('vega-expression');
 var util = require('../util');
-var def = require('../rule/ruleSet');
+var def = require('../editOp/editOpSet');
 var nb = require('./neighbor');
-function transitionSet(s, d, importedTransitionCosts, transOptions) {
-    var importedMarktypeTransitions = importedTransitionCosts ? importedTransitionCosts.marktypeTransitions : def.DEFAULT_MARKTYPE_TRANSITIONS;
-    var importedTransformTransitions = importedTransitionCosts ? importedTransitionCosts.transformTransitions : def.DEFAULT_TRANSFORM_TRANSITIONS;
-    var importedEncodingTransitions = importedTransitionCosts ? importedTransitionCosts.encodingTransitions : def.DEFAULT_ENCODING_TRANSITIONS;
-    var transitions = {
-        marktype: marktypeTransitionSet(s, d, importedMarktypeTransitions),
-        transform: transformTransitionSet(s, d, importedTransformTransitions, transOptions),
-        encoding: encodingTransitionSet(s, d, importedEncodingTransitions)
+function transition(s, d, importedTransitionCosts, transOptions) {
+    var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : def.DEFAULT_MARK_EDIT_OPS;
+    var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : def.DEFAULT_TRANSFORM_EDIT_OPS;
+    var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : def.DEFAULT_ENCODING_EDIT_OPS;
+    var trans = {
+        mark: markEditOps(s, d, importedMarkEditOps),
+        transform: transformEditOps(s, d, importedTransformEditOps, transOptions),
+        encoding: encodingEditOps(s, d, importedEncodingEditOps)
     };
     var cost = 0;
-    cost = transitions.encoding.reduce(function (prev, transition) {
-        if (transition.name.indexOf('_COUNT') >= 0) {
-            var channel_2 = transition.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
-            var aggTr = transitions.transform.filter(function (tr) { return tr.name === "AGGREGATE"; })[0];
-            if (aggTr && aggTr.detail.length === 1 && aggTr.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel_2; }).length) {
-                aggTr.cost = 0;
+    cost = trans.encoding.reduce(function (prev, editOp) {
+        if (editOp.name.indexOf('_COUNT') >= 0) {
+            var channel = editOp.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
+            var aggEditOp = trans.transform.filter(function (editOp) { return editOp.name === "AGGREGATE"; })[0];
+            if (aggEditOp && aggEditOp.detail.length === 1 && aggEditOp.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel; }).length) {
+                aggEditOp.cost = 0;
             }
-            var binTr = transitions.transform.filter(function (tr) { return tr.name === "BIN"; })[0];
-            if (binTr && binTr.detail.filter(function (dt) {
+            var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
+            if (binEditOp && binEditOp.detail.filter(function (dt) {
                 if (dt.type === "added") {
-                    return d.encoding[dt.channel].type === type_1.Type.QUANTITATIVE;
+                    return d.encoding[dt.channel].type === type.Type.QUANTITATIVE;
                 }
                 else {
-                    return s.encoding[dt.channel].type === type_1.Type.QUANTITATIVE;
+                    return s.encoding[dt.channel].type === type.Type.QUANTITATIVE;
                 }
             }).length > 0) {
-                binTr.cost = 0;
+                binEditOp.cost = 0;
             }
         }
-        prev += transition.cost;
+        prev += editOp.cost;
         return prev;
     }, cost);
-    cost = transitions.marktype.reduce(function (prev, transition) {
-        prev += transition.cost;
+    cost = trans.mark.reduce(function (prev, editOp) {
+        prev += editOp.cost;
         return prev;
     }, cost);
-    cost = transitions.transform.reduce(function (prev, transition) {
-        prev += transition.cost;
+    cost = trans.transform.reduce(function (prev, editOp) {
+        prev += editOp.cost;
         return prev;
     }, cost);
-    transitions["cost"] = cost;
-    return transitions;
+    trans["cost"] = cost;
+    return trans;
 }
-exports.transitionSet = transitionSet;
-function marktypeTransitionSet(s, d, importedMarktypeTransitions) {
-    var transSet = [];
-    var marktypeTransitions = importedMarktypeTransitions || def.DEFAULT_MARKTYPE_TRANSITIONS;
-    var newTr;
+exports.transition = transition;
+function markEditOps(s, d, importedMarkEditOps) {
+    var editOps = [];
+    var markEditOps = importedMarkEditOps || def.DEFAULT_MARK_EDIT_OPS;
+    var newEditOp;
     if (s.mark === d.mark) {
-        return transSet;
+        return editOps;
     }
     else {
-        var trName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
-        if (marktypeTransitions[trName]) {
-            newTr = util.duplicate(marktypeTransitions[trName]);
-            newTr.detail = { "from": s.mark.toUpperCase(), "to": d.mark.toUpperCase() };
-            transSet.push(newTr);
+        var editOpName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
+        if (markEditOps[editOpName]) {
+            newEditOp = util.duplicate(markEditOps[editOpName]);
+            newEditOp.detail = { "from": s.mark.toUpperCase(), "to": d.mark.toUpperCase() };
+            editOps.push(newEditOp);
         }
     }
-    return transSet;
+    return editOps;
 }
-exports.marktypeTransitionSet = marktypeTransitionSet;
-function transformTransitionSet(s, d, importedTransformTransitions, transOptions) {
-    var transformTransitions = importedTransformTransitions || def.DEFAULT_TRANSFORM_TRANSITIONS;
-    var transSet = [];
+exports.markEditOps = markEditOps;
+function transformEditOps(s, d, importedTransformEditOps, transOptions) {
+    var transformEditOps = importedTransformEditOps || def.DEFAULT_TRANSFORM_EDIT_OPS;
+    var editOps = [];
     channel_1.CHANNELS.forEach(function (channel) {
         ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
-            var trans;
+            var editOp;
             var already;
-            if (transformType === "SETTYPE" && transformTransitions[transformType]) {
-                trans = transformSettype(s, d, channel, transformTransitions);
+            if (transformType === "SETTYPE" && transformEditOps[transformType]) {
+                editOp = transformSettype(s, d, channel, transformEditOps);
             }
             else {
-                if (transformTransitions[transformType]) {
-                    trans = transformBasic(s, d, channel, transformType, transformTransitions, transOptions);
+                if (transformEditOps[transformType]) {
+                    editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
                 }
             }
-            if (trans) {
-                already = util.find(transSet, function (tr) { return tr.name; }, trans);
+            if (editOp) {
+                already = util.find(editOps, function (eo) { return eo.name; }, editOp);
                 if (already >= 0) {
-                    transSet[already].detail.push(util.duplicate(trans.detail));
+                    editOps[already].detail.push(util.duplicate(editOp.detail));
                 }
                 else {
-                    trans.detail = [util.duplicate(trans.detail)];
-                    transSet.push(trans);
+                    editOp.detail = [util.duplicate(editOp.detail)];
+                    editOps.push(editOp);
                 }
             }
         });
     });
-    var filterTransitions = {
-        "MODIFY_FILTER": transformTransitions["MODIFY_FILTER"],
-        "ADD_FILTER": transformTransitions["ADD_FILTER"],
-        "REMOVE_FILTER": transformTransitions["REMOVE_FILTER"]
+    var importedFilterEditOps = {
+        "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
+        "ADD_FILTER": transformEditOps["ADD_FILTER"],
+        "REMOVE_FILTER": transformEditOps["REMOVE_FILTER"]
     };
-    transSet = transSet.concat(filterTransitionSet(s, d, filterTransitions));
-    return transSet;
+    editOps = editOps.concat(filterEditOps(s, d, importedFilterEditOps));
+    return editOps;
 }
-exports.transformTransitionSet = transformTransitionSet;
-function transformBasic(s, d, channel, transform, transformTransitions, transOptions) {
+exports.transformEditOps = transformEditOps;
+function transformBasic(s, d, channel, transform, transformEditOps, transOptions) {
     var sHas = false;
     var dHas = false;
-    var transistion;
-    var sTransform, dTransform;
+    var editOp;
+    var sEditOp, dEditOp;
     if (s.encoding[channel] && s.encoding[channel][transform.toLowerCase()]) {
         sHas = true;
-        sTransform = s.encoding[channel][transform.toLowerCase()];
+        sEditOp = s.encoding[channel][transform.toLowerCase()];
     }
     if (d.encoding[channel] && d.encoding[channel][transform.toLowerCase()]) {
         dHas = true;
-        dTransform = d.encoding[channel][transform.toLowerCase()];
+        dEditOp = d.encoding[channel][transform.toLowerCase()];
     }
     if (transOptions && transOptions.omitIncludeRawDomain && transform === "SCALE") {
-        if (sTransform && sTransform.includeRawDomain) {
-            delete sTransform.includeRawDomain;
-            if (Object.keys(sTransform).length === 0 && JSON.stringify(sTransform) === JSON.stringify({})) {
+        if (sEditOp && sEditOp.includeRawDomain) {
+            delete sEditOp.includeRawDomain;
+            if (Object.keys(sEditOp).length === 0 && JSON.stringify(sEditOp) === JSON.stringify({})) {
                 sHas = false;
             }
         }
-        if (dTransform && dTransform.includeRawDomain) {
-            delete dTransform.includeRawDomain;
-            if (Object.keys(dTransform).length === 0 && JSON.stringify(dTransform) === JSON.stringify({})) {
+        if (dEditOp && dEditOp.includeRawDomain) {
+            delete dEditOp.includeRawDomain;
+            if (Object.keys(dEditOp).length === 0 && JSON.stringify(dEditOp) === JSON.stringify({})) {
                 dHas = false;
             }
         }
     }
-    if (sHas && dHas && (!util.rawEqual(sTransform, dTransform))) {
-        transistion = util.duplicate(transformTransitions[transform]);
-        transistion.detail = { "type": "modified", "channel": channel };
-        return transistion;
+    if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
+        editOp = util.duplicate(transformEditOps[transform]);
+        editOp.detail = { "type": "modified", "channel": channel };
+        return editOp;
     }
     else if (sHas && !dHas) {
-        transistion = util.duplicate(transformTransitions[transform]);
-        transistion.detail = { "type": "removed", "channel": channel };
-        return transistion;
+        editOp = util.duplicate(transformEditOps[transform]);
+        editOp.detail = { "type": "removed", "channel": channel };
+        return editOp;
     }
     else if (!sHas && dHas) {
-        transistion = util.duplicate(transformTransitions[transform]);
-        transistion.detail = { "type": "added", "channel": channel };
-        return transistion;
+        editOp = util.duplicate(transformEditOps[transform]);
+        editOp.detail = { "type": "added", "channel": channel };
+        return editOp;
     }
 }
 exports.transformBasic = transformBasic;
-function filterTransitionSet(s, d, filterTransitions) {
+function filterEditOps(s, d, importedFilterEditOps) {
     var sFilters = [], dFilters = [];
-    var transitions = [];
+    var editOps = [];
     if (s.transform && s.transform.filter) {
         sFilters = filters(s.transform.filter);
     }
@@ -160,21 +160,21 @@ function filterTransitionSet(s, d, filterTransitions) {
     var dOnly = util.arrayDiff(dFilters, sFilters);
     var sOnly = util.arrayDiff(sFilters, dFilters);
     if (sFilters.length === 0 && dFilters.length === 0) {
-        return transitions;
+        return editOps;
     }
     var isFind = false;
     for (var i = 0; i < dOnly.length; i++) {
         for (var j = 0; j < sOnly.length; j++) {
             if (util.rawEqual(dOnly[i].field, sOnly[j].field)) {
-                var newTr = util.duplicate(filterTransitions["MODIFY_FILTER"]);
-                newTr.detail = { field: sOnly[j].field };
+                var newEditOp = util.duplicate(importedFilterEditOps["MODIFY_FILTER"]);
+                newEditOp.detail = { field: sOnly[j].field };
                 if (sOnly[j].op !== dOnly[j].op) {
-                    newTr.detail.op = sOnly[j].op + ', ' + dOnly[j].op;
+                    newEditOp.detail.op = sOnly[j].op + ', ' + dOnly[j].op;
                 }
                 if (sOnly[j].value !== dOnly[j].value) {
-                    newTr.detail.value = sOnly[j].value + ', ' + dOnly[j].value;
+                    newEditOp.detail.value = sOnly[j].value + ', ' + dOnly[j].value;
                 }
-                transitions.push(newTr);
+                editOps.push(newEditOp);
                 dOnly.splice(i, 1);
                 sOnly.splice(j, 1);
                 isFind = true;
@@ -188,18 +188,18 @@ function filterTransitionSet(s, d, filterTransitions) {
         }
     }
     for (var i = 0; i < dOnly.length; i++) {
-        var newTr = util.duplicate(filterTransitions["ADD_FILTER"]);
-        newTr.detail = util.duplicate(dOnly[i]);
-        transitions.push(newTr);
+        var newEditOp = util.duplicate(importedFilterEditOps["ADD_FILTER"]);
+        newEditOp.detail = util.duplicate(dOnly[i]);
+        editOps.push(newEditOp);
     }
     for (var i = 0; i < sOnly.length; i++) {
-        var newTr = util.duplicate(filterTransitions["REMOVE_FILTER"]);
-        newTr.detail = util.duplicate(sOnly[i]);
-        transitions.push(newTr);
+        var newEditOp = util.duplicate(importedFilterEditOps["REMOVE_FILTER"]);
+        newEditOp.detail = util.duplicate(sOnly[i]);
+        editOps.push(newEditOp);
     }
-    return transitions;
+    return editOps;
 }
-exports.filterTransitionSet = filterTransitionSet;
+exports.filterEditOps = filterEditOps;
 function filters(filterExpression) {
     var filters = [];
     if (util.isArray(filterExpression)) {
@@ -207,13 +207,13 @@ function filters(filterExpression) {
             if (util.isString(filter)) {
                 filters = filters.concat(stringFilter(filter));
             }
-            else if (filter_1.isRangeFilter(filter)) {
+            else if (vlFilter.isRangeFilter(filter)) {
                 filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
             }
-            else if (filter_1.isInFilter(filter)) {
+            else if (vlFilter.isInFilter(filter)) {
                 filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
             }
-            else if (filter_1.isEqualFilter(filter)) {
+            else if (vlFilter.isEqualFilter(filter)) {
                 filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
             }
             else {
@@ -226,13 +226,13 @@ function filters(filterExpression) {
         if (util.isString(filter)) {
             filters = filters.concat(stringFilter(filter));
         }
-        else if (filter_1.isRangeFilter(filter)) {
+        else if (vlFilter.isRangeFilter(filter)) {
             filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
         }
-        else if (filter_1.isInFilter(filter)) {
+        else if (vlFilter.isInFilter(filter)) {
             filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
         }
-        else if (filter_1.isEqualFilter(filter)) {
+        else if (vlFilter.isEqualFilter(filter)) {
             filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
         }
         else {
@@ -260,21 +260,21 @@ function filters(filterExpression) {
     }
 }
 exports.filters = filters;
-function transformSettype(s, d, channel, transformTransitions) {
-    var transistion;
+function transformSettype(s, d, channel, transformEditOps) {
+    var editOp;
     if (s.encoding[channel] && d.encoding[channel]
         && (d.encoding[channel]["field"] === s.encoding[channel]["field"])
         && (d.encoding[channel]["type"] !== s.encoding[channel]["type"])) {
-        transistion = util.duplicate(transformTransitions["SETTYPE"]);
-        transistion.detail = {
+        editOp = util.duplicate(transformEditOps["SETTYPE"]);
+        editOp.detail = {
             "type": s.encoding[channel]["type"] + "_" + d.encoding[channel]["type"],
             "channel": channel
         };
-        return transistion;
+        return editOp;
     }
 }
 exports.transformSettype = transformSettype;
-function encodingTransitionSet(s, d, importedEncodingTransitions) {
+function encodingEditOps(s, d, importedEncodingEditOps) {
     if (nb.sameEncoding(s.encoding, d.encoding)) {
         return [];
     }
@@ -300,9 +300,9 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
         });
         return nodes.splice(argMinD, 1)[0];
     }
-    var nodes = nb.neighbors(s, additionalFields, additionalChannels, importedEncodingTransitions)
+    var nodes = nb.neighbors(s, additionalFields, additionalChannels, importedEncodingEditOps)
         .map(function (neighbor) {
-        neighbor.distance = neighbor.transition.cost,
+        neighbor.distance = neighbor.editOp.cost,
             neighbor.prev = [s];
         return neighbor;
     });
@@ -314,10 +314,10 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
         if (nb.sameEncoding(u.encoding, d.encoding)) {
             break;
         }
-        if (u.distance >= importedEncodingTransitions.ceiling.cost) {
-            return [{ name: 'OVER_THE_CEILING', cost: importedEncodingTransitions.ceiling.alternatingCost }];
+        if (u.distance >= importedEncodingEditOps.ceiling.cost) {
+            return [{ name: 'OVER_THE_CEILING', cost: importedEncodingEditOps.ceiling.alternatingCost }];
         }
-        var newNodes = nb.neighbors(u, additionalFields, u.additionalChannels, importedEncodingTransitions);
+        var newNodes = nb.neighbors(u, additionalFields, u.additionalChannels, importedEncodingEditOps);
         newNodes.forEach(function (newNode) {
             var node;
             for (var i = 0; i < doneNodes.length; i += 1) {
@@ -332,14 +332,14 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
                 }
             }
             if (node) {
-                if (node.distance > u.distance + newNode.transition.cost) {
-                    node.distance = u.distance + newNode.transition.cost;
-                    node.transition = newNode.transition;
+                if (node.distance > u.distance + newNode.editOp.cost) {
+                    node.distance = u.distance + newNode.editOp.cost;
+                    node.editOp = newNode.editOp;
                     node.prev = u.prev.concat([u]);
                 }
             }
             else {
-                newNode.distance = u.distance + newNode.transition.cost;
+                newNode.distance = u.distance + newNode.editOp.cost;
                 newNode.prev = u.prev.concat([u]);
                 nodes.push(newNode);
             }
@@ -350,10 +350,10 @@ function encodingTransitionSet(s, d, importedEncodingTransitions) {
         return [{ name: "UNREACHABLE", cost: 999 }];
     }
     var result = u.prev.map(function (node) {
-        return node.transition;
-    }).filter(function (transition) { return transition; });
-    result.push(u.transition);
+        return node.editOp;
+    }).filter(function (editOp) { return editOp; });
+    result.push(u.editOp);
     return result;
 }
-exports.encodingTransitionSet = encodingTransitionSet;
+exports.encodingEditOps = encodingEditOps;
 //# sourceMappingURL=trans.js.map

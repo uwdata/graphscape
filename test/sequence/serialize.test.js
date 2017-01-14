@@ -1,6 +1,6 @@
 "use strict";
 var expect = require('chai').expect;
-var ruleSet = require('../ruleSetForTest');
+var editOpSet = require('../editOpSetForTest');
 var sr = require('../../src/sequence/serialize');
 var util = require('../../src/util');
 
@@ -334,7 +334,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(40.02);
@@ -594,7 +594,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     // var result = gs.sequence.serialize(charts,options)
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(39.37);
@@ -729,7 +729,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(11.77);
@@ -923,7 +923,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(18.79);
@@ -1046,7 +1046,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(38.45);
@@ -1179,7 +1179,7 @@ describe('sequence.serialize check', function () {
       }
     ];
 
-    var result = sr.serialize(charts, {"fixFirst":false}, ruleSet.DEFAULT_TRANSITIONS);
+    var result = sr.serialize(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(21.59);
