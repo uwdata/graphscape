@@ -7,7 +7,7 @@ var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function serialize(specs, options, editOpSet, callback){
+function sequence(specs, options, editOpSet, callback){
   if (!editOpSet) {
     editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
@@ -66,7 +66,7 @@ function serialize(specs, options, editOpSet, callback){
     return 0;
   });
   
-  var serializedSpecs = [];
+  var sequencedSpecs = [];
   var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].sequenceCost === minSequenceCost ){
@@ -158,4 +158,4 @@ function transitionShorthand(transition){
                     .join('|');
                     
 }
-exports.serialize = serialize;
+exports.sequence = sequence;

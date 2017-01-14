@@ -9,9 +9,9 @@ GraphScape([paper](http://idl.cs.washington.edu/papers/graphscape/)) is a direct
 
 ## Sequence Recommender API
 
-<a name="serialize" href="#serialize">#</a>
-graphscape.sequence.<b>serialize</b>(<i>charts</i>, <i>options</i>[, <i>ruleSet</i>, <i>callback</i>])
-[<>](https://github.com/uwdata/graphscape/blob/master/src/sequence/serialize.js "Source")
+<a name="sequence" href="#sequence">#</a>
+graphscape.<b>sequence</b>(<i>charts</i>, <i>options</i>[, <i>editOpSet</i>, <i>callback</i>])
+[<>](https://github.com/uwdata/graphscape/blob/master/src/sequence/sequence.js "Source")
 
 Generate recommended sequence orders for a collection of Vega-Lite *charts*. The return value is a ranked array of potential sequences and associated metadata.
 
@@ -21,7 +21,7 @@ Generate recommended sequence orders for a collection of Vega-Lite *charts*. The
 | :-------- |:-------------:| :------------- |
 | charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) unit charts. |
 | options | Object | `{ "fixFirst": true|false }` <br> *fixFirst*: indicates whether the first chart in *charts* should be pinned as the first chart of the recommended sequence (`true`) or not (`false`).|
-| ruleSet | Object | (*Optional*) Specifies custom rules for calculating sequence costss |
+| editOpSet | Object | (*Optional*) Specifies custom rules for calculating sequence costss |
 | callback | Function | (*Optional*) `function(result) { ... }` <br> A callback function to invoke with the results. |
 
 
@@ -63,7 +63,7 @@ charts.push({
   }
 });
 var options = { "fixFirst": false };
-console.log(gs.sequence.serialize(charts, options));
+console.log(gs.sequence(charts, options));
 ```
 
 ## Sequence Recommender Web Application
@@ -92,7 +92,7 @@ To use a custom build of `graphscape.js`, copy your new `graphscape.js` file and
 $ cd src/rule
 $ node lp.js
 $ matlab < lp.m
-$ node gen_ruleSet.js # This will generate ruleSet.js.
+$ node genEditOpSet.js # This will generate editOpSet.js.
 
 # After creating your rankings, you must re-build `graphscape.js` to apply changes.
 $ cd

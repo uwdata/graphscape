@@ -14949,14 +14949,14 @@ exports.DEFAULT_EDIT_OPS = {
 }
 },{}],29:[function(require,module,exports){
 "use strict"
-exports.rule = require('./editOp/editOpSet.js')
-exports.sequence = require('./sequence/serialize.js')
-exports.transition = require('./transition/trans.js')
+
+exports.sequence = require('./sequence/sequence.js').sequence;
+exports.transition = require('./transition/trans.js');
 
 
 
 
-},{"./editOp/editOpSet.js":28,"./sequence/serialize.js":32,"./transition/trans.js":34}],30:[function(require,module,exports){
+},{"./sequence/sequence.js":32,"./transition/trans.js":34}],30:[function(require,module,exports){
 'use strict'
 //PatternOptimizer
 function score(coverage, uniqTransitionSets, appear, patternArray){
@@ -15137,7 +15137,7 @@ var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function serialize(specs, options, editOpSet, callback){
+function sequence(specs, options, editOpSet, callback){
   if (!editOpSet) {
     editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
@@ -15196,7 +15196,7 @@ function serialize(specs, options, editOpSet, callback){
     return 0;
   });
   
-  var serializedSpecs = [];
+  var sequencedSpecs = [];
   var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].sequenceCost === minSequenceCost ){
@@ -15288,7 +15288,7 @@ function transitionShorthand(transition){
                     .join('|');
                     
 }
-exports.serialize = serialize;
+exports.sequence = sequence;
 
 },{"../../lib/TSP.js":1,"./../editOp/editOpSet.js":28,"./../transition/trans.js":34,"./PatternOptimizer.js":30,"./TieBreaker.js":31,"d3":4}],33:[function(require,module,exports){
 "use strict";
