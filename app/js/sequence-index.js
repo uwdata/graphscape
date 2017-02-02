@@ -1,15 +1,15 @@
 $(document).on('ready page:load', function () {
-  
+
   var results,uniqDP,uniqD, rankSequenceCost, rankTransitionCosts, rankSequenceCostTie, rankTransitionCostsTie;
 
 
   var worker = new Worker('js/sequence-worker.js');
-  
+
 
 
   $('#toggle-show-all').on('click',function(e){
     if (!$(this).hasClass('active')) {
-      $('#sorted-result .not.optimum').removeClass('hidden');  
+      $('#sorted-result .not.optimum').removeClass('hidden');
       $(this).addClass('active');
       $(this).text('Show Optimum Only');
     } else {
@@ -28,7 +28,7 @@ $(document).on('ready page:load', function () {
         if (a.sumOfTransitionCosts < b.sumOfTransitionCosts) {
           return -1;
         } else {
-          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
+          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;
         }
         return 0;
       });
@@ -37,14 +37,14 @@ $(document).on('ready page:load', function () {
         if(results[i].sumOfTransitionCosts === minSumOfTransitionCosts){
           results[i].isOptimum = true;
         }
-        else { 
-          results[i].isOptimum = false; 
+        else {
+          results[i].isOptimum = false;
         }
       }
       listButtons(results)
       $(this).removeClass('active');
       $(this).text('On Pattern Score');
-      
+
     } else {
       results = results.sort(function(a,b){
         if (a.sequenceCost > b.sequenceCost) {
@@ -53,7 +53,7 @@ $(document).on('ready page:load', function () {
         if (a.sequenceCost < b.sequenceCost) {
           return -1;
         } else {
-          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1; 
+          return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;
         }
         return 0;
       });
@@ -62,7 +62,7 @@ $(document).on('ready page:load', function () {
         if(results[i].sequenceCost === maxSequenceCost){
           results[i].isOptimum = true;
         }
-        else { 
+        else {
           results[i].isOptimum = false;
         }
       }
@@ -71,26 +71,26 @@ $(document).on('ready page:load', function () {
       $(this).addClass('active');
       $(this).text('Off Pattern Score');
     }
-    
+
   });
 
 
   $('#sort').on('click', function(e){
-    
-    
+
+
     var specs = JSON.parse($('#specs').val());
     var fixFirst = $('#fixfirst').is(':checked');
-    
-    // Run 
+
+    // Run
     $('#current-status').show(500, function(){
 
       worker.onmessage = function(e) {
 
-        
 
 
-        setTimeout(function(){ 
-          $('#current-status').hide(500);  
+
+        setTimeout(function(){
+          $('#current-status').hide(500);
         }, 1);
         results = e.data;
 
@@ -99,14 +99,14 @@ $(document).on('ready page:load', function () {
                       .values()
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
-                      
+
 
         allD = results.map(overallD).sort(function(a,b){ return a-b;});
         uniqD = d3.set(results.map(overallD))
                       .values()
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
-                      
+
 
 
 
@@ -128,11 +128,11 @@ $(document).on('ready page:load', function () {
           $('#toggle-show-all').text('Show All');
         }
         listButtons(results, fixFirst);
-        
+
       }
       worker.postMessage({specs: specs, options: {"fixFirst": fixFirst}}); // Start the worker.
     });
-  
+
   })
   function listButtons(results, fixFirst){
 
@@ -150,8 +150,8 @@ $(document).on('ready page:load', function () {
                   .html(sequence.join(',') + ' | ' + Math.round(results[i].sequenceCost*100)/100 )
                   .addClass('result btn btn-xs')
                   .data('result', results[i]);
-      
-      if (results[i].isOptimum) { 
+
+      if (results[i].isOptimum) {
         link.addClass('btn-primary');
         $('#sorted-result .optimum').not('.not').append(link);
       }
@@ -159,7 +159,7 @@ $(document).on('ready page:load', function () {
         link.addClass('btn-default');
         $('#sorted-result .not.optimum').append(link);
       };
-      
+
     };
 
     $('.result').on('click', function(){
@@ -198,14 +198,14 @@ $(document).on('ready page:load', function () {
         if (i>0) {
           var TRdiv = $("<div></div>").attr("class","col-xs-6");
           var TRinfo = "Distance : " + result.transitions[i-1].cost + "<br/>"
-                      + "Marktype  Transitions : " + JSON.stringify(result.transitions[i-1].marktype) + "<br/>"
+                      + "Marktype  Transitions : " + JSON.stringify(result.transitions[i-1].mark) + "<br/>"
                       + "Encoding  Transitions : " + JSON.stringify(result.transitions[i-1].encoding) + "<br/>"
-                      + "Transform Transitions : " + JSON.stringify(result.transitions[i-1].transform); 
+                      + "Transform Transitions : " + JSON.stringify(result.transitions[i-1].transform);
           TRdiv.html(TRinfo);
           newRowDiv.append(TRdiv);
-          
+
         };
-        specsDiv.append(newRowDiv);  
+        specsDiv.append(newRowDiv);
       }
     }
   }

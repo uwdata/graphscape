@@ -335,13 +335,13 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
-    
+
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(40.02);
     expect(result[0].globalWeightingTerm).to.eq( 1- 0.6666666666666666);
     expect(result[0].sequenceCost).to.eq(13.340000000000003);
-    
-    
+
+
   });
 
   it('Case 5', function () {
@@ -600,8 +600,8 @@ describe('sequence.sequence check', function () {
     expect(result[0].sumOfTransitionCosts).to.eq(39.37);
     expect(result[0].globalWeightingTerm).to.eq( 0.33333333333333337);
     expect(result[0].sequenceCost).to.eq(13.123333333333333);
-    
-    
+
+
   });
 
   it('Case 4', function () {
@@ -730,13 +730,13 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
-    
+
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(11.77);
     expect(result[0].globalWeightingTerm).to.eq( 1-0.3333333333333333);
     expect(result[0].sequenceCost).to.eq(7.846666666666668);
-    
-    
+
+
   });
 
   it('Case 3', function () {
@@ -924,12 +924,12 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
-    
+
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(18.79);
     expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
     expect(result[0].sequenceCost).to.eq(12.526993464052287);
-       
+
   });
 
   it('Case 2', function () {
@@ -1047,13 +1047,13 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
-    
+
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(38.45);
     expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
     expect(result[0].sequenceCost).to.eq(25.633333333333336);
-    
-    
+
+
   });
 
   it('Case 1', function () {
@@ -1180,13 +1180,13 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
-    
+
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(21.59);
     expect(result[0].globalWeightingTerm).to.eq( 0.5);
     expect(result[0].sequenceCost).to.eq(10.795);
-    
-    
+
+
   });
 
 })

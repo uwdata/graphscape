@@ -11,13 +11,13 @@ function sequence(specs, options, editOpSet, callback){
   if (!editOpSet) {
     editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
-  
+
   function distanceWithPattern(dist, globalWeightingTerm, filterCost){
     return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, editOpSet);
-    
+
     if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
@@ -25,12 +25,12 @@ function sequence(specs, options, editOpSet, callback){
 
   var transitions = getTransitionSets(specs, editOpSet);
   transitions = extendTransitionSets(transitions);
-  
+
   var TSPResult = TSP.TSP(transitions, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    
+
     var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
@@ -39,7 +39,7 @@ function sequence(specs, options, editOpSet, callback){
     var pattern = transitionSet.map(function(r){ return r.id; });
     var POResult = PO.PatternOptimizer(pattern, transitions.uniq);
 
-    var result = { 
+    var result = {
               "sequence" : sequence,
               "transitions" : transitionSet,
               "sumOfTransitionCosts" : tspR.distance,
@@ -61,24 +61,24 @@ function sequence(specs, options, editOpSet, callback){
     if (a.sequenceCost < b.sequenceCost) {
       return -1;
     } else {
-      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
-    } 
+      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;
+    }
     return 0;
   });
-  
+
   var sequencedSpecs = [];
   var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].sequenceCost === minSequenceCost ){
       TSPResultAll[i].isOptimum = true;
     }
-    else { 
-      break; 
+    else {
+      break;
     }
   }
   var returnValue = TSPResultAll;
 
-  
+
   if(callback){
     callback(returnValue);
   }
@@ -98,7 +98,7 @@ function getTransitionSets(specs, editOpSet){
     transitions.push([]);
     for (var j = 0; j < specs.length; j++) {
       transitions[i].push(trans.transition(specs[i], specs[j], editOpSet, { omitIncludeRawDomin: true }));
-      
+
     }
   }
   return transitions;
@@ -111,17 +111,17 @@ function extendTransitionSets(transitions){
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
       var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      
+
       if ( index === -1) {
-        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
+        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;
       } else {
         curr[i]["id"] = index;
       }
-      
+
     };
     return prev;
   }, []);
-  
+
   var uniqueCosts = d3.set(flatCosts)
                       .values()
                       .map(function(val){ return Number(val); })
@@ -145,10 +145,10 @@ function transitionShorthand(transition){
   return transition.mark
                     .concat(transition.transform)
                     .concat(transition.encoding)
-                    .map(function(tr){ 
+                    .map(function(tr){
                       if (tr.detail) {
                         if (tr.name === "MODIFY_FILTER") {
-                          return tr.name + '(' + JSON.stringify(tr.detail.field) + ')';
+                          return tr.name + '(' + JSON.stringify(tr.detail.where) + ')';
                         }
                         return tr.name + '(' + JSON.stringify(tr.detail) + ')';
                       }
@@ -156,6 +156,6 @@ function transitionShorthand(transition){
                     })
                     .sort()
                     .join('|');
-                    
+
 }
 exports.sequence = sequence;

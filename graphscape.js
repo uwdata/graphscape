@@ -14951,7 +14951,7 @@ exports.DEFAULT_EDIT_OPS = {
 "use strict"
 
 exports.sequence = require('./sequence/sequence.js').sequence;
-exports.transition = require('./transition/trans.js');
+exports.transition = require('./transition/trans.js').transition;
 
 
 
@@ -14981,16 +14981,16 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
   // var inputDistance = distance(inputArray, uniqTransitionSets);
 
   for (var l = 1; l <= inputArray.length; l++) {
-    
+
     for (var i = 0; i < inputArray.length-l+1; i++) {
       var appear = [i];
       for (var j = 0; j < inputArray.length-l+1; j++) {
-        if ( i !== j && isSameSub(inputArray, i, i + (l-1), j, j + (l-1))) {        
+        if ( i !== j && isSameSub(inputArray, i, i + (l-1), j, j + (l-1))) {
           appear.push(j);
         }
       }
       var overlap = false;
-      
+
       var rythmic = true;
       var period = 0;
       for (var k = 0; k < appear.length-1; k++) {
@@ -15004,7 +15004,7 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
         // }
         // period = appear[k+1] - appear[k];
       }
-      
+
       // if (appear.length > 1 && !overlap && rythmic ){
       if (appear.length > 1 && !overlap){
 
@@ -15014,25 +15014,25 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
         if( !Optimized.find(function(rp){ return s(rp.pattern) === s(newPattern); }) ){
           newPattern = { 'pattern': newPattern, 'appear': appear, 'coverage': RPcoverage  };
           newPattern.patternScore = scoreSimple(newPattern.coverage, l, inputArray.length );
-          
+
           if (newPattern.patternScore > maxScore) {
             maxScore = newPattern.patternScore;
-            Optimized = [ newPattern ];  
+            Optimized = [ newPattern ];
           } else if ( newPattern.patternScore === maxScore ) {
-            Optimized.push(newPattern);    
+            Optimized.push(newPattern);
           }
-         
-        } 
+
+        }
       }
     }
   }
-  
+
 
   return Optimized;
 }
 function distance(trArray, uniqTransitionSets){
-  return trArray.reduce(function(prev,curr){ 
-          prev += uniqTransitionSets[curr].tr.cost 
+  return trArray.reduce(function(prev,curr){
+          prev += uniqTransitionSets[curr].tr.cost
           return prev; },0);
 }
 function coverage(array, Patternlength, appear){
@@ -15045,7 +15045,7 @@ function coverage(array, Patternlength, appear){
     coverage += appear[i] + Patternlength - appear[s];
 
   };
-  if (i===appear.length-1) { 
+  if (i===appear.length-1) {
     coverage += Patternlength;
   };
 
@@ -15103,13 +15103,13 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
       }
     }
   }
-  
+
   for (var i = 0; i < filterScore.length; i++) {
     for (var j = 1; j < filterState[filterScore[i].field].length; j++) {
       if ( filterState[filterScore[i].field][j-1] < filterState[filterScore[i].field][j] ) {
-        filterScore[i].score += 1;  
+        filterScore[i].score += 1;
       } else if (filterState[filterScore[i].field][j-1] > filterState[filterScore[i].field][j] ){
-        filterScore[i].score -= 1;  
+        filterScore[i].score -= 1;
       }
     }
 
@@ -15141,13 +15141,13 @@ function sequence(specs, options, editOpSet, callback){
   if (!editOpSet) {
     editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
-  
+
   function distanceWithPattern(dist, globalWeightingTerm, filterCost){
     return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
   var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, editOpSet);
-    
+
     if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
@@ -15155,12 +15155,12 @@ function sequence(specs, options, editOpSet, callback){
 
   var transitions = getTransitionSets(specs, editOpSet);
   transitions = extendTransitionSets(transitions);
-  
+
   var TSPResult = TSP.TSP(transitions, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    
+
     var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
@@ -15169,7 +15169,7 @@ function sequence(specs, options, editOpSet, callback){
     var pattern = transitionSet.map(function(r){ return r.id; });
     var POResult = PO.PatternOptimizer(pattern, transitions.uniq);
 
-    var result = { 
+    var result = {
               "sequence" : sequence,
               "transitions" : transitionSet,
               "sumOfTransitionCosts" : tspR.distance,
@@ -15191,24 +15191,24 @@ function sequence(specs, options, editOpSet, callback){
     if (a.sequenceCost < b.sequenceCost) {
       return -1;
     } else {
-      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
-    } 
+      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;
+    }
     return 0;
   });
-  
+
   var sequencedSpecs = [];
   var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].sequenceCost === minSequenceCost ){
       TSPResultAll[i].isOptimum = true;
     }
-    else { 
-      break; 
+    else {
+      break;
     }
   }
   var returnValue = TSPResultAll;
 
-  
+
   if(callback){
     callback(returnValue);
   }
@@ -15228,7 +15228,7 @@ function getTransitionSets(specs, editOpSet){
     transitions.push([]);
     for (var j = 0; j < specs.length; j++) {
       transitions[i].push(trans.transition(specs[i], specs[j], editOpSet, { omitIncludeRawDomin: true }));
-      
+
     }
   }
   return transitions;
@@ -15241,17 +15241,17 @@ function extendTransitionSets(transitions){
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
       var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      
+
       if ( index === -1) {
-        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
+        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;
       } else {
         curr[i]["id"] = index;
       }
-      
+
     };
     return prev;
   }, []);
-  
+
   var uniqueCosts = d3.set(flatCosts)
                       .values()
                       .map(function(val){ return Number(val); })
@@ -15275,10 +15275,10 @@ function transitionShorthand(transition){
   return transition.mark
                     .concat(transition.transform)
                     .concat(transition.encoding)
-                    .map(function(tr){ 
+                    .map(function(tr){
                       if (tr.detail) {
                         if (tr.name === "MODIFY_FILTER") {
-                          return tr.name + '(' + JSON.stringify(tr.detail.field) + ')';
+                          return tr.name + '(' + JSON.stringify(tr.detail.where) + ')';
                         }
                         return tr.name + '(' + JSON.stringify(tr.detail) + ')';
                       }
@@ -15286,7 +15286,7 @@ function transitionShorthand(transition){
                     })
                     .sort()
                     .join('|');
-                    
+
 }
 exports.sequence = sequence;
 
@@ -15295,512 +15295,557 @@ exports.sequence = sequence;
 var util = require('../util');
 var def = require('../editOp/editOpSet');
 function neighbors(spec, additionalFields, additionalChannels, importedEncodingEditOps) {
-    var neighbors = [];
-    var encodingEditOps = importedEncodingEditOps || def.DEFAULT_ENCODING_EDIT_OPS;
-    var inChannels = util.keys(spec.encoding);
-    var exChannels = additionalChannels;
-    inChannels.forEach(function (channel) {
-        var newNeighbor = util.duplicate(spec);
-        var editOpType = "REMOVE_" + channel.toUpperCase();
-        editOpType += (spec.encoding[channel].field === "*") ? "_COUNT" : "";
-        var editOp = util.duplicate(encodingEditOps[editOpType]);
-        var newAdditionalFields = util.duplicate(additionalFields);
-        if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
-            newAdditionalFields.push(newNeighbor.encoding[channel]);
+  var neighbors = [];
+  var encodingEditOps = importedEncodingEditOps || def.DEFAULT_ENCODING_EDIT_OPS;
+  var inChannels = util.keys(spec.encoding);
+  var exChannels = additionalChannels;
+
+  inChannels.forEach(function (channel) {
+    var newNeighbor = util.duplicate(spec);
+    var editOpType = "REMOVE_" + channel.toUpperCase();
+    editOpType += (spec.encoding[channel].field === "*") ? "_COUNT" : "";
+    var editOp = util.duplicate(encodingEditOps[editOpType]);
+    var newAdditionalFields = util.duplicate(additionalFields);
+    if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
+      newAdditionalFields.push(newNeighbor.encoding[channel]);
+    }
+    var newAdditionalChannels = util.duplicate(additionalChannels);
+    editOp.detail = {
+      "what": ["field","channel"],
+      "before": [newNeighbor.encoding[channel].field, channel],
+      "after": [undefined, undefined]
+    };
+
+    newAdditionalChannels.push(channel);
+    delete newNeighbor.encoding[channel];
+    if (validate(newNeighbor)) {
+      newNeighbor.editOp = editOp;
+      newNeighbor.additionalFields = newAdditionalFields;
+      newNeighbor.additionalChannels = newAdditionalChannels;
+      neighbors.push(newNeighbor);
+    }
+    ;
+    additionalFields.forEach(function (field, index) {
+      if (field.field !== spec.encoding[channel].field) {
+        newNeighbor = util.duplicate(spec);
+        editOpType = "MODIFY_" + channel.toUpperCase();
+        if (spec.encoding[channel].field === "*" && field.field !== "*") {
+          editOpType += "_REMOVE_COUNT";
         }
-        var newAdditionalChannels = util.duplicate(additionalChannels);
-        editOp.detail = { "field": newNeighbor.encoding[channel].field, "channel": channel };
-        newAdditionalChannels.push(channel);
-        delete newNeighbor.encoding[channel];
+        else if (spec.encoding[channel].field !== "*" && field.field === "*") {
+          editOpType += "_ADD_COUNT";
+        }
+        editOp = util.duplicate(encodingEditOps[editOpType]);
+        newAdditionalFields = util.duplicate(additionalFields);
+        newAdditionalFields.splice(index, 1);
+        if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
+          newAdditionalFields.push(newNeighbor.encoding[channel]);
+        }
+        newAdditionalChannels = util.duplicate(additionalChannels);
+        newNeighbor.encoding[channel] = field;
+        editOp.detail = {
+          "what": "field",
+          "before": spec.encoding[channel].field,
+          "after": field.field
+        };
+
         if (validate(newNeighbor)) {
-            newNeighbor.editOp = editOp;
-            newNeighbor.additionalFields = newAdditionalFields;
-            newNeighbor.additionalChannels = newAdditionalChannels;
-            neighbors.push(newNeighbor);
+          newNeighbor.editOp = editOp;
+          newNeighbor.additionalFields = newAdditionalFields;
+          newNeighbor.additionalChannels = newAdditionalChannels;
+          neighbors.push(newNeighbor);
         }
         ;
-        additionalFields.forEach(function (field, index) {
-            if (field.field !== spec.encoding[channel].field) {
-                newNeighbor = util.duplicate(spec);
-                editOpType = "MODIFY_" + channel.toUpperCase();
-                if (spec.encoding[channel].field === "*" && field.field !== "*") {
-                    editOpType += "_REMOVE_COUNT";
-                }
-                else if (spec.encoding[channel].field !== "*" && field.field === "*") {
-                    editOpType += "_ADD_COUNT";
-                }
-                editOp = util.duplicate(encodingEditOps[editOpType]);
-                newAdditionalFields = util.duplicate(additionalFields);
-                newAdditionalFields.splice(index, 1);
-                if (util.find(newAdditionalFields, util.rawEqual, newNeighbor.encoding[channel]) === -1) {
-                    newAdditionalFields.push(newNeighbor.encoding[channel]);
-                }
-                newAdditionalChannels = util.duplicate(additionalChannels);
-                newNeighbor.encoding[channel] = field;
-                editOp.detail = { "field": [spec.encoding[channel].field, field.field].join(','), "channel": channel };
-                if (validate(newNeighbor)) {
-                    newNeighbor.editOp = editOp;
-                    newNeighbor.additionalFields = newAdditionalFields;
-                    newNeighbor.additionalChannels = newAdditionalChannels;
-                    neighbors.push(newNeighbor);
-                }
-                ;
-            }
-        });
-        inChannels.forEach(function (anotherChannel) {
-            if (anotherChannel === channel
-                || (["x", "y"].indexOf(channel) < 0 || ["x", "y"].indexOf(anotherChannel) < 0)) {
-                return;
-            }
-            newNeighbor = util.duplicate(spec);
-            editOp = util.duplicate(encodingEditOps["SWAP_X_Y"]);
-            newAdditionalFields = util.duplicate(additionalFields);
-            newAdditionalChannels = util.duplicate(additionalChannels);
-            var tempChannel = util.duplicate(newNeighbor.encoding[channel]);
-            newNeighbor.encoding[channel] = newNeighbor.encoding[anotherChannel];
-            newNeighbor.encoding[anotherChannel] = tempChannel;
-            editOp.detail = { "field": [spec.encoding["x"].field, spec.encoding["y"].field].join(','), "channel": "x,y" };
-            if (validate(newNeighbor)) {
-                newNeighbor.editOp = editOp;
-                newNeighbor.additionalFields = newAdditionalFields;
-                newNeighbor.additionalChannels = newAdditionalChannels;
-                neighbors.push(newNeighbor);
-            }
-            ;
-        });
-        exChannels.forEach(function (exChannel, index) {
-            newNeighbor = util.duplicate(spec);
-            var newNeighborChannels = (channel + "_" + exChannel).toUpperCase();
-            editOp = util.duplicate(encodingEditOps["MOVE_" + newNeighborChannels]);
-            newAdditionalFields = util.duplicate(additionalFields);
-            newAdditionalChannels = util.duplicate(additionalChannels);
-            newAdditionalChannels.splice(index, 1);
-            newAdditionalChannels.push(channel);
-            newNeighbor.encoding[exChannel] = util.duplicate(newNeighbor.encoding[channel]);
-            delete newNeighbor.encoding[channel];
-            editOp.detail = { "field": spec.encoding[channel].field, "channel": [channel, exChannel].join(',') };
-            if (validate(newNeighbor)) {
-                newNeighbor.editOp = editOp;
-                newNeighbor.additionalFields = newAdditionalFields;
-                newNeighbor.additionalChannels = newAdditionalChannels;
-                neighbors.push(newNeighbor);
-            }
-            ;
-        });
+      }
     });
-    exChannels.forEach(function (channel, chIndex) {
-        additionalFields.forEach(function (field, index) {
-            var newNeighbor = util.duplicate(spec);
-            var editOpType = "ADD_" + channel.toUpperCase();
-            editOpType += (field.field === "*") ? "_COUNT" : "";
-            var editOp = util.duplicate(encodingEditOps[editOpType]);
-            var newAdditionalFields = util.duplicate(additionalFields);
-            var newAdditionalChannels = util.duplicate(additionalChannels);
-            newAdditionalFields.splice(index, 1);
-            newNeighbor.encoding[channel] = field;
-            newAdditionalChannels.splice(chIndex, 1);
-            editOp.detail = { "field": field.field, "channel": channel };
-            if (validate(newNeighbor)) {
-                newNeighbor.editOp = editOp;
-                newNeighbor.additionalFields = newAdditionalFields;
-                newNeighbor.additionalChannels = newAdditionalChannels;
-                neighbors.push(newNeighbor);
-            }
-            ;
-        });
+    inChannels.forEach(function (anotherChannel) {
+      if (anotherChannel === channel
+        || (["x", "y"].indexOf(channel) < 0 || ["x", "y"].indexOf(anotherChannel) < 0)) {
+        return;
+      }
+      newNeighbor = util.duplicate(spec);
+      editOp = util.duplicate(encodingEditOps["SWAP_X_Y"]);
+      newAdditionalFields = util.duplicate(additionalFields);
+      newAdditionalChannels = util.duplicate(additionalChannels);
+      var tempChannel = util.duplicate(newNeighbor.encoding[channel]);
+      newNeighbor.encoding[channel] = newNeighbor.encoding[anotherChannel];
+      newNeighbor.encoding[anotherChannel] = tempChannel;
+      editOp.detail = {
+        "what": ["field", "channel"],
+        "before": [spec.encoding["x"].field, "x"],
+        "after": [spec.encoding["y"].field, "y"]
+      };
+
+      if (validate(newNeighbor)) {
+        newNeighbor.editOp = editOp;
+        newNeighbor.additionalFields = newAdditionalFields;
+        newNeighbor.additionalChannels = newAdditionalChannels;
+        neighbors.push(newNeighbor);
+      }
+      ;
     });
-    for (var i = 0; i < neighbors.length; i += 1) {
-        for (var j = i + 1; j < neighbors.length; j += 1) {
-            if (sameEncoding(neighbors[i].encoding, neighbors[j].encoding)) {
-                neighbors.splice(j, 1);
-                j -= 1;
-            }
-        }
+    exChannels.forEach(function (exChannel, index) {
+      newNeighbor = util.duplicate(spec);
+      var newNeighborChannels = (channel + "_" + exChannel).toUpperCase();
+      editOp = util.duplicate(encodingEditOps["MOVE_" + newNeighborChannels]);
+      newAdditionalFields = util.duplicate(additionalFields);
+      newAdditionalChannels = util.duplicate(additionalChannels);
+      newAdditionalChannels.splice(index, 1);
+      newAdditionalChannels.push(channel);
+      newNeighbor.encoding[exChannel] = util.duplicate(newNeighbor.encoding[channel]);
+      delete newNeighbor.encoding[channel];
+      editOp.detail = {
+        "what": "channel",
+        "before": channel,
+        "after": exChannel
+      };
+
+      if (validate(newNeighbor)) {
+        newNeighbor.editOp = editOp;
+        newNeighbor.additionalFields = newAdditionalFields;
+        newNeighbor.additionalChannels = newAdditionalChannels;
+        neighbors.push(newNeighbor);
+      }
+      ;
+    });
+  });
+  exChannels.forEach(function (channel, chIndex) {
+    additionalFields.forEach(function (field, index) {
+      var newNeighbor = util.duplicate(spec);
+      var editOpType = "ADD_" + channel.toUpperCase();
+      editOpType += (field.field === "*") ? "_COUNT" : "";
+      var editOp = util.duplicate(encodingEditOps[editOpType]);
+      var newAdditionalFields = util.duplicate(additionalFields);
+      var newAdditionalChannels = util.duplicate(additionalChannels);
+      newAdditionalFields.splice(index, 1);
+      newNeighbor.encoding[channel] = field;
+      newAdditionalChannels.splice(chIndex, 1);
+
+      editOp.detail = {
+        "what": ["field","channel"],
+        "before": [undefined, undefined],
+        "after": [field.field, channel]
+      };
+
+      if (validate(newNeighbor)) {
+        newNeighbor.editOp = editOp;
+        newNeighbor.additionalFields = newAdditionalFields;
+        newNeighbor.additionalChannels = newAdditionalChannels;
+        neighbors.push(newNeighbor);
+      }
+      ;
+    });
+  });
+  for (var i = 0; i < neighbors.length; i += 1) {
+    for (var j = i + 1; j < neighbors.length; j += 1) {
+      if (sameEncoding(neighbors[i].encoding, neighbors[j].encoding)) {
+        neighbors.splice(j, 1);
+        j -= 1;
+      }
     }
-    return neighbors;
+  }
+  return neighbors;
 }
 exports.neighbors = neighbors;
 function validate(spec) {
-    return true;
+  return true;
 }
 function sameEncoding(a, b) {
-    var aKeys = util.keys(a);
-    var bKeys = util.keys(b);
-    if (aKeys.length !== bKeys.length) {
-        return false;
+  var aKeys = util.keys(a);
+  var bKeys = util.keys(b);
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
+  var allKeys = util.union(aKeys, bKeys);
+  for (var i = 0; i < allKeys.length; i += 1) {
+    var key = allKeys[i];
+    if (!(a[key] && b[key])) {
+      return false;
     }
-    var allKeys = util.union(aKeys, bKeys);
-    for (var i = 0; i < allKeys.length; i += 1) {
-        var key = allKeys[i];
-        if (!(a[key] && b[key])) {
-            return false;
-        }
-        if (a[key].field !== b[key].field) {
-            return false;
-        }
+    if (a[key].field !== b[key].field) {
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 exports.sameEncoding = sameEncoding;
-
 },{"../editOp/editOpSet":28,"../util":35}],34:[function(require,module,exports){
 "use strict";
 var vlFilter = require('vega-lite/src/filter');
-var type = require('vega-lite/src/type');
+const vlType = require('vega-lite/src/type').Type;
 var channel_1 = require('vega-lite/src/channel');
 var expr = require('vega-expression');
 var util = require('../util');
-var def = require('../editOp/editOpSet');
+const DEFAULT_EDIT_OPS = require('../editOp/editOpSet').DEFAULT_EDIT_OPS;
 var nb = require('./neighbor');
 function transition(s, d, importedTransitionCosts, transOptions) {
-    var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : def.DEFAULT_MARK_EDIT_OPS;
-    var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : def.DEFAULT_TRANSFORM_EDIT_OPS;
-    var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : def.DEFAULT_ENCODING_EDIT_OPS;
-    var trans = {
-        mark: markEditOps(s, d, importedMarkEditOps),
-        transform: transformEditOps(s, d, importedTransformEditOps, transOptions),
-        encoding: encodingEditOps(s, d, importedEncodingEditOps)
-    };
-    var cost = 0;
-    cost = trans.encoding.reduce(function (prev, editOp) {
-        if (editOp.name.indexOf('_COUNT') >= 0) {
-            var channel = editOp.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
-            var aggEditOp = trans.transform.filter(function (editOp) { return editOp.name === "AGGREGATE"; })[0];
-            if (aggEditOp && aggEditOp.detail.length === 1 && aggEditOp.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel; }).length) {
-                aggEditOp.cost = 0;
-            }
-            var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
-            if (binEditOp && binEditOp.detail.filter(function (dt) {
-                if (dt.type === "added") {
-                    return d.encoding[dt.channel].type === type.Type.QUANTITATIVE;
-                }
-                else {
-                    return s.encoding[dt.channel].type === type.Type.QUANTITATIVE;
-                }
-            }).length > 0) {
-                binEditOp.cost = 0;
-            }
+  var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : DEFAULT_EDIT_OPS["markEditOps"];
+  var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : DEFAULT_EDIT_OPS["transformEditOps"];
+  var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : DEFAULT_EDIT_OPS["encodingEditOps"];
+  var trans = {
+    mark: markEditOps(s, d, importedMarkEditOps),
+    transform: transformEditOps(s, d, importedTransformEditOps, transOptions),
+    encoding: encodingEditOps(s, d, importedEncodingEditOps)
+  };
+  var cost = 0;
+  cost = trans.encoding.reduce(function (prev, editOp) {
+    if (editOp.name.indexOf('_COUNT') >= 0) {
+      var channel = editOp.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
+      var aggEditOp = trans.transform.filter(function (editOp) { return editOp.name === "AGGREGATE"; })[0];
+      if (aggEditOp
+          && aggEditOp.detail.length === 1
+          && aggEditOp.detail.filter(function (dt) { return dt.where.toLowerCase() === channel; }).length) {
+        aggEditOp.cost = 0;
+      }
+      var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
+      if (binEditOp && binEditOp.detail.filter(function (dt) {
+        if (dt.how === "added") {
+          return d.encoding[dt.where].type === vlType.QUANTITATIVE;
         }
-        prev += editOp.cost;
-        return prev;
-    }, cost);
-    cost = trans.mark.reduce(function (prev, editOp) {
-        prev += editOp.cost;
-        return prev;
-    }, cost);
-    cost = trans.transform.reduce(function (prev, editOp) {
-        prev += editOp.cost;
-        return prev;
-    }, cost);
-    trans["cost"] = cost;
-    return trans;
+        else {
+          return s.encoding[dt.where].type === vlType.QUANTITATIVE;
+        }
+      }).length > 0) {
+        binEditOp.cost = 0;
+      }
+    }
+    prev += editOp.cost;
+    return prev;
+  }, cost);
+  cost = trans.mark.reduce(function (prev, editOp) {
+    prev += editOp.cost;
+    return prev;
+  }, cost);
+  cost = trans.transform.reduce(function (prev, editOp) {
+    prev += editOp.cost;
+    return prev;
+  }, cost);
+  trans["cost"] = cost;
+  return trans;
 }
 exports.transition = transition;
 function markEditOps(s, d, importedMarkEditOps) {
-    var editOps = [];
-    var markEditOps = importedMarkEditOps || def.DEFAULT_MARK_EDIT_OPS;
-    var newEditOp;
-    if (s.mark === d.mark) {
-        return editOps;
-    }
-    else {
-        var editOpName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
-        if (markEditOps[editOpName]) {
-            newEditOp = util.duplicate(markEditOps[editOpName]);
-            newEditOp.detail = { "from": s.mark.toUpperCase(), "to": d.mark.toUpperCase() };
-            editOps.push(newEditOp);
-        }
-    }
+  var editOps = [];
+  var markEditOps = importedMarkEditOps || DEFAULT_EDIT_OPS["markEditOps"];
+  var newEditOp;
+  if (s.mark === d.mark) {
     return editOps;
+  }
+  else {
+    var editOpName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
+    if (markEditOps[editOpName]) {
+      newEditOp = util.duplicate(markEditOps[editOpName]);
+      newEditOp.detail = { "before":s.mark.toUpperCase(), "after":d.mark.toUpperCase() };
+      editOps.push(newEditOp);
+    }
+  }
+  return editOps;
 }
 exports.markEditOps = markEditOps;
 function transformEditOps(s, d, importedTransformEditOps, transOptions) {
-    var transformEditOps = importedTransformEditOps || def.DEFAULT_TRANSFORM_EDIT_OPS;
-    var editOps = [];
-    channel_1.CHANNELS.forEach(function (channel) {
-        ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
-            var editOp;
-            var already;
-            if (transformType === "SETTYPE" && transformEditOps[transformType]) {
-                editOp = transformSettype(s, d, channel, transformEditOps);
-            }
-            else {
-                if (transformEditOps[transformType]) {
-                    editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
-                }
-            }
-            if (editOp) {
-                already = util.find(editOps, function (eo) { return eo.name; }, editOp);
-                if (already >= 0) {
-                    editOps[already].detail.push(util.duplicate(editOp.detail));
-                }
-                else {
-                    editOp.detail = [util.duplicate(editOp.detail)];
-                    editOps.push(editOp);
-                }
-            }
-        });
+  var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS["transformEditOps"];
+  var editOps = [];
+  channel_1.CHANNELS.forEach(function (channel) {
+    ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
+      var editOp;
+      var already;
+      if (transformType === "SETTYPE" && transformEditOps[transformType]) {
+        editOp = transformSettype(s, d, channel, transformEditOps);
+      }
+      else {
+        if (transformEditOps[transformType]) {
+          editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
+        }
+      }
+      if (editOp) {
+        already = util.find(editOps, function (eo) { return eo.name; }, editOp);
+        if (already >= 0) {
+          editOps[already].detail.push(util.duplicate(editOp.detail));
+        }
+        else {
+          editOp.detail = [util.duplicate(editOp.detail)];
+          editOps.push(editOp);
+        }
+      }
     });
-    var importedFilterEditOps = {
-        "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
-        "ADD_FILTER": transformEditOps["ADD_FILTER"],
-        "REMOVE_FILTER": transformEditOps["REMOVE_FILTER"]
-    };
-    editOps = editOps.concat(filterEditOps(s, d, importedFilterEditOps));
-    return editOps;
+  });
+  var importedFilterEditOps = {
+    "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
+    "ADD_FILTER": transformEditOps["ADD_FILTER"],
+    "REMOVE_FILTER": transformEditOps["REMOVE_FILTER"]
+  };
+  editOps = editOps.concat(filterEditOps(s, d, importedFilterEditOps));
+  return editOps;
 }
 exports.transformEditOps = transformEditOps;
 function transformBasic(s, d, channel, transform, transformEditOps, transOptions) {
-    var sHas = false;
-    var dHas = false;
-    var editOp;
-    var sEditOp, dEditOp;
-    if (s.encoding[channel] && s.encoding[channel][transform.toLowerCase()]) {
-        sHas = true;
-        sEditOp = s.encoding[channel][transform.toLowerCase()];
+  var sHas = false;
+  var dHas = false;
+  var editOp;
+  var sEditOp, dEditOp;
+  if (s.encoding[channel] && s.encoding[channel][transform.toLowerCase()]) {
+    sHas = true;
+    sEditOp = s.encoding[channel][transform.toLowerCase()];
+  }
+  if (d.encoding[channel] && d.encoding[channel][transform.toLowerCase()]) {
+    dHas = true;
+    dEditOp = d.encoding[channel][transform.toLowerCase()];
+  }
+  if (transOptions && transOptions.omitIncludeRawDomain && transform === "SCALE") {
+    if (sEditOp && sEditOp.includeRawDomain) {
+      delete sEditOp.includeRawDomain;
+      if (Object.keys(sEditOp).length === 0 && JSON.stringify(sEditOp) === JSON.stringify({})) {
+        sHas = false;
+      }
     }
-    if (d.encoding[channel] && d.encoding[channel][transform.toLowerCase()]) {
-        dHas = true;
-        dEditOp = d.encoding[channel][transform.toLowerCase()];
+    if (dEditOp && dEditOp.includeRawDomain) {
+      delete dEditOp.includeRawDomain;
+      if (Object.keys(dEditOp).length === 0 && JSON.stringify(dEditOp) === JSON.stringify({})) {
+        dHas = false;
+      }
     }
-    if (transOptions && transOptions.omitIncludeRawDomain && transform === "SCALE") {
-        if (sEditOp && sEditOp.includeRawDomain) {
-            delete sEditOp.includeRawDomain;
-            if (Object.keys(sEditOp).length === 0 && JSON.stringify(sEditOp) === JSON.stringify({})) {
-                sHas = false;
-            }
-        }
-        if (dEditOp && dEditOp.includeRawDomain) {
-            delete dEditOp.includeRawDomain;
-            if (Object.keys(dEditOp).length === 0 && JSON.stringify(dEditOp) === JSON.stringify({})) {
-                dHas = false;
-            }
-        }
-    }
-    if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
-        editOp = util.duplicate(transformEditOps[transform]);
-        editOp.detail = { "type": "modified", "channel": channel };
-        return editOp;
-    }
-    else if (sHas && !dHas) {
-        editOp = util.duplicate(transformEditOps[transform]);
-        editOp.detail = { "type": "removed", "channel": channel };
-        return editOp;
-    }
-    else if (!sHas && dHas) {
-        editOp = util.duplicate(transformEditOps[transform]);
-        editOp.detail = { "type": "added", "channel": channel };
-        return editOp;
-    }
+  }
+  if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
+    editOp = util.duplicate(transformEditOps[transform]);
+    editOp.detail = { "how": "modified", "where": channel };
+    return editOp;
+  }
+  else if (sHas && !dHas) {
+    editOp = util.duplicate(transformEditOps[transform]);
+    editOp.detail = { "how": "removed", "where": channel };
+    return editOp;
+  }
+  else if (!sHas && dHas) {
+    editOp = util.duplicate(transformEditOps[transform]);
+    editOp.detail = { "how": "added", "where": channel };
+    return editOp;
+  }
 }
 exports.transformBasic = transformBasic;
 function filterEditOps(s, d, importedFilterEditOps) {
-    var sFilters = [], dFilters = [];
-    var editOps = [];
-    if (s.transform && s.transform.filter) {
-        sFilters = filters(s.transform.filter);
-    }
-    if (d.transform && d.transform.filter) {
-        dFilters = filters(d.transform.filter);
-    }
-    var dOnly = util.arrayDiff(dFilters, sFilters);
-    var sOnly = util.arrayDiff(sFilters, dFilters);
-    if (sFilters.length === 0 && dFilters.length === 0) {
-        return editOps;
-    }
-    var isFind = false;
-    for (var i = 0; i < dOnly.length; i++) {
-        for (var j = 0; j < sOnly.length; j++) {
-            if (util.rawEqual(dOnly[i].field, sOnly[j].field)) {
-                var newEditOp = util.duplicate(importedFilterEditOps["MODIFY_FILTER"]);
-                newEditOp.detail = { field: sOnly[j].field };
-                if (sOnly[j].op !== dOnly[j].op) {
-                    newEditOp.detail.op = sOnly[j].op + ', ' + dOnly[j].op;
-                }
-                if (sOnly[j].value !== dOnly[j].value) {
-                    newEditOp.detail.value = sOnly[j].value + ', ' + dOnly[j].value;
-                }
-                editOps.push(newEditOp);
-                dOnly.splice(i, 1);
-                sOnly.splice(j, 1);
-                isFind = true;
-                break;
-            }
-        }
-        if (isFind) {
-            isFind = false;
-            i--;
-            continue;
-        }
-    }
-    for (var i = 0; i < dOnly.length; i++) {
-        var newEditOp = util.duplicate(importedFilterEditOps["ADD_FILTER"]);
-        newEditOp.detail = util.duplicate(dOnly[i]);
-        editOps.push(newEditOp);
-    }
-    for (var i = 0; i < sOnly.length; i++) {
-        var newEditOp = util.duplicate(importedFilterEditOps["REMOVE_FILTER"]);
-        newEditOp.detail = util.duplicate(sOnly[i]);
-        editOps.push(newEditOp);
-    }
+  var sFilters = [], dFilters = [];
+  var editOps = [];
+  if (s.transform && s.transform.filter) {
+    sFilters = filters(s.transform.filter);
+  }
+  if (d.transform && d.transform.filter) {
+    dFilters = filters(d.transform.filter);
+  }
+  var dOnly = util.arrayDiff(dFilters, sFilters);
+  var sOnly = util.arrayDiff(sFilters, dFilters);
+  if (sFilters.length === 0 && dFilters.length === 0) {
     return editOps;
+  }
+  var isFind = false;
+  for (var i = 0; i < dOnly.length; i++) {
+    for (var j = 0; j < sOnly.length; j++) {
+      if (util.rawEqual(dOnly[i].field, sOnly[j].field)) {
+        var newEditOp = util.duplicate(importedFilterEditOps["MODIFY_FILTER"]);
+        newEditOp.detail = { "what": [], "where": sOnly[j].field, "before":[], "after":[] };
+        if (sOnly[j].op !== dOnly[j].op) {
+          newEditOp.detail.what.push("op")
+          newEditOp.detail.before.push(sOnly[j].op);
+          newEditOp.detail.after.push(dOnly[j].op);
+        }
+        if (sOnly[j].value !== dOnly[j].value) {
+          newEditOp.detail.what.push("value")
+          newEditOp.detail.before.push(sOnly[j].value);
+          newEditOp.detail.after.push(dOnly[j].value);
+        }
+        editOps.push(newEditOp);
+        dOnly.splice(i, 1);
+        sOnly.splice(j, 1);
+        isFind = true;
+        break;
+      }
+    }
+    if (isFind) {
+      isFind = false;
+      i--;
+      continue;
+    }
+  }
+  for (var i = 0; i < dOnly.length; i++) {
+    var newEditOp = util.duplicate(importedFilterEditOps["ADD_FILTER"]);
+    newEditOp.detail = newEditOp.detail = {
+      "what": ["field", "op", "value"],
+      "before":[undefined, undefined, undefined],
+      "after":[dOnly[i].field, dOnly[i].op, dOnly[i].value]
+    };
+
+    editOps.push(newEditOp);
+  }
+  for (var i = 0; i < sOnly.length; i++) {
+    var newEditOp = util.duplicate(importedFilterEditOps["REMOVE_FILTER"]);
+    newEditOp.detail = newEditOp.detail = {
+      "what": ["field", "op", "value"],
+      "before": [sOnly[i].field, sOnly[i].op, sOnly[i].value],
+      "after": [undefined, undefined, undefined]
+    };
+
+    editOps.push(newEditOp);
+  }
+  return editOps;
 }
 exports.filterEditOps = filterEditOps;
 function filters(filterExpression) {
-    var filters = [];
-    if (util.isArray(filterExpression)) {
-        filterExpression.map(function (filter) {
-            if (util.isString(filter)) {
-                filters = filters.concat(stringFilter(filter));
-            }
-            else if (vlFilter.isRangeFilter(filter)) {
-                filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
-            }
-            else if (vlFilter.isInFilter(filter)) {
-                filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
-            }
-            else if (vlFilter.isEqualFilter(filter)) {
-                filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
-            }
-            else {
-                console.log("WARN: cannot parse filters.");
-            }
-        });
+  var filters = [];
+  if (util.isArray(filterExpression)) {
+    filterExpression.map(function (filter) {
+      if (util.isString(filter)) {
+        filters = filters.concat(stringFilter(filter));
+      }
+      else if (vlFilter.isRangeFilter(filter)) {
+        filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
+      }
+      else if (vlFilter.isInFilter(filter)) {
+        filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
+      }
+      else if (vlFilter.isEqualFilter(filter)) {
+        filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
+      }
+      else {
+        console.log("WARN: cannot parse filters.");
+      }
+    });
+  }
+  else {
+    var filter = filterExpression;
+    if (util.isString(filter)) {
+      filters = filters.concat(stringFilter(filter));
+    }
+    else if (vlFilter.isRangeFilter(filter)) {
+      filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
+    }
+    else if (vlFilter.isInFilter(filter)) {
+      filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
+    }
+    else if (vlFilter.isEqualFilter(filter)) {
+      filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
     }
     else {
-        var filter = filterExpression;
-        if (util.isString(filter)) {
-            filters = filters.concat(stringFilter(filter));
-        }
-        else if (vlFilter.isRangeFilter(filter)) {
-            filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
-        }
-        else if (vlFilter.isInFilter(filter)) {
-            filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
-        }
-        else if (vlFilter.isEqualFilter(filter)) {
-            filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
-        }
-        else {
-            console.log("WARN: cannot parse filters.");
-        }
+      console.log("WARN: cannot parse filters.");
     }
-    return filters;
-    function stringFilter(expression) {
-        var parser = expr["parse"];
-        var expressionTree = parser(expression);
-        return binaryExprsFromExprTree(expressionTree.body[0].expression, [], 0).map(function (bExpr) {
-            return { "field": bExpr.left.property.name, "op": bExpr.operator, "value": bExpr.right.raw };
-        });
-        function binaryExprsFromExprTree(tree, arr, depth) {
-            if (tree.operator === '||' || tree.operator === '&&') {
-                arr = binaryExprsFromExprTree(tree.left, arr, depth + 1);
-                arr = binaryExprsFromExprTree(tree.right, arr, depth + 1);
-            }
-            else if (['==', '===', '!==', '!=', '<', '<=', '>', '>='].indexOf(tree.operator) >= 0) {
-                tree.depth = depth;
-                arr.push(tree);
-            }
-            return arr;
-        }
+  }
+  return filters;
+  function stringFilter(expression) {
+    var parser = expr["parse"];
+    var expressionTree = parser(expression);
+    return binaryExprsFromExprTree(expressionTree.body[0].expression, [], 0).map(function (bExpr) {
+      return { "field": bExpr.left.property.name, "op": bExpr.operator, "value": bExpr.right.raw };
+    });
+    function binaryExprsFromExprTree(tree, arr, depth) {
+      if (tree.operator === '||' || tree.operator === '&&') {
+        arr = binaryExprsFromExprTree(tree.left, arr, depth + 1);
+        arr = binaryExprsFromExprTree(tree.right, arr, depth + 1);
+      }
+      else if (['==', '===', '!==', '!=', '<', '<=', '>', '>='].indexOf(tree.operator) >= 0) {
+        tree.depth = depth;
+        arr.push(tree);
+      }
+      return arr;
     }
+  }
 }
 exports.filters = filters;
 function transformSettype(s, d, channel, transformEditOps) {
-    var editOp;
-    if (s.encoding[channel] && d.encoding[channel]
-        && (d.encoding[channel]["field"] === s.encoding[channel]["field"])
-        && (d.encoding[channel]["type"] !== s.encoding[channel]["type"])) {
-        editOp = util.duplicate(transformEditOps["SETTYPE"]);
-        editOp.detail = {
-            "type": s.encoding[channel]["type"] + "_" + d.encoding[channel]["type"],
-            "channel": channel
-        };
-        return editOp;
-    }
+  var editOp;
+  if (s.encoding[channel] && d.encoding[channel]
+    && (d.encoding[channel]["field"] === s.encoding[channel]["field"])
+    && (d.encoding[channel]["type"] !== s.encoding[channel]["type"])) {
+    editOp = util.duplicate(transformEditOps["SETTYPE"]);
+    editOp.detail = {
+      "before": s.encoding[channel]["type"],
+      "after": d.encoding[channel]["type"],
+      "where": channel
+    };
+    return editOp;
+  }
 }
 exports.transformSettype = transformSettype;
 function encodingEditOps(s, d, importedEncodingEditOps) {
-    if (nb.sameEncoding(s.encoding, d.encoding)) {
-        return [];
+  if (nb.sameEncoding(s.encoding, d.encoding)) {
+    return [];
+  }
+  var sChannels = util.keys(s.encoding);
+  var sFields = sChannels.map(function (key) {
+    return s.encoding[key];
+  });
+  var dChannels = util.keys(d.encoding);
+  var dFields = dChannels.map(function (key) {
+    return d.encoding[key];
+  });
+  var additionalFields = util.unionObjectArray(dFields, sFields, function (field) { return field.field + "_" + field.type; });
+  var additionalChannels = util.arrayDiff(dChannels, sChannels);
+  var u;
+  function nearestNode(nodes) {
+    var minD = Infinity;
+    var argMinD = -1;
+    nodes.forEach(function (node, index) {
+      if (node.distance < minD) {
+        minD = node.distance;
+        argMinD = index;
+      }
+    });
+    return nodes.splice(argMinD, 1)[0];
+  }
+  var nodes = nb.neighbors(s, additionalFields, additionalChannels, importedEncodingEditOps)
+    .map(function (neighbor) {
+    neighbor.distance = neighbor.editOp.cost,
+      neighbor.prev = [s];
+    return neighbor;
+  });
+  s.distance = 0;
+  s.prev = [];
+  var doneNodes = [s];
+  while (nodes.length > 0) {
+    u = nearestNode(nodes);
+    if (nb.sameEncoding(u.encoding, d.encoding)) {
+      break;
     }
-    var sChannels = util.keys(s.encoding);
-    var sFields = sChannels.map(function (key) {
-        return s.encoding[key];
-    });
-    var dChannels = util.keys(d.encoding);
-    var dFields = dChannels.map(function (key) {
-        return d.encoding[key];
-    });
-    var additionalFields = util.unionObjectArray(dFields, sFields, function (field) { return field.field + "_" + field.type; });
-    var additionalChannels = util.arrayDiff(dChannels, sChannels);
-    var u;
-    function nearestNode(nodes) {
-        var minD = Infinity;
-        var argMinD = -1;
-        nodes.forEach(function (node, index) {
-            if (node.distance < minD) {
-                minD = node.distance;
-                argMinD = index;
-            }
-        });
-        return nodes.splice(argMinD, 1)[0];
+    if (u.distance >= importedEncodingEditOps.ceiling.cost) {
+      return [{ name: 'OVER_THE_CEILING', cost: importedEncodingEditOps.ceiling.alternatingCost }];
     }
-    var nodes = nb.neighbors(s, additionalFields, additionalChannels, importedEncodingEditOps)
-        .map(function (neighbor) {
-        neighbor.distance = neighbor.editOp.cost,
-            neighbor.prev = [s];
-        return neighbor;
-    });
-    s.distance = 0;
-    s.prev = [];
-    var doneNodes = [s];
-    while (nodes.length > 0) {
-        u = nearestNode(nodes);
-        if (nb.sameEncoding(u.encoding, d.encoding)) {
-            break;
+    var newNodes = nb.neighbors(u, additionalFields, u.additionalChannels, importedEncodingEditOps);
+    newNodes.forEach(function (newNode) {
+      var node;
+      for (var i = 0; i < doneNodes.length; i += 1) {
+        if (nb.sameEncoding(doneNodes[i].encoding, newNode.encoding)) {
+          return;
         }
-        if (u.distance >= importedEncodingEditOps.ceiling.cost) {
-            return [{ name: 'OVER_THE_CEILING', cost: importedEncodingEditOps.ceiling.alternatingCost }];
+      }
+      for (var i = 0; i < nodes.length; i += 1) {
+        if (nb.sameEncoding(nodes[i].encoding, newNode.encoding)) {
+          node = nodes[i];
+          break;
         }
-        var newNodes = nb.neighbors(u, additionalFields, u.additionalChannels, importedEncodingEditOps);
-        newNodes.forEach(function (newNode) {
-            var node;
-            for (var i = 0; i < doneNodes.length; i += 1) {
-                if (nb.sameEncoding(doneNodes[i].encoding, newNode.encoding)) {
-                    return;
-                }
-            }
-            for (var i = 0; i < nodes.length; i += 1) {
-                if (nb.sameEncoding(nodes[i].encoding, newNode.encoding)) {
-                    node = nodes[i];
-                    break;
-                }
-            }
-            if (node) {
-                if (node.distance > u.distance + newNode.editOp.cost) {
-                    node.distance = u.distance + newNode.editOp.cost;
-                    node.editOp = newNode.editOp;
-                    node.prev = u.prev.concat([u]);
-                }
-            }
-            else {
-                newNode.distance = u.distance + newNode.editOp.cost;
-                newNode.prev = u.prev.concat([u]);
-                nodes.push(newNode);
-            }
-        });
-        doneNodes.push(u);
-    }
-    if (!nb.sameEncoding(u.encoding, d.encoding) && nodes.length === 0) {
-        return [{ name: "UNREACHABLE", cost: 999 }];
-    }
-    var result = u.prev.map(function (node) {
-        return node.editOp;
-    }).filter(function (editOp) { return editOp; });
-    result.push(u.editOp);
-    return result;
+      }
+      if (node) {
+        if (node.distance > u.distance + newNode.editOp.cost) {
+          node.distance = u.distance + newNode.editOp.cost;
+          node.editOp = newNode.editOp;
+          node.prev = u.prev.concat([u]);
+        }
+      }
+      else {
+        newNode.distance = u.distance + newNode.editOp.cost;
+        newNode.prev = u.prev.concat([u]);
+        nodes.push(newNode);
+      }
+    });
+    doneNodes.push(u);
+  }
+  if (!nb.sameEncoding(u.encoding, d.encoding) && nodes.length === 0) {
+    return [{ name: "UNREACHABLE", cost: 999 }];
+  }
+  var result = u.prev.map(function (node) {
+    return node.editOp;
+  }).filter(function (editOp) { return editOp; });
+  result.push(u.editOp);
+  return result;
 }
+
+
 exports.encodingEditOps = encodingEditOps;
 
 },{"../editOp/editOpSet":28,"../util":35,"./neighbor":33,"vega-expression":17,"vega-lite/src/channel":20,"vega-lite/src/filter":23,"vega-lite/src/type":26}],35:[function(require,module,exports){
