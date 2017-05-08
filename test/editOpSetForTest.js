@@ -1,5 +1,5 @@
-exports.DEFAULT_TRANSITIONS = {
-  "marktypeTransitions": {
+exports.DEFAULT_EDIT_OPS = {
+  "markEditOps": {
     "AREA_BAR": {"name": "AREA_BAR","cost": 0.03},
     "AREA_LINE": {"name": "AREA_LINE","cost": 0.02},
     "AREA_POINT": {"name": "AREA_POINT","cost": 0.04},
@@ -16,7 +16,7 @@ exports.DEFAULT_TRANSITIONS = {
     "POINT_TICK": {"name": "POINT_TICK","cost": 0.01},
     "TEXT_TICK": {"name": "TEXT_TICK","cost": 0.05}
   },
-  "transformTransitions": {
+  "transformEditOps": {
     "SCALE": {"name": "SCALE","cost": 0.6},
     "SORT": {"name": "SORT","cost": 0.61},
     "BIN": {"name": "BIN","cost": 0.62},
@@ -25,7 +25,7 @@ exports.DEFAULT_TRANSITIONS = {
     "REMOVE_FILTER": {"name": "REMOVE_FILTER","cost": 0.65},
     "MODIFY_FILTER": {"name": "MODIFY_FILTER","cost": 0.64}
   },
-  "encodingTransitions": {
+  "encodingEditOps": {
     "ADD_X": {"name": "ADD_X","cost": 4.59},
     "ADD_Y": {"name": "ADD_Y","cost": 4.59},
     "ADD_COLOR": {"name": "ADD_COLOR","cost": 4.55},

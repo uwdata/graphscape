@@ -22,16 +22,16 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
   // var inputDistance = distance(inputArray, uniqTransitionSets);
 
   for (var l = 1; l <= inputArray.length; l++) {
-    
+
     for (var i = 0; i < inputArray.length-l+1; i++) {
       var appear = [i];
       for (var j = 0; j < inputArray.length-l+1; j++) {
-        if ( i !== j && isSameSub(inputArray, i, i + (l-1), j, j + (l-1))) {        
+        if ( i !== j && isSameSub(inputArray, i, i + (l-1), j, j + (l-1))) {
           appear.push(j);
         }
       }
       var overlap = false;
-      
+
       var rythmic = true;
       var period = 0;
       for (var k = 0; k < appear.length-1; k++) {
@@ -45,7 +45,7 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
         // }
         // period = appear[k+1] - appear[k];
       }
-      
+
       // if (appear.length > 1 && !overlap && rythmic ){
       if (appear.length > 1 && !overlap){
 
@@ -55,25 +55,25 @@ function PatternOptimizer(inputArray, uniqTransitionSets) {
         if( !Optimized.find(function(rp){ return s(rp.pattern) === s(newPattern); }) ){
           newPattern = { 'pattern': newPattern, 'appear': appear, 'coverage': RPcoverage  };
           newPattern.patternScore = scoreSimple(newPattern.coverage, l, inputArray.length );
-          
+
           if (newPattern.patternScore > maxScore) {
             maxScore = newPattern.patternScore;
-            Optimized = [ newPattern ];  
+            Optimized = [ newPattern ];
           } else if ( newPattern.patternScore === maxScore ) {
-            Optimized.push(newPattern);    
+            Optimized.push(newPattern);
           }
-         
-        } 
+
+        }
       }
     }
   }
-  
+
 
   return Optimized;
 }
 function distance(trArray, uniqTransitionSets){
-  return trArray.reduce(function(prev,curr){ 
-          prev += uniqTransitionSets[curr].tr.cost 
+  return trArray.reduce(function(prev,curr){
+          prev += uniqTransitionSets[curr].tr.cost
           return prev; },0);
 }
 function coverage(array, Patternlength, appear){
@@ -86,7 +86,7 @@ function coverage(array, Patternlength, appear){
     coverage += appear[i] + Patternlength - appear[s];
 
   };
-  if (i===appear.length-1) { 
+  if (i===appear.length-1) {
     coverage += Patternlength;
   };
 

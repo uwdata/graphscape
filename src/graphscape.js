@@ -1,7 +1,7 @@
 "use strict"
-exports.rule = require('./rule/ruleSet.js')
-exports.sequence = require('./sequence/serialize.js')
-exports.transition = require('./transition/trans.js')
+
+exports.sequence = require('./sequence/sequence.js').sequence;
+exports.transition = require('./transition/trans.js').transition;
 
 
 

@@ -1,45 +1,45 @@
 'use strict';
 
-var cp = require('./../transition/trans.js');
-var rule = require('./../rule/ruleSet.js');
+var trans = require('./../transition/trans.js');
+var editOp = require('./../editOp/editOpSet.js');
 var TSP = require('../../lib/TSP.js');
 var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function serialize(specs, options, ruleSet, callback){
-  if (!ruleSet) {
-    ruleSet = rule.DEFAULT_TRANSITIONS;
+function sequence(specs, options, editOpSet, callback){
+  if (!editOpSet) {
+    editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
-  
+
   function distanceWithPattern(dist, globalWeightingTerm, filterCost){
     return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
-  var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, ruleSet);
-    
+  var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, editOpSet);
+
     if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
   }
 
-  var transitionSets = getTransitionSets(specs, ruleSet);
-  transitionSets = extendTransitionSets(transitionSets);
-  
-  var TSPResult = TSP.TSP(transitionSets, "cost", options.fixFirst===true ? 0 : undefined);
+  var transitions = getTransitionSets(specs, editOpSet);
+  transitions = extendTransitionSets(transitions);
+
+  var TSPResult = TSP.TSP(transitions, "cost", options.fixFirst===true ? 0 : undefined);
   var TSPResultAll = TSPResult.all.filter(function(seqWithDist){
     return seqWithDist.sequence[0] === 0;
   }).map(function(tspR){
-    
+
     var sequence = tspR.sequence;
     var transitionSet = [];
     for (var i = 0; i < sequence.length-1; i++) {
-      transitionSet.push(transitionSets[sequence[i]][sequence[i+1]]);
+      transitionSet.push(transitions[sequence[i]][sequence[i+1]]);
     };
     var pattern = transitionSet.map(function(r){ return r.id; });
-    var POResult = PO.PatternOptimizer(pattern, transitionSets.uniq);
+    var POResult = PO.PatternOptimizer(pattern, transitions.uniq);
 
-    var result = { 
+    var result = {
               "sequence" : sequence,
               "transitions" : transitionSet,
               "sumOfTransitionCosts" : tspR.distance,
@@ -61,94 +61,94 @@ function serialize(specs, options, ruleSet, callback){
     if (a.sequenceCost < b.sequenceCost) {
       return -1;
     } else {
-      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;       
-    } 
+      return a.sequence.join(',') > b.sequence.join(',') ? 1 : -1;
+    }
     return 0;
   });
-  
-  var serializedSpecs = [];
+
+  var sequencedSpecs = [];
   var minSequenceCost = TSPResultAll[0].sequenceCost;
   for (var i = 0; i < TSPResultAll.length; i++) {
     if(TSPResultAll[i].sequenceCost === minSequenceCost ){
       TSPResultAll[i].isOptimum = true;
     }
-    else { 
-      break; 
+    else {
+      break;
     }
   }
   var returnValue = TSPResultAll;
 
-  
+
   if(callback){
     callback(returnValue);
   }
   return returnValue;
 }
-function getTransitionSetsFromSpec( spec, specs, ruleSet){
-  var transitionSets = [];
+function getTransitionSetsFromSpec( spec, specs, editOpSet){
+  var transitions = [];
   for (var i = 0; i < specs.length; i++) {
-    transitionSets.push(cp.transitionSet(specs[i], spec, ruleSet, { omitIncludeRawDomin: true }));
+    transitions.push(trans.transition(specs[i], spec, editOpSet, { omitIncludeRawDomin: true }));
   }
-  return transitionSets;
+  return transitions;
 }
 
-function getTransitionSets(specs, ruleSet){
-  var transitionSets = [];
+function getTransitionSets(specs, editOpSet){
+  var transitions = [];
   for (var i = 0; i < specs.length; i++) {
-    transitionSets.push([]);
+    transitions.push([]);
     for (var j = 0; j < specs.length; j++) {
-      transitionSets[i].push(cp.transitionSet(specs[i], specs[j], ruleSet, { omitIncludeRawDomin: true }));
-      
+      transitions[i].push(trans.transition(specs[i], specs[j], editOpSet, { omitIncludeRawDomin: true }));
+
     }
   }
-  return transitionSets;
+  return transitions;
 }
 
-function extendTransitionSets(transitionSets){
+function extendTransitionSets(transitions){
   var uniqTransitionSets = [];
-  var flatCosts = transitionSets.reduce(function(prev,curr){
+  var flatCosts = transitions.reduce(function(prev,curr){
     for (var i = 0; i < curr.length; i++) {
       prev.push(curr[i].cost);
       var transitionSetSH = transitionShorthand(curr[i]);
       var index = uniqTransitionSets.map(function(tr){ return tr.shorthand; }).indexOf(transitionSetSH);
-      
+
       if ( index === -1) {
-        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;  
+        curr[i]["id"] = uniqTransitionSets.push({tr: curr[i], shorthand: transitionSetSH}) - 1;
       } else {
         curr[i]["id"] = index;
       }
-      
+
     };
     return prev;
   }, []);
-  
+
   var uniqueCosts = d3.set(flatCosts)
                       .values()
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
 
-  var rank = d3.scaleOrdinal()
+  var rank = d3.scale.ordinal()
     .domain(uniqueCosts)
     .range([0,uniqueCosts.length]);
 
-  for (var i = 0; i < transitionSets.length; i++) {
-    for (var j = 0; j < transitionSets[i].length; j++) {
-      transitionSets[i][j]["start"] = i;
-      transitionSets[i][j]["destination"] = j;
-      transitionSets[i][j]["rank"] = Math.floor(rank(transitionSets[i][j].cost));
+  for (var i = 0; i < transitions.length; i++) {
+    for (var j = 0; j < transitions[i].length; j++) {
+      transitions[i][j]["start"] = i;
+      transitions[i][j]["destination"] = j;
+      transitions[i][j]["rank"] = Math.floor(rank(transitions[i][j].cost));
     }
   }
-  transitionSets.uniq = uniqTransitionSets;
-  return transitionSets
+  transitions.uniq = uniqTransitionSets;
+  return transitions
 }
 function transitionShorthand(transition){
-  return transition.marktype
+  return transition.mark
                     .concat(transition.transform)
                     .concat(transition.encoding)
-                    .map(function(tr){ 
+                    .map(function(tr){
                       if (tr.detail) {
                         if (tr.name === "MODIFY_FILTER") {
-                          return tr.name + '(' + JSON.stringify(tr.detail.field) + ')';
+                          return tr.name + '(' + JSON.stringify(tr.detail.where) + ')';
                         }
                         return tr.name + '(' + JSON.stringify(tr.detail) + ')';
                       }
@@ -156,6 +156,6 @@ function transitionShorthand(transition){
                     })
                     .sort()
                     .join('|');
-                    
+
 }
-exports.serialize = serialize;
+exports.sequence = sequence;

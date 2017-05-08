@@ -27,13 +27,13 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
       }
     }
   }
-  
+
   for (var i = 0; i < filterScore.length; i++) {
     for (var j = 1; j < filterState[filterScore[i].field].length; j++) {
       if ( filterState[filterScore[i].field][j-1] < filterState[filterScore[i].field][j] ) {
-        filterScore[i].score += 1;  
+        filterScore[i].score += 1;
       } else if (filterState[filterScore[i].field][j-1] > filterState[filterScore[i].field][j] ){
-        filterScore[i].score -= 1;  
+        filterScore[i].score -= 1;
       }
     }
 
