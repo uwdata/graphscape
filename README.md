@@ -20,7 +20,7 @@ Generate recommended sequence orders for a collection of Vega-Lite *charts*. The
 | Parameter  | Type          | Description    |
 | :-------- |:-------------:| :------------- |
 | charts | Array | An array of [Vega-Lite](https://vega.github.io/vega-lite/) unit charts. |
-| options | Object | `{ "fixFirst": true|false }` <br> *fixFirst*: indicates whether the first chart in *charts* should be pinned as the first chart of the recommended sequence (`true`) or not (`false`).|
+| options | Object | `{ "fixFirst": true / false }` <br> *fixFirst*: indicates whether the first chart in *charts* should be pinned as the first chart of the recommended sequence (`true`) or not (`false`).|
 | editOpSet | Object | (*Optional*) Specifies custom rules for calculating sequence costss |
 | callback | Function | (*Optional*) `function(result) { ... }` <br> A callback function to invoke with the results. |
 
@@ -33,7 +33,7 @@ The output is a ranked array of objects, each containing a sequence ordering and
 | :-------- |:-------------:| :------------- |
 | charts | Array | The given input charts. <br> If `options.fixFirst` was `false`, a *null specification* for an empty chart is included as the first entry. |
 | sequence | Array | Order of indexes of input charts.   |
-| transitions | Array | Transitions between each pair of two adjacent charts.<br> Each transition is consist of `id`, `marktype`, `transform`, `encoding`, and `cost` properties. <br> `id` : Transition identifier.<br> `marktype` : Edit operations in *mark* category.<br> `transform` : Edit operations in *transform* category.<br> `encoding` : Edit operations in *encoding* category.<br> `cost` : Sum of all costs of edit operations in this transition. |
+| transitions | Array | Transitions between each pair of two adjacent charts with `id`. |
 | sequenceCost | Number| Final GraphScape sequence cost. |
 | sumOfTransitionCosts | Number | Sum of transition costs. |
 | patterns | Array | Observed patterns of the sequence. <br> Each pattern is consist of `pattern`, `appear`, `coverage`, and `patternScore`. <br> `pattern` : An array of transition `id`s composing the pattern.<br> `appear` : An array of indexes of `transitions` where the pattern appears in the sequence. <br>`coverage` : How much the pattern cover the sequence.<br>`patternScore` : Final pattern score, which is the same as coverage now. |
@@ -64,6 +64,55 @@ charts.push({
 });
 var options = { "fixFirst": false };
 console.log(gs.sequence(charts, options));
+```
+
+
+<a name="transition" href="#transition">#</a>
+graphscape.<b>transition</b>(<i>source chart</i>, <i>target chart</i>)
+[<>](https://github.com/uwdata/graphscape/blob/master/src/transition/trans.js "Source")
+
+Generate a transition from a source Vega-Lite chart to a target Vega-Lite chart. The transition has the minimum edit operation costs.
+
+### Input
+
+| Parameter  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| source chart | Object | A [Vega-Lite](https://vega.github.io/vega-lite/) unit chart. |
+| target chart | Object | A [Vega-Lite](https://vega.github.io/vega-lite/) unit chart. |
+
+### Output
+
+The output is a ranked array of objects, each containing a sequence ordering and related metadata.
+
+| Property  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| mark | Array | Edit operations in *mark* category. |
+| transform | Array | Edit operations in *transform* category.   |
+| encoding | Array | Edit operations in *encoding* category.   |
+| cost | Number | Sum of all costs of edit operations in this transition.   |
+
+
+### Sample Code (node.js)
+
+```js
+var gs = require('./graphscape.js')
+var source = {
+  "data": {"url": "data/cars.json"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative"},
+  }
+};
+var target = {
+  "data": {"url": "data/cars.json"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Horsepower","type": "quantitative"},
+    "y": {"field": "Miles_per_Gallon","type": "quantitative"}
+  }
+};
+
+console.log(gs.transition(source, target));
 ```
 
 ## Sequence Recommender Web Application
