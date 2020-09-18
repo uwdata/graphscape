@@ -2,7 +2,7 @@
   "name": "graphscape",
   "version": "0.0.1",
   "description": "Measure cognitive distances among visualizations.",
-  "main": "lp.js",
+  "main": "src/graphscape.js",
   "scripts": {
     "test": "mocha --recursive",
     "build" : "browserify src/graphscape.js -o graphscape.js -s graphscape",
