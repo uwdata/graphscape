@@ -1,11 +1,8 @@
 "use strict";
 var expect = require('chai').expect;
 var editOpSet = require('../editOpSetForTest');
-var trans = require('../../src/transition/trans');
-var util = require('../../src/util');
 
-var Type = require('vega-lite/src/type').Type;
-var AggregateOp = require('vega-lite/src/aggregate').AggregateOp;
+const { TYPES } = require('../../src/constants');
 var neighbor = require('../../src/transition/neighbor');
 
 describe('transition.neighbor', function () {
@@ -17,7 +14,7 @@ describe('transition.neighbor', function () {
         "x": { "field": "Horsepower", "type": "quantitative" }
       }
     };
-    var additionalFields = [{ "field": "Origin", "type": Type.ORDINAL }];
+    var additionalFields = [{ "field": "Origin", "type": TYPES.ORDINAL }];
     var additionalChannels = ["y"];
 
     var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
@@ -31,7 +28,7 @@ describe('transition.neighbor', function () {
         "x": { "field": "*", "type": "quantitative", "aggregate": "count" }
       }
     };
-    var additionalFields = [{ "field": "*", "type": Type.QUANTITATIVE, "aggregate": AggregateOp.COUNT }];
+    var additionalFields = [{ "field": "*", "type": TYPES.QUANTITATIVE, "aggregate": "count" }];
     var additionalChannels = ["y"];
     var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
     expect(result[0].editOp.name).to.eq("REMOVE_X_COUNT");
@@ -71,8 +68,8 @@ describe('transition.neighbor', function () {
       }
     };
     var additionalFields = [
-      { "field": "Acceleration", "type": Type.QUANTITATIVE },
-      { "field": "Horsepower", "type": Type.QUANTITATIVE }];
+      { "field": "Acceleration", "type": TYPES.QUANTITATIVE },
+      { "field": "Horsepower", "type": TYPES.QUANTITATIVE }];
     var additionalChannels = [];
     var result = neighbor.neighbors(testVL, additionalFields, additionalChannels, editOpSet.DEFAULT_EDIT_OPS.encodingEditOps);
     expect(result.length).to.eq(6);

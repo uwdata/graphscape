@@ -1,11 +1,11 @@
 "use strict";
-var vlFilter = require('vega-lite/src/filter');
-const vlType = require('vega-lite/src/type').Type;
-var channel_1 = require('vega-lite/src/channel');
+
 var expr = require('vega-expression');
+const { TYPES, CHANNELS } = require('../constants');
 var util = require('../util');
 const DEFAULT_EDIT_OPS = require('../editOp/editOpSet').DEFAULT_EDIT_OPS;
 var nb = require('./neighbor');
+
 function transition(s, d, importedTransitionCosts, transOptions) {
   var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : DEFAULT_EDIT_OPS["markEditOps"];
   var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : DEFAULT_EDIT_OPS["transformEditOps"];
@@ -28,10 +28,10 @@ function transition(s, d, importedTransitionCosts, transOptions) {
       var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
       if (binEditOp && binEditOp.detail.filter(function (dt) {
         if (dt.how === "added") {
-          return d.encoding[dt.where].type === vlType.QUANTITATIVE;
+          return d.encoding[dt.where].type === TYPES.QUANTITATIVE;
         }
         else {
-          return s.encoding[dt.where].type === vlType.QUANTITATIVE;
+          return s.encoding[dt.where].type === TYPES.QUANTITATIVE;
         }
       }).length > 0) {
         binEditOp.cost = 0;
@@ -73,7 +73,7 @@ exports.markEditOps = markEditOps;
 function transformEditOps(s, d, importedTransformEditOps, transOptions) {
   var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS["transformEditOps"];
   var editOps = [];
-  channel_1.CHANNELS.forEach(function (channel) {
+  CHANNELS.forEach(function (channel) {
     ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
       var editOp;
       var already;
@@ -154,10 +154,10 @@ function filterEditOps(s, d, importedFilterEditOps) {
   var sFilters = [], dFilters = [];
   var editOps = [];
   if (s.transform && s.transform.filter) {
-    sFilters = filters(s.transform.filter);
+    sFilters = getFilters(s.transform.filter);
   }
   if (d.transform && d.transform.filter) {
-    dFilters = filters(d.transform.filter);
+    dFilters = getFilters(d.transform.filter);
   }
   var dOnly = util.arrayDiff(dFilters, sFilters);
   var sOnly = util.arrayDiff(sFilters, dFilters);
@@ -216,52 +216,46 @@ function filterEditOps(s, d, importedFilterEditOps) {
   return editOps;
 }
 exports.filterEditOps = filterEditOps;
-function filters(filterExpression) {
-  var filters = [];
+
+function getFilters (filterExpression) {
+  let filters;
   if (util.isArray(filterExpression)) {
-    filterExpression.map(function (filter) {
-      if (util.isString(filter)) {
-        filters = filters.concat(stringFilter(filter));
-      }
-      else if (vlFilter.isRangeFilter(filter)) {
-        filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
-      }
-      else if (vlFilter.isInFilter(filter)) {
-        filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
-      }
-      else if (vlFilter.isEqualFilter(filter)) {
-        filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
-      }
-      else {
-        console.log("WARN: cannot parse filters.");
-      }
-    });
+    filters = filterExpression.reduce((acc, expression) => {
+      return acc.concat(parsePredicateFilter(expression));
+    }, []);
   }
   else {
-    var filter = filterExpression;
-    if (util.isString(filter)) {
-      filters = filters.concat(stringFilter(filter));
+    filters = parsePredicateFilter(filterExpression);
+  }
+
+  return filters;
+
+  function parsePredicateFilter(expression) {
+    let parsed = [];
+    if (util.isString(expression)) {
+      parsed = parsed.concat(stringFilter(expression));
     }
-    else if (vlFilter.isRangeFilter(filter)) {
-      filters.push({ "field": filter.field, "op": 'range', "value": JSON.stringify(filter.range) });
-    }
-    else if (vlFilter.isInFilter(filter)) {
-      filters.push({ "field": filter.field, "op": 'in', "value": JSON.stringify(filter.in) });
-    }
-    else if (vlFilter.isEqualFilter(filter)) {
-      filters.push({ "field": filter.field, "op": 'equal', "value": filter.equal.toString() });
-    }
-    else {
+    ["range", "in", "equal"].filter(op => expression.hasOwnProperty(op)).forEach(op => {
+      parsed.push({
+        "field": expression.field,
+        "op": op,
+        "value": JSON.stringify(expression[op])
+      });
+    })
+    if (parsed.length === 0) {
       console.log("WARN: cannot parse filters.");
     }
+    return parsed;
   }
-  return filters;
+
   function stringFilter(expression) {
     var parser = expr["parse"];
     var expressionTree = parser(expression);
-    return binaryExprsFromExprTree(expressionTree.body[0].expression, [], 0).map(function (bExpr) {
+
+    return binaryExprsFromExprTree(expressionTree, [], 0).map(function (bExpr) {
       return { "field": bExpr.left.property.name, "op": bExpr.operator, "value": bExpr.right.raw };
     });
+
     function binaryExprsFromExprTree(tree, arr, depth) {
       if (tree.operator === '||' || tree.operator === '&&') {
         arr = binaryExprsFromExprTree(tree.left, arr, depth + 1);
@@ -275,7 +269,8 @@ function filters(filterExpression) {
     }
   }
 }
-exports.filters = filters;
+exports.getFilters = getFilters;
+
 function transformSettype(s, d, channel, transformEditOps) {
   var editOp;
   if (s.encoding[channel] && d.encoding[channel]

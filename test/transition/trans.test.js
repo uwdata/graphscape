@@ -113,8 +113,9 @@ describe('transition.trans', function () {
     });
     it('should return MODIFY_FILTER  edit operation when filter has Filter objects correctly.', function () {
       const startVL = { "transform": { "filter": { field: "Running_Time_min", range: [0, null] } } };
-      const destinationVL = { "transform": { "filter": [{ field: "Running_Time_min", equal: "0" }, { field: "Rotten_Tomato_Rating", equal: "100" }] } };
+      const destinationVL = { "transform": { "filter": [{ field: "Running_Time_min", equal: 0 }, { field: "Rotten_Tomato_Rating", equal: 100 }] } };
       var sd = trans.filterEditOps(startVL, destinationVL, filterEditOps);
+
       expect(sd[0].name).to.eq("MODIFY_FILTER");
       expect(sd[0].detail.before[0]+', '+sd[0].detail.after[0]).to.eq("range, equal");
       expect(sd[0].detail.before[1]+', '+sd[0].detail.after[1]).to.eq('[0,null], 0');

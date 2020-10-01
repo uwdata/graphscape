@@ -122,12 +122,11 @@ function extendTransitionSets(transitions){
     return prev;
   }, []);
 
-  var uniqueCosts = d3.set(flatCosts)
-                      .values()
+  var uniqueCosts = [...new Set(flatCosts)]
                       .map(function(val){ return Number(val); })
                       .sort(function(a,b){ return a-b;});
 
-  var rank = d3.scale.ordinal()
+  var rank = d3.scaleOrdinal()
     .domain(uniqueCosts)
     .range([0,uniqueCosts.length]);
 
