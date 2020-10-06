@@ -18,9 +18,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
     }
     var newAdditionalChannels = util.duplicate(additionalChannels);
     editOp.detail = {
-      "what": ["field","channel"],
-      "before": [newNeighbor.encoding[channel].field, channel],
-      "after": [undefined, undefined]
+      "before": {"field": newNeighbor.encoding[channel].field, channel},
+      "after": undefined
     };
 
     newAdditionalChannels.push(channel);
@@ -33,7 +32,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
     }
     ;
     additionalFields.forEach(function (field, index) {
-      if (field.field !== spec.encoding[channel].field) {
+      if ((field.field !== spec.encoding[channel].field) ||
+        (field.type !== spec.encoding[channel].type)) {
         newNeighbor = util.duplicate(spec);
         editOpType = "MODIFY_" + channel.toUpperCase();
         if (spec.encoding[channel].field === "*" && field.field !== "*") {
@@ -51,9 +51,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
         newAdditionalChannels = util.duplicate(additionalChannels);
         newNeighbor.encoding[channel] = field;
         editOp.detail = {
-          "what": "field",
-          "before": spec.encoding[channel].field,
-          "after": field.field
+          "before": { ...spec.encoding[channel], channel},
+          "after": { ...field, channel}
         };
 
         if (validate(newNeighbor)) {
@@ -78,9 +77,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
       newNeighbor.encoding[channel] = newNeighbor.encoding[anotherChannel];
       newNeighbor.encoding[anotherChannel] = tempChannel;
       editOp.detail = {
-        "what": ["field", "channel"],
-        "before": [spec.encoding["x"].field, "x"],
-        "after": [spec.encoding["y"].field, "y"]
+        "before": {"field": spec.encoding["x"].field, "channel": "x"},
+        "after": {"field": spec.encoding["y"].field, "channel": "y"}
       };
 
       if (validate(newNeighbor)) {
@@ -88,8 +86,7 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
         newNeighbor.additionalFields = newAdditionalFields;
         newNeighbor.additionalChannels = newAdditionalChannels;
         neighbors.push(newNeighbor);
-      }
-      ;
+      };
     });
     exChannels.forEach(function (exChannel, index) {
       newNeighbor = util.duplicate(spec);
@@ -102,9 +99,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
       newNeighbor.encoding[exChannel] = util.duplicate(newNeighbor.encoding[channel]);
       delete newNeighbor.encoding[channel];
       editOp.detail = {
-        "what": "channel",
-        "before": channel,
-        "after": exChannel
+        "before": {channel},
+        "after": {"channel": exChannel}
       };
 
       if (validate(newNeighbor)) {
@@ -129,9 +125,8 @@ function neighbors(spec, additionalFields, additionalChannels, importedEncodingE
       newAdditionalChannels.splice(chIndex, 1);
 
       editOp.detail = {
-        "what": ["field","channel"],
-        "before": [undefined, undefined],
-        "after": [field.field, channel]
+        "before": undefined,
+        "after": {"field": field.field, channel}
       };
 
       if (validate(newNeighbor)) {
@@ -169,7 +164,7 @@ function sameEncoding(a, b) {
     if (!(a[key] && b[key])) {
       return false;
     }
-    if (a[key].field !== b[key].field) {
+    if ((a[key].field !== b[key].field) || a[key].type !== b[key].type) {
       return false;
     }
   }

@@ -8,22 +8,19 @@ function TieBreaker(result, transitionSetsFromEmptyVis) {
   var filterSequenceCost = 0;
   for (var i = 0; i < result.charts.length; i++) {
     let spec = result.charts[i];
-    if (!!spec.transform && !!spec.transform.filter) {
-      let filter;
-      if (Array.isArray(spec.transform.filter)) {
-        for (var j = 0; j < spec.transform.filter.length; j++) {
-
-          filter = spec.transform.filter[j];
-          if (!!filter.field && !!filter.equal ) {
-            if (!!filterState[filter.field]) {
-              filterState[filter.field].push(filter.equal);
-            } else {
-              filterState[filter.field] = [filter.equal] ;
-              filterScore.push({ "field": filter.field, "score": 0});
-            }
+    if (spec.transform ) {
+      let filters = spec.transform.filter(trsfm => trsfm.filter).map(trsfm => trsfm.filter);
+      for (var j = 0; j < filters.length; j++) {
+        let filter = filters[j];
+        if ( filter.hasOwnProperty("field") && filter.hasOwnProperty("equal") ) {
+          if (filterState[filter.field]) {
+            filterState[filter.field].push(filter.equal);
+          } else {
+            filterState[filter.field] = [filter.equal] ;
+            filterScore.push({ "field": filter.field, "score": 0});
           }
-
         }
+
       }
     }
   }

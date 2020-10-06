@@ -2,10 +2,10 @@
   "name": "graphscape",
   "version": "0.0.1",
   "description": "Measure cognitive distances among visualizations.",
-  "main": "src/graphscape.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive",
-    "build": "browserify src/graphscape.js -o graphscape.js -s graphscape",
+    "quick-build": "rollup -c",
     "deploy": ""
   },
   "repository": {
@@ -26,10 +26,19 @@
     "url": "https://github.com/uwdata/GraphScape/issues"
   },
   "devDependencies": {
-    "browserify": "~13.0.1",
-    "browserify-versionify": "~1.0.6",
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
     "chai": "~3.5.0",
-    "mocha": "^8.1.0"
+    "mocha": "^8.1.0",
+    "rollup": "^2.28.2",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^15.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-terser": "^7.0.2"
   },
   "dependencies": {
     "vega": "^5.15.0",

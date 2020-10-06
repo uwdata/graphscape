@@ -147,7 +147,7 @@ function transitionShorthand(transition){
                     .map(function(tr){
                       if (tr.detail) {
                         if (tr.name === "MODIFY_FILTER") {
-                          return tr.name + '(' + JSON.stringify(tr.detail.where) + ')';
+                          return tr.name + '(' + JSON.stringify(tr.detail.id) + ')';
                         }
                         return tr.name + '(' + JSON.stringify(tr.detail) + ')';
                       }

@@ -6,7 +6,7 @@ var util = require('../../src/util');
 var startVL = {
   "data": { "url": "/data/cars.json" },
   "mark": "area",
-  "transform": { "filter": "datum.Year > 1970 " },
+  "transform": [{ "filter": "datum.Year > 1970 " }],
   "encoding": {
     "x": { "type": "temporal", "field": "Year", "timeUnit": "year" },
     "y": { "type": "quantitative",
@@ -26,7 +26,7 @@ var destinationVL = {
       "field": "Acceleration",
       "scale": { "type": "log" }
     },
-    "color": { "type": "ordinal", "field": "Origin" }
+    "color": { "type": "nominal", "field": "Origin" }
   }
 };
 describe('transition.trans', function () {
@@ -37,7 +37,7 @@ describe('transition.trans', function () {
       expect(tr.name).to.eq("AREA_POINT");
     });
   });
-  describe ('transform edit operation', function () {
+  describe('transform edit operation', function () {
     const result = trans.transformEditOps(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
     it('should return SCALE,AGGREGATE, and SORT editOperations correctly.', function () {
       const scaleTrs = trans.transformBasic(startVL, destinationVL, "y", "SCALE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
@@ -50,7 +50,7 @@ describe('transition.trans', function () {
     });
     it('should omit SCALE if omitIncludeRawDomain is true.', function () {
       var testVL = util.duplicate(startVL);
-      testVL.encoding.y["scale"] = { includeRawDomain: true };
+      testVL.encoding.y["scale"] = { domain: "unaggregated" };
       var real = trans.transformBasic(startVL, testVL, "y", "SCALE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"], { omitIncludeRawDomain: true });
       expect(real).to.eq(undefined);
     });
@@ -58,6 +58,27 @@ describe('transition.trans', function () {
     // it('should return SETTYPE editOperation correctly.', function () {
     //   expect(trans.transformSettype(startVL, destinationVL, "color", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]).name).to.eq("SETTYPE");
     // });
+    it('should not return SCALE/AGGREGATE/SORT editOperations when the field MOVED.', function () {
+      const s = {
+        "encoding": {
+          "x": {"field": "A", "type": "qauntitative", "aggregate": "mean"}
+        }
+      }, d = {
+        "encoding": {
+          "y": {"field": "A", "type": "qauntitative", "aggregate": "mean", "scale": {"type": "log"}}
+        }
+      }, d2 = {
+        "encoding": {
+          "x": {"field": "A", "type": "qauntitative"}
+        }
+      };
+      const o = trans.transition(s, d, editOpSet.DEFAULT_EDIT_OPS);
+      expect(o.encoding[0].name).to.eq("MOVE_X_Y");
+      expect(o.transform[0].name).to.eq("SCALE");
+      const o2 = trans.transition(s, d2, editOpSet.DEFAULT_EDIT_OPS);
+      expect(o2.transform[0].name).to.eq("AGGREGATE");
+    });
+
     it('should return all editOperations without order.', function () {
       expect(result.length).to.eq(3);
     });
@@ -67,53 +88,61 @@ describe('transition.trans', function () {
       "REMOVE_FILTER": editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["REMOVE_FILTER"]
     };
     it('should return ADD_FILTER / REMOVE_FILTER edit operation correctly.', function () {
-      var startVL = { "transform": { "filter": "datum.A == 0 && datum.B == 100 && datum.C == 3  " } };
-      var destinationVL = { "transform": { "filter": "datum.A == 0 && datum.B == 100 && datum.D == 4" } };
+      var startVL = { "transform": [{ "filter": "datum.A == 0 && datum.B == 100 && datum.C == 3  " }] };
+      var destinationVL = { "transform": [{ "filter": "datum.A == 0 && datum.B == 100 && datum.D == 4" }] };
       var sd = trans.filterEditOps(startVL, destinationVL, filterEditOps);
       expect(sd.length).to.eq(2);
+
       expect(sd[0].name).to.eq("ADD_FILTER");
-      expect(sd[0].detail.after[0]).to.eq("D");
-      expect(sd[0].detail.after[1]).to.eq("==");
-      expect(sd[0].detail.after[2]).to.eq("4");
+      expect(sd[0].detail.after[0][0]).to.eq("D");
+      expect(sd[0].detail.after[1][0]).to.eq("==");
+      expect(sd[0].detail.after[2][0]).to.eq("4");
       expect(sd[1].name).to.eq("REMOVE_FILTER");
-      expect(sd[1].detail.before[0]).to.eq("C");
-      expect(sd[1].detail.before[1]).to.eq("==");
-      expect(sd[1].detail.before[2]).to.eq("3");
+      expect(sd[1].detail.before[0][0]).to.eq("C");
+      expect(sd[1].detail.before[1][0]).to.eq("==");
+      expect(sd[1].detail.before[2][0]).to.eq("3");
     });
     it('should return MODIFY_FILTER  edit operation correctly.', function () {
-      var startVL = { "transform": { "filter": "datum.Running_Time_min > 0" } };
-      var destinationVL = { "transform": { "filter": "datum.Running_Time_min == 100 && datum.Rotten_Tomato_Rating == 100" } };
+      var startVL = { "transform": [{ "filter": "datum.Running_Time_min > 0" }] };
+      var destinationVL = { "transform": [{ "filter": "datum.Running_Time_min == 100 && datum.Rotten_Tomato_Rating == 100" }] };
       var sd = trans.filterEditOps(startVL, destinationVL, filterEditOps);
       expect(sd[0].name).to.eq("MODIFY_FILTER");
-      expect(sd[0].detail.where).to.eq("Running_Time_min");
+      expect(sd[0].detail.id).to.eq("Running_Time_min");
       expect(sd[0].detail.before[0]+', '+sd[0].detail.after[0]).to.eq(">, ==");
       expect(sd[0].detail.before[1]+', '+sd[0].detail.after[1]).to.eq("0, 100");
 
       expect(sd[1].name).to.eq("ADD_FILTER");
-      expect(sd[1].detail.after[0]).to.eq("Rotten_Tomato_Rating");
-      expect(sd[1].detail.after[1]).to.eq("==");
-      expect(sd[1].detail.after[2]).to.eq("100");
+      expect(sd[1].detail.after[0][0]).to.eq("Rotten_Tomato_Rating");
+      expect(sd[1].detail.after[1][0]).to.eq("==");
+      expect(sd[1].detail.after[2][0]).to.eq("100");
 
-      startVL = { "transform": { "filter": "datum.A == 0 && datum.B == 100" } };
-      destinationVL = { "transform": { "filter": "datum.A != 0 && datum.D == 100" } };
+      startVL = { "transform": [{ "filter": "datum.A == 0 && datum.B == 100" }] };
+      destinationVL = { "transform": [{ "filter": "datum.A != 0 && datum.D == 100" }] };
       sd = trans.filterEditOps(startVL, destinationVL, filterEditOps);
       expect(sd[0].name).to.eq("MODIFY_FILTER");
       expect(sd[0].detail.before[0]+', '+sd[0].detail.after[0]).to.eq("==, !=");
 
       expect(sd[1].name).to.eq("ADD_FILTER");
-      expect(sd[1].detail.after[0]).to.eq("D");
-      expect(sd[1].detail.after[1]).to.eq("==");
-      expect(sd[1].detail.after[2]).to.eq("100");
+      expect(sd[1].detail.after[0][0]).to.eq("D");
+      expect(sd[1].detail.after[1][0]).to.eq("==");
+      expect(sd[1].detail.after[2][0]).to.eq("100");
 
       expect(sd[2].name).to.eq("REMOVE_FILTER");
-      expect(sd[2].detail.before[0]).to.eq("B");
-      expect(sd[2].detail.before[1]).to.eq("==");
-      expect(sd[2].detail.before[2]).to.eq("100");
+      expect(sd[2].detail.before[0][0]).to.eq("B");
+      expect(sd[2].detail.before[1][0]).to.eq("==");
+      expect(sd[2].detail.before[2][0]).to.eq("100");
 
     });
     it('should return MODIFY_FILTER  edit operation when filter has Filter objects correctly.', function () {
-      const startVL = { "transform": { "filter": { field: "Running_Time_min", range: [0, null] } } };
-      const destinationVL = { "transform": { "filter": [{ field: "Running_Time_min", equal: 0 }, { field: "Rotten_Tomato_Rating", equal: 100 }] } };
+      const startVL = {
+        "transform": [{ "filter": { field: "Running_Time_min", range: [0, null] } }]
+      };
+      const destinationVL = {
+        "transform": [
+          {"filter": { field: "Running_Time_min", equal: 0 }},
+          {"filter": { field: "Rotten_Tomato_Rating", equal: 100 }}
+        ]
+      };
       var sd = trans.filterEditOps(startVL, destinationVL, filterEditOps);
 
       expect(sd[0].name).to.eq("MODIFY_FILTER");
@@ -121,36 +150,45 @@ describe('transition.trans', function () {
       expect(sd[0].detail.before[1]+', '+sd[0].detail.after[1]).to.eq('[0,null], 0');
 
       expect(sd[1].name).to.eq("ADD_FILTER");
-      expect(sd[1].detail.after[0]).to.eq("Rotten_Tomato_Rating");
-      expect(sd[1].detail.after[1]).to.eq("equal");
-      expect(sd[1].detail.after[2]).to.eq("100");
+      expect(sd[1].detail.after[0][0]).to.eq("Rotten_Tomato_Rating");
+      expect(sd[1].detail.after[1][0]).to.eq("equal");
+      expect(sd[1].detail.after[2][0]).to.eq("100");
 
-      const startVL2 = { "transform": { "filter": ["datum.A == 0", { field: "B", in: ['red', 'blue'] }] } };
-      const destinationVL2 = { "transform": { "filter": "datum.A != 0 && datum.D == 100" } };
+      const startVL2 = {
+        "transform": [
+          { "filter": "datum.A == 0"},
+          { "filter": {field: "B", oneOf: ['red', 'blue']} }
+        ]
+      };
+      const destinationVL2 = {
+        "transform": [
+          { "filter": "datum.A != 0 && datum.D == 100" }
+        ]
+      };
 
       sd = trans.filterEditOps(startVL2, destinationVL2, filterEditOps);
       expect(sd[0].name).to.eq("MODIFY_FILTER");
       expect(sd[0].detail.before[0]+', '+sd[0].detail.after[0]).to.eq("==, !=");
 
       expect(sd[1].name).to.eq("ADD_FILTER");
-      expect(sd[1].detail.after[0]).to.eq("D");
-      expect(sd[1].detail.after[1]).to.eq("==");
-      expect(sd[1].detail.after[2]).to.eq("100");
+      expect(sd[1].detail.after[0][0]).to.eq("D");
+      expect(sd[1].detail.after[1][0]).to.eq("==");
+      expect(sd[1].detail.after[2][0]).to.eq("100");
 
       expect(sd[2].name).to.eq("REMOVE_FILTER");
-      expect(sd[2].detail.before[0]).to.eq("B");
-      expect(sd[2].detail.before[1]).to.eq("in");
-      expect(sd[2].detail.before[2]).to.eq('["red","blue"]');
+      expect(sd[2].detail.before[0][0]).to.eq("B");
+      expect(sd[2].detail.before[1][0]).to.eq("oneOf");
+      expect(sd[2].detail.before[2][0]).to.eq('["red","blue"]');
     });
     it('should return FILTER ARITHMETIC edit operation correctly.', function () {
-      var startVL = { "transform": { "filter": "datum.Running_Time_min > 0" } };
-      var destinationVL = { "transform": { "filter": "datum.Running_Time_min > 10" } };
+      var startVL = { "transform": [{ "filter": "datum.Running_Time_min > 0" }] };
+      var destinationVL = { "transform": [{ "filter": "datum.Running_Time_min > 10" }] };
       expect(trans.filterEditOps(startVL, destinationVL, filterEditOps)[0].name).to.eq("MODIFY_FILTER");
-      startVL = { "transform": { "filter": "datum.A == 0 && datum.B == 100 && datum.S !== 1" } };
-      destinationVL = { "transform": { "filter": "datum.A == 0 && datum.S !== 1 && datum.B == 100" } };
+      startVL = { "transform": [{ "filter": "datum.A == 0 && datum.B == 100 && datum.S !== 1" }] };
+      destinationVL = { "transform": [{ "filter": "datum.A == 0 && datum.S !== 1 && datum.B == 100" }] };
       expect(trans.filterEditOps(startVL, destinationVL, filterEditOps).length).to.eq(0);
-      startVL = { "transform": { "filter": "datum.Running_Time_min > 0" } };
-      destinationVL = { "transform": { "filter": "datum.Running_Time_min == 0" } };
+      startVL = { "transform": [{ "filter": "datum.Running_Time_min > 0" }] };
+      destinationVL = { "transform": [{ "filter": "datum.Running_Time_min == 0" }] };
       expect(trans.filterEditOps(startVL, destinationVL, filterEditOps)[0].name).to.eq("MODIFY_FILTER");
     });
   });
@@ -167,7 +205,7 @@ describe('transition.trans', function () {
         }
       };
       var target1 = util.duplicate(source);
-      target1.encoding.y = { "field": "Origin", "type": "ordinal" };
+      target1.encoding.y = { "field": "Origin", "type": "nominal" };
       var target2 = util.duplicate(target1);
       delete target2.encoding.x;
       target2.encoding.color = { "field": "Horsepower", "type": "quantitative" };
@@ -260,7 +298,7 @@ describe('transition.trans', function () {
       var result1 = trans.encodingEditOps(source, target, editOpSet.DEFAULT_EDIT_OPS["encodingEditOps"]);
       expect(result1.length).to.eq(1);
     });
-    it('should return all encoding editOperations correctly when nodes are updated during Dijkstra Algorithm.', function () {
+    it.skip('should return all encoding editOperations correctly when nodes are updated during Dijkstra Algorithm.', function () {
       this.timeout(500000);
       var startVL = {
         "data": {
@@ -343,6 +381,7 @@ describe('transition.trans', function () {
     });
     it('should return all editOperations correctly.', function () {
       var result = trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
+
       expect(result.mark[0].cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["markEditOps"]["AREA_POINT"].cost);
       expect(result.transform.length).to.eq(3);
       expect(result.encoding.length).to.eq(2);
@@ -352,9 +391,9 @@ describe('transition.trans', function () {
     var startVL = {
       "data": { "url": "data/cameras.json" },
       "mark": "bar",
-      "transform": {
+      "transform": [{
         "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-      },
+      }],
       "encoding": {
         "x": { "field": "Price", "type": "quantitative", "bin": true },
         "y": {
@@ -367,9 +406,9 @@ describe('transition.trans', function () {
     var destinationVL = {
       "data": { "url": "data/cameras.json" },
       "mark": "point",
-      "transform": {
+      "transform": [{
         "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-      },
+      }],
       "encoding": {
         "y": { "field": "Max_resolution", "type": "quantitative" },
         "x": { "field": "Weight", "type": "quantitative" }

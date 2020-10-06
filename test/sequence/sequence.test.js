@@ -10,11 +10,11 @@ describe('sequence.sequence check', function () {
     var charts = [
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -23,10 +23,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
+            }
+          },
             {
+              "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -35,10 +37,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -49,8 +54,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -64,11 +69,11 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -77,10 +82,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
+            }
+          },
             {
+              "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -89,10 +96,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -103,8 +113,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -118,11 +128,11 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -131,10 +141,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
+            }
+          },
             {
+              "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -143,10 +155,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -157,8 +172,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -172,11 +187,11 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -185,10 +200,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
+            }
+          },
             {
+              "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -197,10 +214,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -211,8 +231,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -226,11 +246,11 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -239,10 +259,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
+            }
+          },
             {
+              "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -251,10 +273,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -265,8 +290,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -280,11 +305,11 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
+        "transform": [
             {
+              "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -293,10 +318,12 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
-            {
+            }
+          },
+          {
+            "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -305,10 +332,13 @@ describe('sequence.sequence check', function () {
                 "Based on Tody",
                 "Based on Book/Short Story"
               ]
-            },
-            {
+            }
+          },
+
+          {
+            "filter": {
               "field": "Creative_Type",
-              "in": [
+              "oneOf": [
                 "Contemporary Fiction",
                 "Dramatization",
                 "Factual",
@@ -319,8 +349,8 @@ describe('sequence.sequence check', function () {
                 "Super Hero"
               ]
             }
-          ]
-        },
+          }
+          ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -348,11 +378,11 @@ describe('sequence.sequence check', function () {
     var charts = [
       {
         "data": {"url": "data/movies.json","formatType": "json"},
-        "transform": {
-          "filter": [
-            {
+        "transform": [
+          {
+            "filter": {
               "field": "Major_Genre",
-              "in": [
+              "oneOf": [
                 "Action",
                 "Adventure",
                 "Comedy",
@@ -361,10 +391,13 @@ describe('sequence.sequence check', function () {
                 "Horror",
                 "Thriller/Suspense"
               ]
-            },
-            {
+            }
+
+          },
+          {
+            "filter": {
               "field": "Source",
-              "in": [
+              "oneOf": [
                 "Disney Ride",
                 "Based on Game",
                 "Remake",
@@ -374,8 +407,9 @@ describe('sequence.sequence check', function () {
                 "Based on Book/Short Story"
               ]
             }
-          ]
-        },
+
+          }
+        ],
         "mark": "bar",
         "encoding": {
           "x": {
@@ -389,11 +423,10 @@ describe('sequence.sequence check', function () {
       },
       {
           "data": {"url": "data/movies.json","formatType": "json"},
-          "transform": {
-            "filter": [
-              {
+          "transform": [
+              {"filter": {
                 "field": "Major_Genre",
-                "in": [
+                "oneOf": [
                   "Action",
                   "Adventure",
                   "Comedy",
@@ -402,10 +435,13 @@ describe('sequence.sequence check', function () {
                   "Horror",
                   "Thriller/Suspense"
                 ]
-              },
+              }
+            },
               {
+                "filter":
+                {
                 "field": "Source",
-                "in": [
+                "oneOf": [
                   "Disney Ride",
                   "Based on Game",
                   "Remake",
@@ -415,8 +451,8 @@ describe('sequence.sequence check', function () {
                   "Based on Book/Short Story"
                 ]
               }
-            ]
-          },
+            }
+            ],
           "mark": "bar",
           "encoding": {
             "x": {
@@ -430,11 +466,10 @@ describe('sequence.sequence check', function () {
       },
       {
           "data": {"url": "data/movies.json","formatType": "json"},
-          "transform": {
-            "filter": [
-              {
+          "transform": [
+              {"filter": {
                 "field": "Major_Genre",
-                "in": [
+                "oneOf": [
                   "Action",
                   "Adventure",
                   "Comedy",
@@ -443,10 +478,13 @@ describe('sequence.sequence check', function () {
                   "Horror",
                   "Thriller/Suspense"
                 ]
-              },
+              }
+            },
               {
+                "filter":
+                {
                 "field": "Source",
-                "in": [
+                "oneOf": [
                   "Disney Ride",
                   "Based on Game",
                   "Remake",
@@ -456,8 +494,8 @@ describe('sequence.sequence check', function () {
                   "Based on Book/Short Story"
                 ]
               }
-            ]
-          },
+            }
+            ],
           "mark": "bar",
           "encoding": {
             "x": {
@@ -471,11 +509,10 @@ describe('sequence.sequence check', function () {
       },
       {
           "data": {"url": "data/movies.json","formatType": "json"},
-          "transform": {
-            "filter": [
-              {
+          "transform": [
+              {"filter": {
                 "field": "Major_Genre",
-                "in": [
+                "oneOf": [
                   "Action",
                   "Adventure",
                   "Comedy",
@@ -484,10 +521,13 @@ describe('sequence.sequence check', function () {
                   "Horror",
                   "Thriller/Suspense"
                 ]
-              },
+              }
+            },
               {
+                "filter":
+                {
                 "field": "Source",
-                "in": [
+                "oneOf": [
                   "Disney Ride",
                   "Based on Game",
                   "Remake",
@@ -497,8 +537,8 @@ describe('sequence.sequence check', function () {
                   "Based on Book/Short Story"
                 ]
               }
-            ]
-          },
+            }
+            ],
           "mark": "bar",
           "encoding": {
             "x": {
@@ -512,11 +552,10 @@ describe('sequence.sequence check', function () {
       },
       {
           "data": {"url": "data/movies.json","formatType": "json"},
-          "transform": {
-            "filter": [
-              {
+          "transform": [
+              {"filter": {
                 "field": "Major_Genre",
-                "in": [
+                "oneOf": [
                   "Action",
                   "Adventure",
                   "Comedy",
@@ -525,10 +564,13 @@ describe('sequence.sequence check', function () {
                   "Horror",
                   "Thriller/Suspense"
                 ]
-              },
+              }
+            },
               {
+                "filter":
+                {
                 "field": "Source",
-                "in": [
+                "oneOf": [
                   "Disney Ride",
                   "Based on Game",
                   "Remake",
@@ -538,8 +580,8 @@ describe('sequence.sequence check', function () {
                   "Based on Book/Short Story"
                 ]
               }
-            ]
-          },
+            }
+            ],
           "mark": "bar",
           "encoding": {
             "x": {
@@ -553,11 +595,10 @@ describe('sequence.sequence check', function () {
       },
       {
           "data": {"url": "data/movies.json","formatType": "json"},
-          "transform": {
-            "filter": [
-              {
+          "transform": [
+              {"filter": {
                 "field": "Major_Genre",
-                "in": [
+                "oneOf": [
                   "Action",
                   "Adventure",
                   "Comedy",
@@ -566,10 +607,13 @@ describe('sequence.sequence check', function () {
                   "Horror",
                   "Thriller/Suspense"
                 ]
-              },
+              }
+            },
               {
+                "filter":
+                {
                 "field": "Source",
-                "in": [
+                "oneOf": [
                   "Disney Ride",
                   "Based on Game",
                   "Remake",
@@ -579,8 +623,8 @@ describe('sequence.sequence check', function () {
                   "Based on Book/Short Story"
                 ]
               }
-            ]
-          },
+            }
+            ],
           "mark": "bar",
           "encoding": {
             "x": {
@@ -630,7 +674,7 @@ describe('sequence.sequence check', function () {
         "description": "Apple Inc. Stock Price",
         "data": {"formatType": "csv","url": "data/stocks.csv"},
         "mark": "area",
-        "transform": {"filter":"datum.symbol=='AAPL'"},
+        "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
           "x": {
             "field": "date",
@@ -651,7 +695,7 @@ describe('sequence.sequence check', function () {
         "description": "Apple Inc. Stock Price",
         "data": {"formatType": "csv","url": "data/stocks.csv"},
         "mark": "point",
-        "transform": {"filter":"datum.symbol=='AAPL'"},
+        "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
           "x": {"field": "date","type": "temporal",
             "axis": {"title": "Date", "format":"%Y-%m", "labelAngle":0}},
@@ -671,7 +715,7 @@ describe('sequence.sequence check', function () {
         "description": "Apple Inc. Stock Price",
         "data": {"formatType": "csv","url": "data/stocks.csv"},
         "mark": "line",
-        "transform": {"filter":"datum.symbol=='AAPL'"},
+        "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
           "x": {"field": "date","type": "temporal",
             "axis": {"title": "Date", "format":"%Y-%m", "labelAngle":0}},
@@ -691,7 +735,7 @@ describe('sequence.sequence check', function () {
         "description": "Apple Inc. Stock Price",
         "data": {"formatType": "csv","url": "data/stocks.csv"},
         "mark": "point",
-        "transform": {"filter":"datum.symbol=='AAPL'"},
+        "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
           "x": {"field": "date","type": "temporal",
             "axis": {"title": "Date", "format":"%Y-%m", "labelAngle":0}},
@@ -711,7 +755,7 @@ describe('sequence.sequence check', function () {
         "description": "Apple Inc. Stock Price",
         "data": {"formatType": "csv","url": "data/stocks.csv"},
         "mark": "line",
-        "transform": {"filter":"datum.symbol=='AAPL'"},
+        "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
           "x": {"field": "date","type": "temporal",
             "axis": {"title": "Date", "format":"%Y-%m", "labelAngle":0}},
@@ -744,9 +788,9 @@ describe('sequence.sequence check', function () {
       {
         "description": "Cars in 1973",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1973}]
-        },
+        "transform": [
+          { "filter": { "field":"Year", "equal": 1973} }
+        ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -774,9 +818,9 @@ describe('sequence.sequence check', function () {
       {
         "description": "Cars in 1978",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1978}]
-        },
+        "transform": [{
+          "filter": { "field":"Year", "equal": 1978}}
+        ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -804,9 +848,9 @@ describe('sequence.sequence check', function () {
       {
         "description": "Cars in 1982",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1982}]
-        },
+        "transform": [{
+          "filter": { "field":"Year", "equal": 1982}}
+        ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -834,9 +878,10 @@ describe('sequence.sequence check', function () {
       {
         "description": "USA Cars in 1978",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "USA"}]
-        },
+        "transform": [
+            {"filter": { "field":"Year", "equal": 1978}},
+            {"filter":{ "field":"Origin", "equal": "USA"}}
+          ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -864,9 +909,10 @@ describe('sequence.sequence check', function () {
       {
         "description": "Japan Cars in 1978",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "Japan"}]
-        },
+        "transform": [
+          {"filter": { "field":"Year", "equal": 1978}},
+          {"filter":{ "field":"Origin", "equal": "Japan"}}
+        ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -894,9 +940,10 @@ describe('sequence.sequence check', function () {
       {
         "description": "Europe Cars in 1978",
         "data": {"url": "data/cars.json"},
-        "transform": {
-          "filter": [{ "field":"Year", "equal": 1978}, { "field":"Origin", "equal": "Europe"}]
-        },
+        "transform": [
+          {"filter": { "field":"Year", "equal": 1978}},
+          {"filter":{ "field":"Origin", "equal": "Europe"}}
+        ],
         "mark": "point",
         "encoding": {
           "x": {
@@ -937,9 +984,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "bar",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "x": {
             "field": "Price",
@@ -958,9 +1005,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "bar",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "x": {
             "field": "Max_resolution",
@@ -979,9 +1026,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "bar",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "x": {"field": "Weight","type": "quantitative","bin": true,
             "axis": {"title": "Weight (g)","format":",.3d"}},
@@ -996,9 +1043,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "point",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "y": {
             "field": "Price",
@@ -1015,9 +1062,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "point",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "y": {
             "field": "Price",
@@ -1031,9 +1078,9 @@ describe('sequence.sequence check', function () {
       {
         "data": {"url": "data/cameras.json"},
         "mark": "point",
-        "transform": {
+        "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-        },
+        }],
         "encoding": {
           "y": {
             "field": "Max_resolution",
@@ -1047,11 +1094,15 @@ describe('sequence.sequence check', function () {
     ];
 
     var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    // [
+    //   0, 1, 2, 4,
+    //   6, 3, 5
+    // ]
 
     expect(result.length).to.eq(720);
-    expect(result[0].sumOfTransitionCosts).to.eq(38.45);
+    expect(result[0].sumOfTransitionCosts).to.eq(38.47);
     expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
-    expect(result[0].sequenceCost).to.eq(25.633333333333336);
+    expect(result[0].sequenceCost).to.eq(25.64666666666667);
 
 
   });

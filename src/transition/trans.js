@@ -1,37 +1,65 @@
 "use strict";
-
+const d3 = require("d3");
 var expr = require('vega-expression');
-const { TYPES, CHANNELS } = require('../constants');
+const { TYPES, CHANNELS, OPS, LOGIC_OPS } = require('../constants');
 var util = require('../util');
 const DEFAULT_EDIT_OPS = require('../editOp/editOpSet').DEFAULT_EDIT_OPS;
 var nb = require('./neighbor');
+
 
 function transition(s, d, importedTransitionCosts, transOptions) {
   var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : DEFAULT_EDIT_OPS["markEditOps"];
   var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : DEFAULT_EDIT_OPS["transformEditOps"];
   var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : DEFAULT_EDIT_OPS["encodingEditOps"];
   var trans = {
-    mark: markEditOps(s, d, importedMarkEditOps),
-    transform: transformEditOps(s, d, importedTransformEditOps, transOptions),
-    encoding: encodingEditOps(s, d, importedEncodingEditOps)
+    mark: markEditOps(s, d, importedMarkEditOps).map(eo => { return {...eo, type: "mark"}}),
+    transform: transformEditOps(s, d, importedTransformEditOps, transOptions).map(eo => { return {...eo, type: "transform"}}),
+    encoding: encodingEditOps(s, d, importedEncodingEditOps).map(eo => { return {...eo, type: "encoding"}})
   };
+
+  //Todo: if there is a MOVE_A_B and the field has Transform, ignore the transform
+  const re = new RegExp("^MOVE_")
+  trans.transform = trans.transform.filter(editOp => {
+    if (editOp.name.indexOf("FILTER") >= 0) {
+      return true;
+    }
+    let moveEditOps = trans.encoding.filter(eo => re.test(eo.name) );
+    if (moveEditOps.length ===0) {
+      return true;
+    }
+    moveEditOps.forEach(moveEditOp => {
+
+      let sChannel = moveEditOp.detail.before.channel,
+        dChannel = moveEditOp.detail.after.channel;
+      let removed = editOp.detail.findIndex(dt => (dt.how === "removed") && (dt.channel === sChannel))
+      let added = editOp.detail.findIndex(dt => (dt.how === "added") && (dt.channel === dChannel))
+      if ((removed >= 0) && (added >= 0)) {
+        editOp.detail = editOp.detail.filter((dt, i) => [removed, added].indexOf(i)<0);
+      }
+    })
+    return editOp.detail.length > 0
+  })
+
+
+
   var cost = 0;
+
   cost = trans.encoding.reduce(function (prev, editOp) {
     if (editOp.name.indexOf('_COUNT') >= 0) {
       var channel = editOp.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
       var aggEditOp = trans.transform.filter(function (editOp) { return editOp.name === "AGGREGATE"; })[0];
       if (aggEditOp
           && aggEditOp.detail.length === 1
-          && aggEditOp.detail.filter(function (dt) { return dt.where.toLowerCase() === channel; }).length) {
+          && aggEditOp.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel; }).length) {
         aggEditOp.cost = 0;
       }
       var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
       if (binEditOp && binEditOp.detail.filter(function (dt) {
         if (dt.how === "added") {
-          return d.encoding[dt.where].type === TYPES.QUANTITATIVE;
+          return d.encoding[dt.channel].type === TYPES.QUANTITATIVE;
         }
         else {
-          return s.encoding[dt.where].type === TYPES.QUANTITATIVE;
+          return s.encoding[dt.channel].type === TYPES.QUANTITATIVE;
         }
       }).length > 0) {
         binEditOp.cost = 0;
@@ -48,8 +76,11 @@ function transition(s, d, importedTransitionCosts, transOptions) {
     prev += editOp.cost;
     return prev;
   }, cost);
-  trans["cost"] = cost;
-  return trans;
+
+  return {
+    ...trans,
+    cost
+  };
 }
 exports.transition = transition;
 function markEditOps(s, d, importedMarkEditOps) {
@@ -69,29 +100,26 @@ function markEditOps(s, d, importedMarkEditOps) {
   }
   return editOps;
 }
+
 exports.markEditOps = markEditOps;
 function transformEditOps(s, d, importedTransformEditOps, transOptions) {
   var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS["transformEditOps"];
   var editOps = [];
   CHANNELS.forEach(function (channel) {
     ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
-      var editOp;
-      var already;
+      let editOp;
+
       if (transformType === "SETTYPE" && transformEditOps[transformType]) {
         editOp = transformSettype(s, d, channel, transformEditOps);
-      }
-      else {
-        if (transformEditOps[transformType]) {
-          editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
-        }
+      } else if (transformEditOps[transformType]) {
+        editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
       }
       if (editOp) {
-        already = util.find(editOps, function (eo) { return eo.name; }, editOp);
-        if (already >= 0) {
-          editOps[already].detail.push(util.duplicate(editOp.detail));
-        }
-        else {
-          editOp.detail = [util.duplicate(editOp.detail)];
+        let found = editOps.find(eo => eo.name === editOp.name);
+        if (found) {
+          found.detail.push(editOp.detail);
+        } else {
+          editOp.detail = [editOp.detail];
           editOps.push(editOp);
         }
       }
@@ -102,6 +130,7 @@ function transformEditOps(s, d, importedTransformEditOps, transOptions) {
     "ADD_FILTER": transformEditOps["ADD_FILTER"],
     "REMOVE_FILTER": transformEditOps["REMOVE_FILTER"]
   };
+
   editOps = editOps.concat(filterEditOps(s, d, importedFilterEditOps));
   return editOps;
 }
@@ -120,65 +149,79 @@ function transformBasic(s, d, channel, transform, transformEditOps, transOptions
     dEditOp = d.encoding[channel][transform.toLowerCase()];
   }
   if (transOptions && transOptions.omitIncludeRawDomain && transform === "SCALE") {
-    if (sEditOp && sEditOp.includeRawDomain) {
-      delete sEditOp.includeRawDomain;
-      if (Object.keys(sEditOp).length === 0 && JSON.stringify(sEditOp) === JSON.stringify({})) {
+    if (sEditOp && sEditOp.domain && dEditOp.domain === "unaggregated") {
+      delete sEditOp.domain;
+
+      if (Object.keys(sEditOp).length === 0 ) {
         sHas = false;
       }
     }
-    if (dEditOp && dEditOp.includeRawDomain) {
-      delete dEditOp.includeRawDomain;
-      if (Object.keys(dEditOp).length === 0 && JSON.stringify(dEditOp) === JSON.stringify({})) {
+
+    if (dEditOp && dEditOp.domain && (dEditOp.domain === "unaggregated")) {
+      delete dEditOp.domain;
+
+
+      if (Object.keys(dEditOp).length === 0 ) {
         dHas = false;
       }
     }
   }
   if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "modified", "where": channel };
+    editOp.detail = { "how": "modified", "channel": channel };
     return editOp;
   }
   else if (sHas && !dHas) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "removed", "where": channel };
+    editOp.detail = { "how": "removed", "channel": channel };
     return editOp;
   }
   else if (!sHas && dHas) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "added", "where": channel };
+    editOp.detail = { "how": "added", "channel": channel };
     return editOp;
   }
 }
 exports.transformBasic = transformBasic;
 function filterEditOps(s, d, importedFilterEditOps) {
+
   var sFilters = [], dFilters = [];
   var editOps = [];
-  if (s.transform && s.transform.filter) {
-    sFilters = getFilters(s.transform.filter);
+
+  if (s.transform) {
+
+    sFilters = getFilters(s.transform.filter(trsfm => trsfm.filter).map(trsfm => trsfm.filter));
   }
-  if (d.transform && d.transform.filter) {
-    dFilters = getFilters(d.transform.filter);
+  if (d.transform) {
+    dFilters = getFilters(d.transform.filter(trsfm => trsfm.filter).map(trsfm => trsfm.filter));
   }
-  var dOnly = util.arrayDiff(dFilters, sFilters);
-  var sOnly = util.arrayDiff(sFilters, dFilters);
+
   if (sFilters.length === 0 && dFilters.length === 0) {
     return editOps;
   }
+
+  var dOnly = util.arrayDiff(dFilters, sFilters);
+  var sOnly = util.arrayDiff(sFilters, dFilters);
+
   var isFind = false;
   for (var i = 0; i < dOnly.length; i++) {
     for (var j = 0; j < sOnly.length; j++) {
-      if (util.rawEqual(dOnly[i].field, sOnly[j].field)) {
+      if (dOnly[i].id === sOnly[j].id) {
         var newEditOp = util.duplicate(importedFilterEditOps["MODIFY_FILTER"]);
-        newEditOp.detail = { "what": [], "where": sOnly[j].field, "before":[], "after":[] };
-        if (sOnly[j].op !== dOnly[j].op) {
+        newEditOp.detail = {
+          "what": [], "id": sOnly[j].id, "before":[], "after":[],
+          "sFilter": sOnly[j],
+          "eFilter": dOnly[i]
+        };
+        if (!util.deepEqual(sOnly[j].op, dOnly[i].op)) {
           newEditOp.detail.what.push("op")
           newEditOp.detail.before.push(sOnly[j].op);
-          newEditOp.detail.after.push(dOnly[j].op);
+          newEditOp.detail.after.push(dOnly[i].op);
         }
-        if (sOnly[j].value !== dOnly[j].value) {
+        if (!util.deepEqual(sOnly[j].value, dOnly[i].value)) {
           newEditOp.detail.what.push("value")
           newEditOp.detail.before.push(sOnly[j].value);
-          newEditOp.detail.after.push(dOnly[j].value);
+          newEditOp.detail.after.push(dOnly[i].value);
         }
         editOps.push(newEditOp);
         dOnly.splice(i, 1);
@@ -196,9 +239,12 @@ function filterEditOps(s, d, importedFilterEditOps) {
   for (var i = 0; i < dOnly.length; i++) {
     var newEditOp = util.duplicate(importedFilterEditOps["ADD_FILTER"]);
     newEditOp.detail = newEditOp.detail = {
+      "id": dOnly[i].id,
       "what": ["field", "op", "value"],
       "before":[undefined, undefined, undefined],
-      "after":[dOnly[i].field, dOnly[i].op, dOnly[i].value]
+      "after":[dOnly[i].field, dOnly[i].op, dOnly[i].value],
+      "eFilter": dOnly[i],
+      "sFilter": undefined,
     };
 
     editOps.push(newEditOp);
@@ -206,9 +252,12 @@ function filterEditOps(s, d, importedFilterEditOps) {
   for (var i = 0; i < sOnly.length; i++) {
     var newEditOp = util.duplicate(importedFilterEditOps["REMOVE_FILTER"]);
     newEditOp.detail = newEditOp.detail = {
+      "id": sOnly[i].id,
       "what": ["field", "op", "value"],
       "before": [sOnly[i].field, sOnly[i].op, sOnly[i].value],
-      "after": [undefined, undefined, undefined]
+      "after": [undefined, undefined, undefined],
+      "sFilter": sOnly[i],
+      "eFilter": undefined,
     };
 
     editOps.push(newEditOp);
@@ -223,53 +272,94 @@ function getFilters (filterExpression) {
     filters = filterExpression.reduce((acc, expression) => {
       return acc.concat(parsePredicateFilter(expression));
     }, []);
-  }
-  else {
+  } else {
     filters = parsePredicateFilter(filterExpression);
   }
 
+  filters = d3.groups(filters, filter => filter.id)
+    .map(group => {
+      return {
+        id: group[0],
+        field: group[1].map(filter => filter.field),
+        op: group[1].map(filter => filter.op),
+        value: group[1].map(filter => filter.value)
+      }
+    })
+
   return filters;
 
-  function parsePredicateFilter(expression) {
-    let parsed = [];
-    if (util.isString(expression)) {
-      parsed = parsed.concat(stringFilter(expression));
-    }
-    ["range", "in", "equal"].filter(op => expression.hasOwnProperty(op)).forEach(op => {
+
+}
+exports.getFilters = getFilters;
+
+function parsePredicateFilter(expression) {
+
+  let parsed = [];
+  if (util.isString(expression)) {
+    parsed = parsed.concat(stringFilter(expression));
+  } else {
+    LOGIC_OPS.filter(logicOp => expression.hasOwnProperty(logicOp)).forEach(logicOp => {
+      let subParsed;
+      if (util.isArray(expression[logicOp])) {
+        subParsed = expression[logicOp].reduce((subParsed, expr) => {
+          return subParsed.concat(parsePredicateFilter(expr))
+        }, []);
+      } else {
+        subParsed = parsePredicateFilter(expression[logicOp]);
+      }
+      let id = subParsed.map(f => f.id).join("_")
       parsed.push({
+        "id": `${logicOp}>[${id}]`,
+        "op": logicOp,
+        "value": subParsed
+      })
+    })
+
+    OPS.filter(op => expression.hasOwnProperty(op))
+      .forEach(op => {
+      parsed.push({
+        "id": expression.field,
         "field": expression.field,
         "op": op,
         "value": JSON.stringify(expression[op])
       });
     })
-    if (parsed.length === 0) {
-      console.log("WARN: cannot parse filters.");
-    }
-    return parsed;
   }
 
-  function stringFilter(expression) {
-    var parser = expr["parse"];
-    var expressionTree = parser(expression);
+  if (parsed.length === 0) {
+    console.log("WARN: cannot parse filters.");
+  }
+  return parsed;
+}
+exports.parsePredicateFilter = parsePredicateFilter;
 
-    return binaryExprsFromExprTree(expressionTree, [], 0).map(function (bExpr) {
-      return { "field": bExpr.left.property.name, "op": bExpr.operator, "value": bExpr.right.raw };
-    });
+function stringFilter(expression) {
+  var parser = expr["parse"];
+  var expressionTree = parser(expression);
 
-    function binaryExprsFromExprTree(tree, arr, depth) {
-      if (tree.operator === '||' || tree.operator === '&&') {
-        arr = binaryExprsFromExprTree(tree.left, arr, depth + 1);
-        arr = binaryExprsFromExprTree(tree.right, arr, depth + 1);
-      }
-      else if (['==', '===', '!==', '!=', '<', '<=', '>', '>='].indexOf(tree.operator) >= 0) {
-        tree.depth = depth;
-        arr.push(tree);
-      }
-      return arr;
+  return binaryExprsFromExprTree(expressionTree, [], 0).map(function (bExpr) {
+    return {
+      "id": bExpr.left.property.name,
+      "field": bExpr.left.property.name,
+      "op": bExpr.operator,
+      "value": bExpr.right.raw
+    };
+  });
+
+  function binaryExprsFromExprTree(tree, arr, depth) {
+    if (tree.operator === '||' || tree.operator === '&&') {
+      arr = binaryExprsFromExprTree(tree.left, arr, depth + 1);
+      arr = binaryExprsFromExprTree(tree.right, arr, depth + 1);
     }
+    else if (['==', '===', '!==', '!=', '<', '<=', '>', '>='].indexOf(tree.operator) >= 0) {
+      tree.depth = depth;
+      arr.push(tree);
+    }
+    return arr;
   }
 }
-exports.getFilters = getFilters;
+
+
 
 function transformSettype(s, d, channel, transformEditOps) {
   var editOp;
@@ -280,12 +370,14 @@ function transformSettype(s, d, channel, transformEditOps) {
     editOp.detail = {
       "before": s.encoding[channel]["type"],
       "after": d.encoding[channel]["type"],
-      "where": channel
+      "channel": channel
     };
     return editOp;
   }
 }
 exports.transformSettype = transformSettype;
+
+
 function encodingEditOps(s, d, importedEncodingEditOps) {
   if (nb.sameEncoding(s.encoding, d.encoding)) {
     return [];
@@ -361,11 +453,12 @@ function encodingEditOps(s, d, importedEncodingEditOps) {
   if (!nb.sameEncoding(u.encoding, d.encoding) && nodes.length === 0) {
     return [{ name: "UNREACHABLE", cost: 999 }];
   }
-  var result = u.prev.map(function (node) {
+  var result = [].concat(u.prev.map(function (node) {
     return node.editOp;
-  }).filter(function (editOp) { return editOp; });
+  }).filter(function (editOp) { return editOp; })
+  );
   result.push(u.editOp);
-  return result;
+  return result ;
 }
 
 
