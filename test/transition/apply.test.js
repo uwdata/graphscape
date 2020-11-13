@@ -190,19 +190,20 @@ describe('transition.apply', function () {
 
   });
   describe('apply', function () {
-    it('should apply a REMOVE_Channel edit operation correctly.', function () {
+    it('should apply a REMOVE_Channel edit operation correctly.', async function () {
       let startVL = {"encoding": {"x": {"field": "A", "type": "nominal"}}};
       let endVL = {"encoding": {"y": {"field": "A", "type": "quantitative", "aggregate": "mean" }}};
-      const editOps = trans.transition(
+      const editOps = await trans.transition(
         util.duplicate(startVL),
         util.duplicate(endVL),
-        editOpSet.DEFAULT_EDIT_OPS)
+        editOpSet.DEFAULT_EDIT_OPS
+        );
 
-        expect(() => {
-          apply.apply(startVL, endVL, editOps.transform);
-        }).to.throw();
-        let iSpec = apply.apply(startVL, endVL, editOps.encoding.concat(editOps.transform))
-        expect(iSpec).to.deep.equal(endVL)
+      expect(() => {
+        apply.apply(startVL, endVL, editOps.transform);
+      }).to.throw();
+      let iSpec = apply.apply(startVL, endVL, editOps.encoding.concat(editOps.transform))
+      expect(iSpec).to.deep.equal(endVL)
 
     });
   });

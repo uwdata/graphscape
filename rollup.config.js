@@ -16,6 +16,8 @@ const outputs = [
         sourcemap: true,
         name: 'graphscape',
         globals: {
+          vega: "vega",
+          "vega-lite": "vl",
           d3: "d3"
         }
       },
@@ -26,6 +28,8 @@ const outputs = [
         name: 'graphscape',
         plugins: [terser()],
         globals: {
+          vega: "vega",
+          "vega-lite": "vl",
           d3: "d3"
         }
       }
@@ -46,7 +50,7 @@ const outputs = [
       }),
       bundleSize()
     ],
-    external: ['d3']
+    external: ['d3',  "vega-lite", "vega"]
   }
 ];
 

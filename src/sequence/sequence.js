@@ -7,7 +7,7 @@ var d3 = require('d3');
 var PO = require('./PatternOptimizer.js');
 var tb = require('./TieBreaker.js');
 
-function sequence(specs, options, editOpSet, callback){
+async function sequence(specs, options, editOpSet, callback){
   if (!editOpSet) {
     editOpSet = editOp.DEFAULT_EDIT_OPS;
   }
@@ -16,14 +16,14 @@ function sequence(specs, options, editOpSet, callback){
     return (dist + filterCost / 1000) * globalWeightingTerm;
   }
 
-  var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, editOpSet);
+  var transitionSetsFromEmptyVis = await getTransitionSetsFromSpec({ "mark":"null", "encoding": {} }, specs, editOpSet);
 
     if (!options.fixFirst) {
     var startingSpec = { "mark":"null", "encoding": {} };
     specs = [ startingSpec ].concat(specs);
   }
 
-  var transitions = getTransitionSets(specs, editOpSet);
+  var transitions = await getTransitionSets(specs, editOpSet);
   transitions = extendTransitionSets(transitions);
 
   var TSPResult = TSP.TSP(transitions, "cost", options.fixFirst===true ? 0 : undefined);
@@ -84,20 +84,20 @@ function sequence(specs, options, editOpSet, callback){
   }
   return returnValue;
 }
-function getTransitionSetsFromSpec( spec, specs, editOpSet){
+async function getTransitionSetsFromSpec( spec, specs, editOpSet){
   var transitions = [];
   for (var i = 0; i < specs.length; i++) {
-    transitions.push(trans.transition(specs[i], spec, editOpSet, { omitIncludeRawDomin: true }));
+    transitions.push(await trans.transition(specs[i], spec, editOpSet, { omitIncludeRawDomin: true }));
   }
   return transitions;
 }
 
-function getTransitionSets(specs, editOpSet){
+async function getTransitionSets(specs, editOpSet){
   var transitions = [];
   for (var i = 0; i < specs.length; i++) {
     transitions.push([]);
     for (var j = 0; j < specs.length; j++) {
-      transitions[i].push(trans.transition(specs[i], specs[j], editOpSet, { omitIncludeRawDomin: true }));
+      transitions[i].push(await trans.transition(specs[i], specs[j], editOpSet, { omitIncludeRawDomin: true }));
 
     }
   }

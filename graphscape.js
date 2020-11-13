@@ -1,12 +1,14 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.graphscape = {}, global.d3));
-}(this, (function (exports, d3) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3'), require('vega'), require('vega-lite')) :
+  typeof define === 'function' && define.amd ? define(['d3', 'vega', 'vega-lite'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.graphscape = factory(global.d3, global.vega, global.vl));
+}(this, (function (d3, vega, vl) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
   var d3__default = /*#__PURE__*/_interopDefaultLegacy(d3);
+  var vega__default = /*#__PURE__*/_interopDefaultLegacy(vega);
+  var vl__default = /*#__PURE__*/_interopDefaultLegacy(vl);
 
   function accessor(fn, fields, name) {
     fn.fields = fields || [];
@@ -2866,7 +2868,7 @@
         neighbors.push(newNeighbor);
       }
       additionalFields.forEach(function (field, index) {
-        if (field.field !== spec.encoding[channel].field) {
+        if (field.field !== spec.encoding[channel].field || field.type !== spec.encoding[channel].type) {
           newNeighbor = util.duplicate(spec);
           editOpType = "MODIFY_" + channel.toUpperCase();
 
@@ -2887,11 +2889,11 @@
           newAdditionalChannels = util.duplicate(additionalChannels);
           newNeighbor.encoding[channel] = field;
           editOp.detail = {
-            "before": {
-              "field": spec.encoding[channel].field
+            "before": { ...spec.encoding[channel],
+              channel
             },
-            "after": {
-              "field": field.field
+            "after": { ...field,
+              channel
             }
           };
 
@@ -3019,7 +3021,7 @@
         return false;
       }
 
-      if (a[key].field !== b[key].field) {
+      if (a[key].field !== b[key].field || a[key].type !== b[key].type) {
         return false;
       }
     }
@@ -3043,17 +3045,20 @@
   } = constants;
   const DEFAULT_EDIT_OPS$1 = editOpSet.DEFAULT_EDIT_OPS;
 
-  function transition(s, d, importedTransitionCosts, transOptions) {
+  async function transition(s, d, importedTransitionCosts, transOptions) {
     var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : DEFAULT_EDIT_OPS$1["markEditOps"];
     var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : DEFAULT_EDIT_OPS$1["transformEditOps"];
     var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : DEFAULT_EDIT_OPS$1["encodingEditOps"];
+
+    let _transformEditOps = await transformEditOps(s, d, importedTransformEditOps, transOptions);
+
     var trans = {
       mark: markEditOps(s, d, importedMarkEditOps).map(eo => {
         return { ...eo,
           type: "mark"
         };
       }),
-      transform: transformEditOps(s, d, importedTransformEditOps, transOptions).map(eo => {
+      transform: _transformEditOps.map(eo => {
         return { ...eo,
           type: "transform"
         };
@@ -3063,7 +3068,32 @@
           type: "encoding"
         };
       })
-    };
+    }; //Todo: if there is a MOVE_A_B and the field has Transform, ignore the transform
+
+    const re = new RegExp("^MOVE_");
+    trans.transform = trans.transform.filter(editOp => {
+      if (editOp.name.indexOf("FILTER") >= 0) {
+        return true;
+      }
+
+      let moveEditOps = trans.encoding.filter(eo => re.test(eo.name));
+
+      if (moveEditOps.length === 0) {
+        return true;
+      }
+
+      moveEditOps.forEach(moveEditOp => {
+        let sChannel = moveEditOp.detail.before.channel,
+            dChannel = moveEditOp.detail.after.channel;
+        let removed = editOp.detail.findIndex(dt => dt.how === "removed" && dt.channel === sChannel);
+        let added = editOp.detail.findIndex(dt => dt.how === "added" && dt.channel === dChannel);
+
+        if (removed >= 0 && added >= 0) {
+          editOp.detail = editOp.detail.filter((dt, i) => [removed, added].indexOf(i) < 0);
+        }
+      });
+      return editOp.detail.length > 0;
+    });
     var cost = 0;
     cost = trans.encoding.reduce(function (prev, editOp) {
       if (editOp.name.indexOf('_COUNT') >= 0) {
@@ -3136,17 +3166,21 @@
 
   var markEditOps_1 = markEditOps;
 
-  function transformEditOps(s, d, importedTransformEditOps, transOptions) {
+  async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
     var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS$1["transformEditOps"];
     var editOps = [];
-    CHANNELS$1.forEach(function (channel) {
-      ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(function (transformType) {
+
+    for (let i = 0; i < CHANNELS$1.length; i++) {
+      const channel = CHANNELS$1[i];
+      ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(async function (transformType) {
         let editOp;
 
         if (transformType === "SETTYPE" && transformEditOps[transformType]) {
           editOp = transformSettype(s, d, channel, transformEditOps);
+        } else if (transformType === "SCALE" && transformEditOps[transformType]) {
+          editOp = await scaleEditOps(s, d, channel, transformEditOps[transformType], transOptions);
         } else if (transformEditOps[transformType]) {
-          editOp = transformBasic(s, d, channel, transformType, transformEditOps, transOptions);
+          editOp = transformBasic(s, d, channel, transformType, transformEditOps);
         }
 
         if (editOp) {
@@ -3160,7 +3194,7 @@
           }
         }
       });
-    });
+    }
     var importedFilterEditOps = {
       "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
       "ADD_FILTER": transformEditOps["ADD_FILTER"],
@@ -3172,7 +3206,7 @@
 
   var transformEditOps_1 = transformEditOps;
 
-  function transformBasic(s, d, channel, transform, transformEditOps, transOptions) {
+  function transformBasic(s, d, channel, transform, transformEditOps) {
     var sHas = false;
     var dHas = false;
     var editOp;
@@ -3186,24 +3220,6 @@
     if (d.encoding[channel] && d.encoding[channel][transform.toLowerCase()]) {
       dHas = true;
       dEditOp = d.encoding[channel][transform.toLowerCase()];
-    }
-
-    if (transOptions && transOptions.omitIncludeRawDomain && transform === "SCALE") {
-      if (sEditOp && sEditOp.domain && dEditOp.domain === "unaggregated") {
-        delete sEditOp.domain;
-
-        if (Object.keys(sEditOp).length === 0) {
-          sHas = false;
-        }
-      }
-
-      if (dEditOp && dEditOp.domain && dEditOp.domain === "unaggregated") {
-        delete dEditOp.domain;
-
-        if (Object.keys(dEditOp).length === 0) {
-          dHas = false;
-        }
-      }
     }
 
     if (sHas && dHas && !util.rawEqual(sEditOp, dEditOp)) {
@@ -3231,6 +3247,104 @@
   }
 
   var transformBasic_1 = transformBasic;
+
+  async function scaleEditOps(s, d, channel, scaleTransformEditOps, transOptions) {
+    var sHas = false,
+        sOnlyHasDomainRelated = false;
+    var dHas = false,
+        dOnlyHasDomainRelated = false;
+    var editOp;
+    var sEditOp, dEditOp;
+
+    if (s.encoding[channel] && s.encoding[channel].scale) {
+      sHas = true;
+      sEditOp = { ...s.encoding[channel].scale
+      };
+
+      if (!Object.keys(sEditOp).find(key => ["domain", "zero"].indexOf(key) < 0)) {
+        sOnlyHasDomainRelated = true;
+      }
+    }
+
+    if (d.encoding[channel] && d.encoding[channel].scale) {
+      dHas = true;
+      dEditOp = { ...d.encoding[channel].scale
+      };
+
+      if (!Object.keys(dEditOp).find(key => ["domain", "zero"].indexOf(key) < 0)) {
+        dOnlyHasDomainRelated = true;
+      }
+    }
+
+    if (transOptions && transOptions.omitIncludeRawDomain) {
+      if (sEditOp && sEditOp.domain && dEditOp.domain === "unaggregated") {
+        delete sEditOp.domain;
+
+        if (Object.keys(sEditOp).length === 0) {
+          sOnlyHasDomainRelated = false;
+          sHas = false;
+        }
+      }
+
+      if (dEditOp && dEditOp.domain && dEditOp.domain === "unaggregated") {
+        delete dEditOp.domain;
+
+        if (Object.keys(dEditOp).length === 0) {
+          dOnlyHasDomainRelated = false;
+          dHas = false;
+        }
+      }
+    }
+
+    if (sHas && dHas && !util.rawEqual(sEditOp, dEditOp)) {
+      if (sOnlyHasDomainRelated && dOnlyHasDomainRelated && (await sameDomain(s, d, channel))) {
+        return;
+      }
+
+      editOp = util.duplicate(scaleTransformEditOps);
+      editOp.detail = {
+        "how": "modified",
+        "channel": channel
+      };
+      return editOp;
+    } else if (sHas && !dHas) {
+      if (sOnlyHasDomainRelated && (await sameDomain(s, d, channel))) {
+        return;
+      }
+
+      editOp = util.duplicate(scaleTransformEditOps);
+      editOp.detail = {
+        "how": "removed",
+        "channel": channel
+      };
+      return editOp;
+    } else if (!sHas && dHas) {
+      if (dOnlyHasDomainRelated && (await sameDomain(s, d, channel))) {
+        return;
+      }
+
+      editOp = util.duplicate(scaleTransformEditOps);
+      editOp.detail = {
+        "how": "added",
+        "channel": channel
+      };
+      return editOp;
+    }
+  }
+
+  var scaleEditOps_1 = scaleEditOps;
+
+  async function sameDomain(s, d, channel) {
+    const dView = await new vega__default['default'].View(vega__default['default'].parse(vl__default['default'].compile(util.duplicate(d)).spec), {
+      renderer: "svg"
+    }).runAsync();
+    const sView = await new vega__default['default'].View(vega__default['default'].parse(vl__default['default'].compile(util.duplicate(s)).spec), {
+      renderer: "svg"
+    }).runAsync();
+    const sScale = sView._runtime.scales[channel].value;
+    const dScale = dView._runtime.scales[channel].value;
+    return util.deepEqual(sScale.domain(), dScale.domain());
+  }
 
   function filterEditOps(s, d, importedFilterEditOps) {
     var sFilters = [],
@@ -3539,6 +3653,7 @@
     markEditOps: markEditOps_1,
     transformEditOps: transformEditOps_1,
     transformBasic: transformBasic_1,
+    scaleEditOps: scaleEditOps_1,
     filterEditOps: filterEditOps_1,
     getFilters: getFilters_1,
     parsePredicateFilter: parsePredicateFilter_1,
@@ -3790,7 +3905,7 @@
     TieBreaker: TieBreaker
   };
 
-  function sequence(specs, options, editOpSet$1, callback) {
+  async function sequence(specs, options, editOpSet$1, callback) {
     if (!editOpSet$1) {
       editOpSet$1 = editOpSet.DEFAULT_EDIT_OPS;
     }
@@ -3799,7 +3914,7 @@
       return (dist + filterCost / 1000) * globalWeightingTerm;
     }
 
-    var transitionSetsFromEmptyVis = getTransitionSetsFromSpec({
+    var transitionSetsFromEmptyVis = await getTransitionSetsFromSpec({
       "mark": "null",
       "encoding": {}
     }, specs, editOpSet$1);
@@ -3812,7 +3927,7 @@
       specs = [startingSpec].concat(specs);
     }
 
-    var transitions = getTransitionSets(specs, editOpSet$1);
+    var transitions = await getTransitionSets(specs, editOpSet$1);
     transitions = extendTransitionSets(transitions);
     var TSPResult = TSP_1.TSP(transitions, "cost", options.fixFirst === true ? 0 : undefined);
     var TSPResultAll = TSPResult.all.filter(function (seqWithDist) {
@@ -3873,11 +3988,11 @@
     return returnValue;
   }
 
-  function getTransitionSetsFromSpec(spec, specs, editOpSet) {
+  async function getTransitionSetsFromSpec(spec, specs, editOpSet) {
     var transitions = [];
 
     for (var i = 0; i < specs.length; i++) {
-      transitions.push(trans.transition(specs[i], spec, editOpSet, {
+      transitions.push(await trans.transition(specs[i], spec, editOpSet, {
         omitIncludeRawDomin: true
       }));
     }
@@ -3885,14 +4000,14 @@
     return transitions;
   }
 
-  function getTransitionSets(specs, editOpSet) {
+  async function getTransitionSets(specs, editOpSet) {
     var transitions = [];
 
     for (var i = 0; i < specs.length; i++) {
       transitions.push([]);
 
       for (var j = 0; j < specs.length; j++) {
-        transitions[i].push(trans.transition(specs[i], specs[j], editOpSet, {
+        transitions[i].push(await trans.transition(specs[i], specs[j], editOpSet, {
           omitIncludeRawDomin: true
         }));
       }
@@ -3960,18 +4075,160 @@
     sequence: sequence_2
   };
 
-  var sequence$1 = sequence_1.sequence;
-  var transition$1 = trans.transition;
-  var src = {
-    sequence: sequence$1,
-    transition: transition$1
+  const {
+    parsePredicateFilter: parsePredicateFilter$1
+  } = trans;
+
+  function apply(sSpec, eSpec, editOps) {
+    return editOps.reduce((resultSpec, editOp) => {
+      if (editOp.type === "mark") {
+        resultSpec = applyMarkEditOp(resultSpec, eSpec);
+      } else if (editOp.type === "transform") {
+        resultSpec = applyTransformEditOp(resultSpec, eSpec, editOp);
+      } else if (editOp.type === "encoding") {
+        resultSpec = applyEncodingEditOp(resultSpec, eSpec, editOp);
+      }
+
+      return resultSpec;
+    }, util.duplicate(sSpec)); //an intermediate spec by applying edit operations on the sSpec
+  }
+
+  var apply_2 = apply;
+
+  function applyMarkEditOp(targetSpec, eSpec, editOp) {
+    let resultSpec = util.duplicate(targetSpec);
+    resultSpec.mark = eSpec.mark;
+    return resultSpec;
+  }
+
+  var applyMarkEditOp_1 = applyMarkEditOp;
+
+  function applyTransformEditOp(targetSpec, eSpec, editOp) {
+    let resultSpec = util.duplicate(targetSpec);
+    const transformType = editOp.name.toLowerCase();
+    const details = !util.isArray(editOp.detail) ? [editOp.detail] : editOp.detail;
+
+    if (transformType.indexOf("filter") >= 0) {
+      if (editOp.name === "REMOVE_FILTER" || editOp.name === "MODIFY_FILTER") {
+        resultSpec.transform.filter(tfm => {
+          return tfm.filter && parsePredicateFilter$1(tfm.filter)[0].id === editOp.detail.id;
+        }).forEach(filter => {
+          if (resultSpec.transform) {
+            let i = resultSpec.transform.findIndex(trsfm => util.deepEqual(trsfm, filter));
+            resultSpec.transform.splice(i, 1);
+          }
+        });
+      }
+
+      if (editOp.name === "ADD_FILTER" || editOp.name === "MODIFY_FILTER") {
+        eSpec.transform.filter(tfm => {
+          return tfm.filter && parsePredicateFilter$1(tfm.filter)[0].id === editOp.detail.id;
+        }).forEach(filter => {
+          if (!resultSpec.transform) {
+            resultSpec.transform = [filter];
+          } else if (!resultSpec.transform.find(trsfm => util.deepEqual(filter, trsfm))) {
+            resultSpec.transform.push(filter);
+          }
+        });
+      }
+    } else {
+      details.forEach(detail => {
+        if (resultSpec.encoding[detail.channel]) {
+          if (detail.how === "removed") {
+            delete resultSpec.encoding[detail.channel][transformType];
+          } else {
+            resultSpec.encoding[detail.channel][transformType] = eSpec.encoding[detail.channel][transformType];
+          }
+        } else {
+          throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since there is no \"").concat(detail.channel, "\" channel."));
+        }
+      });
+    }
+
+    return resultSpec;
+  }
+
+  var applyTransformEditOp_1 = applyTransformEditOp;
+
+  function applyEncodingEditOp(targetSpec, eSpec, editOp) {
+    let resultSpec = util.duplicate(targetSpec);
+
+    if (editOp.name.indexOf("REMOVE") === 0) {
+      let channel = editOp.detail.before.channel;
+
+      if (resultSpec.encoding[channel]) {
+        delete resultSpec.encoding[channel];
+      } else {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since there is no \"").concat(channel, "\" channel."));
+      }
+    } else if (editOp.name.indexOf("ADD") === 0) {
+      let channel = editOp.detail.after.channel;
+
+      if (resultSpec.encoding[channel]) {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since \"").concat(channel, "\" already exists."));
+      } else {
+        resultSpec.encoding[channel] = util.duplicate(eSpec.encoding[channel]);
+      }
+    } else if (editOp.name.indexOf("MOVE") === 0) {
+      let sChannel = editOp.detail.before.channel,
+          dChannel = editOp.detail.after.channel;
+
+      if (!resultSpec.encoding[sChannel]) {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since there is no \"").concat(sChannel, "\" channel."));
+      } else if (resultSpec.encoding[dChannel]) {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since \"").concat(dChannel, "\" already exists."));
+      } else {
+        resultSpec.encoding[dChannel] = util.duplicate(resultSpec.encoding[sChannel]);
+        delete resultSpec.encoding[sChannel];
+      }
+    } else if (editOp.name.indexOf("MODIFY") === 0) {
+      let channel = editOp.detail.before.channel,
+          field = editOp.detail.after.field,
+          type = editOp.detail.after.type;
+
+      if (!resultSpec.encoding[channel]) {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since there is no \"").concat(channel, "\" channel."));
+      } else {
+        resultSpec.encoding[channel].field = field;
+        resultSpec.encoding[channel].type = type;
+      }
+    } else if (editOp.name.indexOf("SWAP_X_Y") === 0) {
+      if (!resultSpec.encoding.x || !resultSpec.encoding.y) {
+        throw new UnapplicableEditOPError("Cannot apply ".concat(editOp.name, " since there is no \"x\" and \"y\" channels."));
+      } else {
+        let temp = util.duplicate(resultSpec.encoding.y);
+        resultSpec.encoding.y = util.duplicate(resultSpec.encoding.x);
+        resultSpec.encoding.x = temp;
+      }
+    }
+
+    return resultSpec;
+  }
+
+  var applyEncodingEditOp_1 = applyEncodingEditOp;
+
+  class UnapplicableEditOPError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "UnapplicableEditOPError";
+    }
+
+  }
+
+  var apply_1 = {
+    apply: apply_2,
+    applyMarkEditOp: applyMarkEditOp_1,
+    applyTransformEditOp: applyTransformEditOp_1,
+    applyEncodingEditOp: applyEncodingEditOp_1
   };
 
-  exports.default = src;
-  exports.sequence = sequence$1;
-  exports.transition = transition$1;
+  var src = {
+    sequence: sequence_1.sequence,
+    transition: trans.transition,
+    apply: apply_1.apply
+  };
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return src;
 
 })));
 //# sourceMappingURL=graphscape.js.map

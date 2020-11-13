@@ -37,28 +37,47 @@ describe('transition.trans', function () {
       expect(tr.name).to.eq("AREA_POINT");
     });
   });
-  describe('transform edit operation', function () {
-    const result = trans.transformEditOps(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
-    it('should return SCALE,AGGREGATE, and SORT editOperations correctly.', function () {
-      const scaleTrs = trans.transformBasic(startVL, destinationVL, "y", "SCALE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
-      expect(scaleTrs.cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"].cost);
+  describe('transform edit operation', async function () {
+    const result = await trans.transformEditOps(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
+    it('should return AGGREGATE, and SORT editOperations correctly.', function () {
       expect(trans.transformBasic(startVL, destinationVL, "y", "AGGREGATE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]).cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["AGGREGATE"].cost);
       expect(trans.transformBasic(startVL, destinationVL, "y", "SORT", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"])).to.eq(undefined);
     });
-    it('should return SCALE,AGGREGATE, and SORT editOperations with detail correctly.', function () {
-      expect(result[0].detail.length).to.eq(2);
+    it('should return SCALE editOperations correctly.', async function () {
+      const scaleTrs = await trans.scaleEditOps(startVL, destinationVL, "y", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"]);
+      expect(scaleTrs.cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"].cost);
     });
-    it('should omit SCALE if omitIncludeRawDomain is true.', function () {
+    it.only('should return SCALE editOperations correctly.', async function () {
+      let s = {
+        "data": {"values": [{"X": 0},{"X": 100}]},
+        "mark": "point",
+        "encoding": {"x": {"field": "X", "type": "quantitative"}}
+      }
+      let d = {
+        "data": {"values": [{"X": 0},{"X": 100}]},
+        "mark": "point",
+        "encoding": {"x": {"field": "X", "type": "quantitative", "scale": {"domain": [0,100]}}}
+      }
+      const scaleTrs = await trans.scaleEditOps(s, d, "x", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"]);
+      expect(scaleTrs).to.eq(undefined);
+    });
+    it('should return SCALE,AGGREGATE, and SORT editOperations with detail correctly.', function () {
+
+      expect(result.find(eo => eo.name ==="SCALE").detail.length).to.eq(2);
+      expect(result.find(eo => eo.name ==="AGGREGATE").detail.length).to.eq(1);
+      expect(result.find(eo => eo.name ==="REMOVE_FILTER").detail.id).to.eq("Year");
+    });
+    it('should omit SCALE if omitIncludeRawDomain is true.', async function () {
       var testVL = util.duplicate(startVL);
       testVL.encoding.y["scale"] = { domain: "unaggregated" };
-      var real = trans.transformBasic(startVL, testVL, "y", "SCALE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"], { omitIncludeRawDomain: true });
+      const real = await trans.scaleEditOps(startVL, testVL, "y", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"], { omitIncludeRawDomain: true });
       expect(real).to.eq(undefined);
     });
     // YH : Deprecated SETTYPE editOperation
     // it('should return SETTYPE editOperation correctly.', function () {
     //   expect(trans.transformSettype(startVL, destinationVL, "color", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]).name).to.eq("SETTYPE");
     // });
-    it('should not return SCALE/AGGREGATE/SORT editOperations when the field MOVED.', function () {
+    it('should not return SCALE/AGGREGATE/SORT editOperations when the field MOVED.', async function () {
       const s = {
         "encoding": {
           "x": {"field": "A", "type": "qauntitative", "aggregate": "mean"}
@@ -72,10 +91,10 @@ describe('transition.trans', function () {
           "x": {"field": "A", "type": "qauntitative"}
         }
       };
-      const o = trans.transition(s, d, editOpSet.DEFAULT_EDIT_OPS);
+      const o = await trans.transition(s, d, editOpSet.DEFAULT_EDIT_OPS);
       expect(o.encoding[0].name).to.eq("MOVE_X_Y");
       expect(o.transform[0].name).to.eq("SCALE");
-      const o2 = trans.transition(s, d2, editOpSet.DEFAULT_EDIT_OPS);
+      const o2 = await trans.transition(s, d2, editOpSet.DEFAULT_EDIT_OPS);
       expect(o2.transform[0].name).to.eq("AGGREGATE");
     });
 
@@ -351,7 +370,7 @@ describe('transition.trans', function () {
     });
   });
   describe('whole editOperation', function () {
-    it('should return modified costs for _COUNT type encoding editOperations.', function () {
+    it('should return modified costs for _COUNT type encoding editOperations.', async function () {
       var startVL = {
         "mark": "area",
         "encoding": {
@@ -372,49 +391,19 @@ describe('transition.trans', function () {
           "y": { "type": "quantitative", "field": "A", "aggregate": "mean", "bin": true }
         }
       };
-      var result = trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
+      var result = await trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
       var actualCost = editOpSet.DEFAULT_EDIT_OPS.encodingEditOps["ADD_X_COUNT"].cost;
       expect(result.encoding[0].cost).to.eq(actualCost);
-      var result2 = trans.transition(startVL, destinationVL2, editOpSet.DEFAULT_EDIT_OPS);
+      var result2 = await trans.transition(startVL, destinationVL2, editOpSet.DEFAULT_EDIT_OPS);
       actualCost = editOpSet.DEFAULT_EDIT_OPS.encodingEditOps["ADD_X_COUNT"].cost + editOpSet.DEFAULT_EDIT_OPS.transformEditOps["AGGREGATE"].cost;
       expect(result2['cost']).to.eq(actualCost);
     });
-    it('should return all editOperations correctly.', function () {
-      var result = trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
+    it('should return all editOperations correctly.', async function () {
+      var result = await trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
 
       expect(result.mark[0].cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["markEditOps"]["AREA_POINT"].cost);
       expect(result.transform.length).to.eq(3);
       expect(result.encoding.length).to.eq(2);
     });
-  });
-  it('should return modified costs for _COUNT type encoding editOperations.', function () {
-    var startVL = {
-      "data": { "url": "data/cameras.json" },
-      "mark": "bar",
-      "transform": [{
-        "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-      }],
-      "encoding": {
-        "x": { "field": "Price", "type": "quantitative", "bin": true },
-        "y": {
-          "field": "*",
-          "type": "quantitative",
-          "aggregate": "count"
-        }
-      }
-    };
-    var destinationVL = {
-      "data": { "url": "data/cameras.json" },
-      "mark": "point",
-      "transform": [{
-        "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
-      }],
-      "encoding": {
-        "y": { "field": "Max_resolution", "type": "quantitative" },
-        "x": { "field": "Weight", "type": "quantitative" }
-      }
-    };
-    var result = trans.transition(startVL, destinationVL, editOpSet.DEFAULT_EDIT_OPS);
-
   });
 });

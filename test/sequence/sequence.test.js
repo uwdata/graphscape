@@ -6,7 +6,7 @@ var util = require('../../src/util');
 
 describe('sequence.sequence check', function () {
   this.timeout(60000);
-  it('Case 6', function () {
+  it('Case 6',async function () {
     var charts = [
       {
         "data": {"url": "data/movies.json","formatType": "json"},
@@ -364,7 +364,7 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(40.02);
@@ -374,7 +374,7 @@ describe('sequence.sequence check', function () {
 
   });
 
-  it('Case 5', function () {
+  it('Case 5',async function () {
     var charts = [
       {
         "data": {"url": "data/movies.json","formatType": "json"},
@@ -638,7 +638,7 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     // var result = gs.sequence.sequence(charts,options)
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(39.37);
@@ -648,7 +648,7 @@ describe('sequence.sequence check', function () {
 
   });
 
-  it('Case 4', function () {
+  it('Case 4',async function () {
     var charts = [
       {
         "description": "IT Companies Stock Price",
@@ -773,17 +773,17 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
-    expect(result[0].sumOfTransitionCosts).to.eq(11.77);
+    expect(result[0].sumOfTransitionCosts).to.eq(11.17);
     expect(result[0].globalWeightingTerm).to.eq( 1-0.3333333333333333);
-    expect(result[0].sequenceCost).to.eq(7.846666666666668);
+    expect(result[0].sequenceCost).to.eq(7.446666666666667);
 
 
   });
 
-  it('Case 3', function () {
+  it('Case 3',async function () {
     var charts = [
       {
         "description": "Cars in 1973",
@@ -970,16 +970,17 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
-    expect(result[0].sumOfTransitionCosts).to.eq(18.79);
+
+    expect(result[0].sumOfTransitionCosts).to.eq(18.19);
     expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
-    expect(result[0].sequenceCost).to.eq(12.526993464052287);
+    expect(result[0].sequenceCost).to.eq(12.126993464052289);
 
   });
 
-  it('Case 2', function () {
+  it('Case 2',async function () {
     var charts = [
       {
         "data": {"url": "data/cameras.json"},
@@ -1093,7 +1094,7 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
     // [
     //   0, 1, 2, 4,
     //   6, 3, 5
@@ -1107,7 +1108,7 @@ describe('sequence.sequence check', function () {
 
   });
 
-  it('Case 1', function () {
+  it('Case 1',async function () {
     var charts = [
       {
         "data": {
@@ -1230,7 +1231,7 @@ describe('sequence.sequence check', function () {
       }
     ];
 
-    var result = sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
+    var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
     expect(result[0].sumOfTransitionCosts).to.eq(21.59);

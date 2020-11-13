@@ -1,7 +1,6 @@
 "use strict"
-
-exports.sequence = require('./sequence/sequence.js').sequence;
-exports.transition = require('./transition/trans.js').transition;
-
-
-
+module.exports = {
+  sequence: require('./sequence/sequence.js').sequence,
+  transition: require('./transition/trans.js').transition,
+  apply: require('./transition/apply').apply
+}
