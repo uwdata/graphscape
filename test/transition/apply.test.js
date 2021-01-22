@@ -206,6 +206,44 @@ describe('transition.apply', function () {
       expect(iSpec).to.deep.equal(endVL)
 
     });
+
+    it.only('should return an error if the resulted spec is invalid.', async function () {
+      let startVL = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+        "data": {"url": "data/penguins.json"},
+        "mark": "point",
+        "encoding": {
+          "x": { "field": "A", "type": "quantitative"},
+          "color": {"field": "Species", "type": "nominal"}
+        }
+      };
+      let endVL = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+        "data": {"url": "data/penguins.json"},
+        "mark": "point",
+        "encoding": {
+          "x": { "field": "A", "type": "quantitative", "bin": true },
+          "size": {"field": "*", "type": "nominal", "aggregate": "count"}
+        }
+      };
+      const editOps = await trans.transition(
+        util.duplicate(startVL),
+        util.duplicate(endVL),
+        editOpSet.DEFAULT_EDIT_OPS
+        );
+
+      const eos = [...editOps.encoding, editOps.transform.find(eo => eo.name === 'AGGREGATE')];
+      expect(() => {
+        apply.apply(util.duplicate(startVL), endVL, eos);
+      }).to.throw(`The resulted spec is not valid Vega-Lite Spec.`);
+
+      const eos2 = [...editOps.encoding];
+
+      expect(() => {
+        apply.apply(util.duplicate(startVL), endVL, eos2);
+      }).to.throw(`_COUNT encoding edit operations cannot be applied without AGGREGATE.`);
+
+    });
   });
 
 });

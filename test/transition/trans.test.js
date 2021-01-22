@@ -47,7 +47,7 @@ describe('transition.trans', function () {
       const scaleTrs = await trans.scaleEditOps(startVL, destinationVL, "y", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"]);
       expect(scaleTrs.cost).to.eq(editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SCALE"].cost);
     });
-    it.only('should return SCALE editOperations correctly.', async function () {
+    it('should return SCALE editOperations correctly.', async function () {
       let s = {
         "data": {"values": [{"X": 0},{"X": 100}]},
         "mark": "point",

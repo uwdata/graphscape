@@ -4080,7 +4080,8 @@
   } = trans;
 
   function apply(sSpec, eSpec, editOps) {
-    return editOps.reduce((resultSpec, editOp) => {
+    checkApplyingEditOps(editOps);
+    let resultSpec = editOps.reduce((resultSpec, editOp) => {
       if (editOp.type === "mark") {
         resultSpec = applyMarkEditOp(resultSpec, eSpec);
       } else if (editOp.type === "transform") {
@@ -4091,6 +4092,9 @@
 
       return resultSpec;
     }, util.duplicate(sSpec)); //an intermediate spec by applying edit operations on the sSpec
+
+    checkSpec(resultSpec);
+    return resultSpec;
   }
 
   var apply_2 = apply;
@@ -4207,10 +4211,65 @@
 
   var applyEncodingEditOp_1 = applyEncodingEditOp;
 
+  function checkSpec(spec) {
+    let lg = vega__default['default'].logger();
+    const warnings = [],
+          errors = [];
+
+    lg.warn = m => {
+      warnings.push(m);
+    };
+
+    lg.error = m => {
+      errors.push(m);
+    };
+
+    vl__default['default'].compile(spec, {
+      logger: lg
+    });
+
+    for (const key in spec.encoding) {
+      if (spec.encoding.hasOwnProperty(key)) {
+        const fieldDef = spec.encoding[key];
+
+        if (fieldDef.field === "*" && !fieldDef.aggregate) {
+          warnings.push("'*' field should innclude aggregate.");
+        }
+      }
+    }
+
+    if (warnings.length > 0 || errors.length > 0) {
+      throw new InvalidVLSpecError("The resulted spec is not valid Vega-Lite Spec.");
+    }
+  }
+
+  function checkApplyingEditOps(editOps) {
+    // _COUNT encodig should be applied with AGGREGATE
+    if (editOps.find(eo => eo.name.indexOf("_COUNT") >= 0) && !editOps.find(eo => eo.name === "AGGREGATE")) {
+      throw new UnapplicableEditOpsError("_COUNT encoding edit operations cannot be applied without AGGREGATE.");
+    }
+  }
+
   class UnapplicableEditOPError extends Error {
     constructor(message) {
       super(message);
       this.name = "UnapplicableEditOPError";
+    }
+
+  }
+
+  class InvalidVLSpecError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "InvalidVLSpecError";
+    }
+
+  }
+
+  class UnapplicableEditOpsError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "UnapplicableEditOpsError";
     }
 
   }
