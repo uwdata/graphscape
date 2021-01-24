@@ -10,12 +10,12 @@ function isin(item, array) {
   return array.indexOf(item) !== -1;
 }
 exports.isin = isin;
-;
+
 function json(s, sp) {
   return JSON.stringify(s, null, sp);
 }
 exports.json = json;
-;
+
 function keys(obj) {
   var k = [], x;
   for (x in obj) {
@@ -24,12 +24,16 @@ function keys(obj) {
   return k;
 }
 exports.keys = keys;
-;
+
 function duplicate(obj) {
+  if (obj === undefined) {
+    return undefined;
+  }
   return JSON.parse(JSON.stringify(obj));
 }
 exports.duplicate = duplicate;
-;
+exports.copy = duplicate;
+
 function forEach(obj, f, thisArg) {
   if (obj.forEach) {
     obj.forEach.call(thisArg, f);
@@ -41,7 +45,7 @@ function forEach(obj, f, thisArg) {
   }
 }
 exports.forEach = forEach;
-;
+
 function any(arr, f) {
   var i = 0, k;
   for (k in arr) {
@@ -52,7 +56,7 @@ function any(arr, f) {
   return false;
 }
 exports.any = any;
-;
+
 function nestedMap(collection, f, level, filter) {
   return level === 0 ?
     collection.map(f) :
@@ -62,7 +66,7 @@ function nestedMap(collection, f, level, filter) {
     });
 }
 exports.nestedMap = nestedMap;
-;
+
 function nestedReduce(collection, f, level, filter) {
   return level === 0 ?
     collection.reduce(f, []) :
@@ -72,12 +76,12 @@ function nestedReduce(collection, f, level, filter) {
     });
 }
 exports.nestedReduce = nestedReduce;
-;
+
 function nonEmpty(grp) {
   return !exports.isArray(grp) || grp.length > 0;
 }
 exports.nonEmpty = nonEmpty;
-;
+
 function traverse(node, arr) {
   if (node.value !== undefined) {
     arr.push(node.value);
@@ -93,7 +97,7 @@ function traverse(node, arr) {
   return arr;
 }
 exports.traverse = traverse;
-;
+
 function extend(obj, b) {
   var rest = [];
   for (var _i = 2; _i < arguments.length; _i++) {
@@ -108,15 +112,15 @@ function extend(obj, b) {
   return obj;
 }
 exports.extend = extend;
-;
-function union(a, b) {
-  var o = {};
-  a.forEach(function (x) { o[x] = true; });
-  b.forEach(function (x) { o[x] = true; });
-  return keys(o);
+
+function union(arr1, arr2, accessor = (d) => d) {
+  let result = [...arr1];
+  return result.concat(
+      arr2.filter(x => !arr1.find(y => accessor(x) === accessor(y)))
+    );
 }
 exports.union = union;
-;
+
 var gen;
 (function (gen) {
   function getOpt(opt) {
@@ -140,7 +144,7 @@ function powerset(list) {
   return ps;
 }
 exports.powerset = powerset;
-;
+
 function chooseKorLess(list, k) {
   var subset = [[]];
   for (var i = 0; i < list.length; i++) {
@@ -154,7 +158,7 @@ function chooseKorLess(list, k) {
   return subset;
 }
 exports.chooseKorLess = chooseKorLess;
-;
+
 function chooseK(list, k) {
   var subset = [[]];
   var kArray = [];
@@ -172,7 +176,7 @@ function chooseK(list, k) {
   return kArray;
 }
 exports.chooseK = chooseK;
-;
+
 function cross(a, b) {
   var x = [];
   for (var i = 0; i < a.length; i++) {
@@ -183,7 +187,7 @@ function cross(a, b) {
   return x;
 }
 exports.cross = cross;
-;
+
 function find(array, f, obj) {
   for (var i = 0; i < array.length; i += 1) {
     if (f(obj) === f(array[i])) {
@@ -248,4 +252,61 @@ exports.deepEqual = deepEqual;
 function isDate(o) {
   return o !== undefined && typeof o.getMonth === "function";
 }
+
+// partitioning the array into N_p arrays
+function partition(arr, N_p) {
+  if (arr.length === N_p) {
+    return [arr.map(item => [item])]
+  } else if (N_p === 1) {
+    return [[arr]]
+  } else if (N_p > arr.length) {
+    throw new Error(`Cannot partition the array of ${arr.length} into ${N_p}.`);
+  } else if (arr.length === 0) {
+    return;
+  }
+  let item = [arr[0]];
+  let newArr = arr.slice(1);
+  let results =  partition(newArr, N_p - 1).map(pt => {
+    let newPt = duplicate(pt);
+    newPt.push(item)
+    return newPt
+  });
+  return partition(newArr, N_p).reduce((results, currPt) => {
+
+    return results.concat(currPt.map((p, i, currPt) => {
+      let newPt = duplicate(currPt);
+      let newP = duplicate(p);
+      newP.push(item[0]);
+      newPt[i] = newP;
+      return newPt;
+    }));
+  }, results)
+}
+exports.partition = partition;
+
+function permutate(arr) {
+  if (arr.length === 2) {
+    return [arr, [arr[1], arr[0]]];
+  }
+  return arr.reduce((acc, anchor, i) => {
+    const workingArr = duplicate(arr);
+    workingArr.splice(i, 1);
+
+    acc = acc.concat(
+      permutate(workingArr).map(newArr => {
+        return [anchor].concat(newArr);
+      })
+    );
+    return acc;
+  }, []);
+}
+exports.permutate = permutate;
+
+function intersection(arr1, arr2, accessor = (d) => d) {
+  return arr2.filter(x => arr1.find(y => accessor(x) === accessor(y)))
+}
+exports.intersection = intersection
+
+
+
 //# sourceMappingURL=util.js.map

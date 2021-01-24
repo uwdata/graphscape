@@ -1,7 +1,5 @@
-
+"use strict";
 const d3 = require("d3");
-const vega = require("vega");
-const vl = require("vega-lite");
 var expr = require('vega-expression');
 const { TYPES, CHANNELS, OPS, LOGIC_OPS } = require('../constants');
 var util = require('../util');
@@ -9,62 +7,26 @@ const DEFAULT_EDIT_OPS = require('../editOp/editOpSet').DEFAULT_EDIT_OPS;
 var nb = require('./neighbor');
 
 
-async function transition(s, d, importedTransitionCosts, transOptions) {
+function transition(s, d, importedTransitionCosts, transOptions) {
   var importedMarkEditOps = importedTransitionCosts ? importedTransitionCosts.markEditOps : DEFAULT_EDIT_OPS["markEditOps"];
   var importedTransformEditOps = importedTransitionCosts ? importedTransitionCosts.transformEditOps : DEFAULT_EDIT_OPS["transformEditOps"];
   var importedEncodingEditOps = importedTransitionCosts ? importedTransitionCosts.encodingEditOps : DEFAULT_EDIT_OPS["encodingEditOps"];
-  let _transformEditOps = await transformEditOps(s, d, importedTransformEditOps, transOptions);
   var trans = {
     mark: markEditOps(s, d, importedMarkEditOps).map(eo => { return {...eo, type: "mark"}}),
-    transform: _transformEditOps.map(eo => { return {...eo, type: "transform"}}),
+    transform: transformEditOps(s, d, importedTransformEditOps, transOptions).map(eo => { return {...eo, type: "transform"}}),
     encoding: encodingEditOps(s, d, importedEncodingEditOps).map(eo => { return {...eo, type: "encoding"}})
   };
 
-  //Todo: if there is a MOVE_A_B and the field has Transform, ignore the transform
-  const re = new RegExp("^MOVE_")
-  trans.transform = trans.transform.filter(editOp => {
-    if (editOp.name.indexOf("FILTER") >= 0) {
-      return true;
-    }
-    let moveEditOps = trans.encoding.filter(eo => re.test(eo.name) );
-    if (moveEditOps.length ===0) {
-      return true;
-    }
-    moveEditOps.forEach(moveEditOp => {
-
-      let sChannel = moveEditOp.detail.before.channel,
-        dChannel = moveEditOp.detail.after.channel;
-      let removed = editOp.detail.findIndex(dt => (dt.how === "removed") && (dt.channel === sChannel))
-      let added = editOp.detail.findIndex(dt => (dt.how === "added") && (dt.channel === dChannel))
-      if ((removed >= 0) && (added >= 0)) {
-        editOp.detail = editOp.detail.filter((dt, i) => [removed, added].indexOf(i)<0);
-      }
-    })
-    return editOp.detail.length > 0
-  })
-
-
-
   var cost = 0;
-
   cost = trans.encoding.reduce(function (prev, editOp) {
     if (editOp.name.indexOf('_COUNT') >= 0) {
-      var channel = editOp.name.replace(/COUNT/g, '').replace(/ADD/g, '').replace(/REMOVE/g, '').replace(/MODIFY/g, '').replace(/_/g, '').toLowerCase();
-      var aggEditOp = trans.transform.filter(function (editOp) { return editOp.name === "AGGREGATE"; })[0];
-      if (aggEditOp
-          && aggEditOp.detail.length === 1
-          && aggEditOp.detail.filter(function (dt) { return dt.channel.toLowerCase() === channel; }).length) {
+
+      var aggEditOp = trans.transform.find((editOp) => (editOp.name === "AGGREGATE"));
+      if (aggEditOp && !aggEditOp.detail.find(dt => dt.field !== "*")) {
         aggEditOp.cost = 0;
       }
-      var binEditOp = trans.transform.filter(function (editOp) { return editOp.name === "BIN"; })[0];
-      if (binEditOp && binEditOp.detail.filter(function (dt) {
-        if (dt.how === "added") {
-          return d.encoding[dt.channel].type === TYPES.QUANTITATIVE;
-        }
-        else {
-          return s.encoding[dt.channel].type === TYPES.QUANTITATIVE;
-        }
-      }).length > 0) {
+      var binEditOp = trans.transform.find((editOp) => editOp.name === "BIN" );
+      if (binEditOp && (binEditOp.detail.filter(dt => (dt.field === "*") || (dt.how === "modify")).length === 0)) {
         binEditOp.cost = 0;
       }
     }
@@ -103,35 +65,64 @@ function markEditOps(s, d, importedMarkEditOps) {
   }
   return editOps;
 }
+
 exports.markEditOps = markEditOps;
-
-async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
+function transformEditOps(s, d, importedTransformEditOps, transOptions) {
   var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS["transformEditOps"];
-  var editOps = [];
-  for (let i = 0; i < CHANNELS.length; i++) {
-    const channel = CHANNELS[i];
-
-    ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(async function (transformType) {
-      let editOp;
-
-      if (transformType === "SETTYPE" && transformEditOps[transformType]) {
-        editOp = transformSettype(s, d, channel, transformEditOps);
-      } else if (transformType === "SCALE" && transformEditOps[transformType]) {
-        editOp = await scaleEditOps(s, d, channel, transformEditOps[transformType], transOptions);
-      } else if (transformEditOps[transformType]) {
-        editOp = transformBasic(s, d, channel, transformType, transformEditOps);
-      }
-      if (editOp) {
-        let found = editOps.find(eo => eo.name === editOp.name);
-        if (found) {
-          found.detail.push(editOp.detail);
-        } else {
-          editOp.detail = [editOp.detail];
-          editOps.push(editOp);
+  const sFields = Object.keys(s.encoding).map(function (key) {
+    return s.encoding[key];
+  });
+  const dFields =  Object.keys(d.encoding).map(function (key) {
+    return d.encoding[key];
+  });
+  let editOps = [];
+  for (let i = 0; i < sFields.length; i++) {
+    const sField = sFields[i];
+    const dField = dFields.find(dF => dF.field === sField.field);
+    if (dField) {
+      ["SCALE", "SORT", "AGGREGATE", "BIN"].map(function (transformType) {
+        let transform = transformType.toLowerCase();
+        let sTransform = sField[transform] ? util.duplicate(sField[transform]) : undefined,
+          dTransform = dField[transform] ? util.duplicate(dField[transform]) : undefined;
+        let field = sField.field;
+        if (transOptions && transOptions.omitIncludeRawDomain && transformType === "SCALE") {
+          if (sTransform && sTransform.domain === "unaggregated") {
+            delete sTransform.domain;
+          }
+          if (dTransform && dTransform.domain === "unaggregated") {
+            delete dTransform.domain;
+          }
         }
-      }
-    });
-  };
+
+        let sHas = sTransform && (Object.keys(sTransform).length > 0),
+          dHas = dTransform && (Object.keys(dTransform).length > 0);
+        if (sHas && dHas) {
+          if (!util.deepEqual(sTransform, dTransform)) {
+            editOps.push({
+              ...util.duplicate(transformEditOps[transformType]),
+              detail: {how: "modified", field}
+            });
+          }
+        } else if (sHas || dHas) {
+          editOps.push({
+            ...util.duplicate(transformEditOps[transformType]),
+            detail: {how: (sHas && !dHas) ? "removed" : "added", field}
+          });
+        }
+      })
+    }
+  }
+
+  editOps = d3.groups(editOps, eo => eo.name)
+    .map(group => {
+      return {
+        ...group[1][0],
+        detail: group[1].reduce((detail,eo) => {
+          return detail.concat(eo.detail)
+        }, [])
+      };
+    })
+
   var importedFilterEditOps = {
     "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
     "ADD_FILTER": transformEditOps["ADD_FILTER"],
@@ -142,114 +133,7 @@ async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
   return editOps;
 }
 exports.transformEditOps = transformEditOps;
-function transformBasic(s, d, channel, transform, transformEditOps) {
-  var sHas = false;
-  var dHas = false;
-  var editOp;
-  var sEditOp, dEditOp;
-  if (s.encoding[channel] && s.encoding[channel][transform.toLowerCase()]) {
-    sHas = true;
-    sEditOp = s.encoding[channel][transform.toLowerCase()];
-  }
-  if (d.encoding[channel] && d.encoding[channel][transform.toLowerCase()]) {
-    dHas = true;
-    dEditOp = d.encoding[channel][transform.toLowerCase()];
-  }
 
-  if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
-    editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "modified", "channel": channel };
-    return editOp;
-  }
-  else if (sHas && !dHas) {
-    editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "removed", "channel": channel };
-    return editOp;
-  }
-  else if (!sHas && dHas) {
-    editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "added", "channel": channel };
-    return editOp;
-  }
-}
-exports.transformBasic = transformBasic;
-
-async function scaleEditOps(s, d, channel, scaleTransformEditOps, transOptions) {
-  var sHas = false, sOnlyHasDomainRelated = false;
-  var dHas = false, dOnlyHasDomainRelated = false;
-  var editOp;
-  var sEditOp, dEditOp;
-  if (s.encoding[channel] && s.encoding[channel].scale) {
-    sHas = true;
-    sEditOp = {...s.encoding[channel].scale};
-    if (!Object.keys(sEditOp).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
-      sOnlyHasDomainRelated = true;
-    }
-  }
-  if (d.encoding[channel] && d.encoding[channel].scale) {
-    dHas = true;
-    dEditOp = {...d.encoding[channel].scale};
-    if (!Object.keys(dEditOp).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
-      dOnlyHasDomainRelated = true;
-    }
-  }
-  if (transOptions && transOptions.omitIncludeRawDomain) {
-    if (sEditOp && sEditOp.domain && dEditOp.domain === "unaggregated") {
-      delete sEditOp.domain;
-      if (Object.keys(sEditOp).length === 0) {
-        sOnlyHasDomainRelated = false;
-        sHas = false;
-      }
-    }
-
-    if (dEditOp && dEditOp.domain && (dEditOp.domain === "unaggregated")) {
-      delete dEditOp.domain;
-      if (Object.keys(dEditOp).length === 0) {
-        dOnlyHasDomainRelated = false;
-        dHas = false;
-      }
-    }
-  }
-  if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
-    if (sOnlyHasDomainRelated && dOnlyHasDomainRelated && await sameDomain(s,d, channel)) {
-      return;
-    }
-    editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "modified", "channel": channel };
-    return editOp;
-  }
-  else if (sHas && !dHas) {
-    if (sOnlyHasDomainRelated && await sameDomain(s,d, channel)) {
-      return;
-    }
-    editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "removed", "channel": channel };
-    return editOp;
-  }
-  else if (!sHas && dHas) {
-    if (dOnlyHasDomainRelated && await sameDomain(s,d, channel)) {
-      return;
-    }
-    editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "added", "channel": channel };
-    return editOp;
-  }
-}
-exports.scaleEditOps = scaleEditOps;
-async function sameDomain(s, d, channel) {
-  const dView = await new vega.View(vega.parse(vl.compile(util.duplicate(d)).spec), {
-    renderer: "svg"
-  }).runAsync();
-
-  const sView = await new vega.View(vega.parse(vl.compile(util.duplicate(s)).spec), {
-    renderer: "svg"
-  }).runAsync();
-
-  const sScale = sView._runtime.scales[channel].value;
-  const dScale = dView._runtime.scales[channel].value;
-
-  return util.deepEqual(sScale.domain(), dScale.domain())
-}
 function filterEditOps(s, d, importedFilterEditOps) {
 
   var sFilters = [], dFilters = [];
@@ -457,7 +341,7 @@ function encodingEditOps(s, d, importedEncodingEditOps) {
   var dFields = dChannels.map(function (key) {
     return d.encoding[key];
   });
-  var additionalFields = util.union(dFields, sFields, function (field) { return field.field + "_" + field.type; });
+  var additionalFields = util.unionObjectArray(dFields, sFields, function (field) { return field.field + "_" + field.type; });
   var additionalChannels = util.arrayDiff(dChannels, sChannels);
   var u;
   function nearestNode(nodes) {

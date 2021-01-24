@@ -2,7 +2,7 @@
 var expect = require('chai').expect;
 var editOpSet = require('../editOpSetForTest');
 var sq = require('../../src/sequence/sequence').sequence;
-var util = require('../../src/util');
+
 
 describe('sequence.sequence check', function () {
   this.timeout(60000);
@@ -783,13 +783,13 @@ describe('sequence.sequence check', function () {
 
   });
 
-  it('Case 3',async function () {
+  it('Case 3', async function () {
     var charts = [
       {
         "description": "Cars in 1973",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [
-          { "filter": { "field":"Year", "equal": 1973} }
+          { "filter": { "field":"Year", "equal": "1973-01-01"} }
         ],
         "mark": "point",
         "encoding": {
@@ -817,9 +817,9 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Cars in 1978",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [{
-          "filter": { "field":"Year", "equal": 1978}}
+          "filter": { "field":"Year", "equal": "1978-01-01"}}
         ],
         "mark": "point",
         "encoding": {
@@ -847,9 +847,9 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Cars in 1982",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [{
-          "filter": { "field":"Year", "equal": 1982}}
+          "filter": { "field":"Year", "equal": "1982-01-01"}}
         ],
         "mark": "point",
         "encoding": {
@@ -877,9 +877,9 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "USA Cars in 1978",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [
-            {"filter": { "field":"Year", "equal": 1978}},
+            {"filter": { "field":"Year", "equal": "1978-01-01"}},
             {"filter":{ "field":"Origin", "equal": "USA"}}
           ],
         "mark": "point",
@@ -908,9 +908,9 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Japan Cars in 1978",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [
-          {"filter": { "field":"Year", "equal": 1978}},
+          {"filter": { "field":"Year", "equal": "1978-01-01"}},
           {"filter":{ "field":"Origin", "equal": "Japan"}}
         ],
         "mark": "point",
@@ -939,9 +939,9 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Europe Cars in 1978",
-        "data": {"url": "data/cars.json"},
+        "data": {"url": "data/cars.json", "formatType": "json"},
         "transform": [
-          {"filter": { "field":"Year", "equal": 1978}},
+          {"filter": { "field":"Year", "equal": "1978-01-01"}},
           {"filter":{ "field":"Origin", "equal": "Europe"}}
         ],
         "mark": "point",
@@ -973,7 +973,6 @@ describe('sequence.sequence check', function () {
     var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
-
     expect(result[0].sumOfTransitionCosts).to.eq(18.19);
     expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
     expect(result[0].sequenceCost).to.eq(12.126993464052289);
