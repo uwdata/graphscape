@@ -67,7 +67,7 @@ describe("evaluate", () => {
       ...transition.encoding
     ];
 
-    let sequences = await enumerate(sSpec, eSpec, editOps, 2)
+    let sequences = await enumerate(sSpec, eSpec, editOps, 3)
     sequences = sequences.map((seq) => {
       return {
         ...seq,

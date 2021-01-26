@@ -5,9 +5,13 @@ const vega = require("vega");
 const { copy, deepEqual, partition, permutate, union, intersection} = require("../util");
 const apply = require("../transition/apply").apply
 // Take two vega-lite specs and enumerate paths [{sequence, editOpPartition (aka transition)}]:
-async function enumerate(sVLSpec, eVLSpec, editOps, stageN) {
+async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
+  if (editOps.length < transM) {
+    throw new CannotEnumStagesMoreThanTransitions(editOps.length, transM)
+  }
 
-  const editOpPartitions = partition(editOps, stageN + 1)
+  const editOpPartitions = partition(editOps, transM)
+
   const orderedEditOpPartitions = editOpPartitions.reduce((ordered, pt) => {
     return ordered.concat(permutate(pt));
   }, [])
@@ -128,3 +132,11 @@ function validate(sequence) {
   return true;
 }
 exports.validate = validate
+
+
+class CannotEnumStagesMoreThanTransitions extends Error {
+  constructor(editOpsN, transM) {
+    super(`Cannot enumerate ${transM} transitions for ${editOpsN} edit operations. The number of transitions should lesser than the number of possible edit operations.`)
+    this.name = "CannotEnumStagesMoreThanTransitions"
+  }
+}

@@ -2016,10 +2016,15 @@
     exports.keys = keys;
 
     function duplicate(obj) {
+      if (obj === undefined) {
+        return undefined;
+      }
+
       return JSON.parse(JSON.stringify(obj));
     }
 
     exports.duplicate = duplicate;
+    exports.copy = duplicate;
 
     function forEach(obj, f, thisArg) {
       if (obj.forEach) {
@@ -2110,15 +2115,9 @@
 
     exports.extend = extend;
 
-    function union(a, b) {
-      var o = {};
-      a.forEach(function (x) {
-        o[x] = true;
-      });
-      b.forEach(function (x) {
-        o[x] = true;
-      });
-      return keys(o);
+    function union(arr1, arr2, accessor = d => d) {
+      let result = [...arr1];
+      return result.concat(arr2.filter(x => !arr1.find(y => accessor(x) === accessor(y))));
     }
 
     exports.union = union;
@@ -2271,7 +2270,66 @@
 
     function isDate(o) {
       return o !== undefined && typeof o.getMonth === "function";
+    } // partitioning the array into N_p arrays
+
+
+    function partition(arr, N_p) {
+      if (arr.length === N_p) {
+        return [arr.map(item => [item])];
+      } else if (N_p === 1) {
+        return [[arr]];
+      } else if (N_p > arr.length) {
+        throw new Error("Cannot partition the array of ".concat(arr.length, " into ").concat(N_p, "."));
+      } else if (arr.length === 0) {
+        return;
+      }
+
+      let item = [arr[0]];
+      let newArr = arr.slice(1);
+      let results = partition(newArr, N_p - 1).map(pt => {
+        let newPt = duplicate(pt);
+        newPt.push(item);
+        return newPt;
+      });
+      return partition(newArr, N_p).reduce((results, currPt) => {
+        return results.concat(currPt.map((p, i, currPt) => {
+          let newPt = duplicate(currPt);
+          let newP = duplicate(p);
+          newP.push(item[0]);
+          newPt[i] = newP;
+          return newPt;
+        }));
+      }, results);
     }
+
+    exports.partition = partition;
+
+    function permutate(arr) {
+      if (arr.length === 1) {
+        return [arr];
+      }
+
+      if (arr.length === 2) {
+        return [arr, [arr[1], arr[0]]];
+      }
+
+      return arr.reduce((acc, anchor, i) => {
+        const workingArr = duplicate(arr);
+        workingArr.splice(i, 1);
+        acc = acc.concat(permutate(workingArr).map(newArr => {
+          return [anchor].concat(newArr);
+        }));
+        return acc;
+      }, []);
+    }
+
+    exports.permutate = permutate;
+
+    function intersection(arr1, arr2, accessor = d => d) {
+      return arr2.filter(x => arr1.find(y => accessor(x) === accessor(y)));
+    }
+
+    exports.intersection = intersection;
   });
 
   var DEFAULT_EDIT_OPS = {
@@ -3559,7 +3617,7 @@
     var dFields = dChannels.map(function (key) {
       return d.encoding[key];
     });
-    var additionalFields = util.unionObjectArray(dFields, sFields, function (field) {
+    var additionalFields = util.union(dFields, sFields, function (field) {
       return field.field + "_" + field.type;
     });
     var additionalChannels = util.arrayDiff(dChannels, sChannels);
@@ -4281,10 +4339,416 @@
     applyEncodingEditOp: applyEncodingEditOp_1
   };
 
+  const {
+    copy,
+    deepEqual,
+    partition,
+    permutate,
+    union,
+    intersection
+  } = util;
+  const apply$1 = apply_1.apply; // Take two vega-lite specs and enumerate paths [{sequence, editOpPartition (aka transition)}]:
+
+  async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
+    if (editOps.length < transM) {
+      throw new CannotEnumStagesMoreThanTransitions(editOps.length, transM);
+    }
+
+    const editOpPartitions = partition(editOps, transM);
+    const orderedEditOpPartitions = editOpPartitions.reduce((ordered, pt) => {
+      return ordered.concat(permutate(pt));
+    }, []);
+    const sequences = [];
+    const mergedScaleDomain = await scaleModifier(sVLSpec, eVLSpec);
+
+    for (const editOpPartition of orderedEditOpPartitions) {
+      const sequence = [copy(sVLSpec)];
+      let currSpec = copy(sVLSpec);
+      let valid = true;
+
+      for (let i = 0; i < editOpPartition.length; i++) {
+        const editOps = editOpPartition[i];
+
+        if (i === editOpPartition.length - 1) {
+          sequence.push(eVLSpec);
+          break; // The last spec should be the same as eVLSpec;
+        }
+
+        try {
+          currSpec = apply$1(copy(currSpec), eVLSpec, editOps);
+
+          for (const channel in mergedScaleDomain) {
+            if (mergedScaleDomain.hasOwnProperty(channel)) {
+              if (currSpec.encoding[channel]) {
+                if (!currSpec.encoding[channel].scale) {
+                  currSpec.encoding[channel].scale = {};
+                }
+
+                currSpec.encoding[channel].scale.domain = mergedScaleDomain[channel];
+
+                if (currSpec.encoding[channel].scale.zero !== undefined) {
+                  delete currSpec.encoding[channel].scale.zero;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          if (["UnapplicableEditOPError", "InvalidVLSpecError", "UnapplicableEditOpsError"].indexOf(e.name) < 0) {
+            throw e;
+          } else {
+            valid = false;
+            break;
+          }
+        }
+
+        sequence.push(copy(currSpec));
+      }
+
+      if (valid && validate(sequence)) {
+        sequences.push({
+          sequence,
+          editOpPartition
+        });
+      }
+    }
+
+    return sequences;
+  }
+
+  var enumerate_2 = enumerate;
+
+  async function scaleModifier(sVLSpec, eVLSpec) {
+    // Todo: get the scales including all data points while doing transitions.
+    const eView = await new vega__default['default'].View(vega__default['default'].parse(vl__default['default'].compile(eVLSpec).spec), {
+      renderer: "svg"
+    }).runAsync();
+    const sView = await new vega__default['default'].View(vega__default['default'].parse(vl__default['default'].compile(sVLSpec).spec), {
+      renderer: "svg"
+    }).runAsync();
+    let scales = {
+      initial: sView._runtime.scales,
+      final: eView._runtime.scales
+    };
+    return intersection(Object.keys(scales.initial), Object.keys(scales.final)).reduce((newScaleDomain, scaleName) => {
+      let vlField_i = sVLSpec.encoding[scaleName],
+          vlField_f = eVLSpec.encoding[scaleName];
+      let scale_i = scales.initial[scaleName].value;
+      let scale_f = scales.final[scaleName].value;
+
+      if (vlField_i && vlField_f && vlField_i.field === vlField_f.field && vlField_i.type === vlField_f.type && scale_i.type === scale_f.type) {
+        let vlType = vlField_i.type,
+            vgType = scale_i.type;
+
+        if (vlType === "quantitative") {
+          newScaleDomain[scaleName] = [Math.min(scale_i.domain()[0], scale_f.domain()[0]), Math.max(scale_i.domain()[1], scale_f.domain()[1])];
+        } else if (vlType === "nominal" || vlType === "ordinal") {
+          newScaleDomain[scaleName] = union(scale_i.domain(), scale_f.domain());
+        } else if (vlType === "temporal" && vgType === "time") {
+          newScaleDomain[scaleName] = [Math.min(scale_i.domain()[0], scale_f.domain()[0]), Math.max(scale_i.domain()[1], scale_f.domain()[1])];
+        }
+      }
+
+      return newScaleDomain;
+    }, {});
+  }
+
+  var scaleModifier_1 = scaleModifier;
+
+  function validate(sequence) {
+    //Todo: check if the sequence is a valid vega-lite spec.
+    let prevChart = sequence[0];
+
+    for (let i = 1; i < sequence.length; i++) {
+      const currChart = sequence[i];
+
+      if (deepEqual(prevChart, currChart)) {
+        return false;
+      }
+
+      prevChart = sequence[i];
+    }
+
+    return true;
+  }
+
+  var validate_1 = validate;
+
+  class CannotEnumStagesMoreThanTransitions extends Error {
+    constructor(editOpsN, transM) {
+      super("Cannot enumerate ".concat(transM, " transitions for ").concat(editOpsN, " edit operations. The number of transitions should lesser than the number of possible edit operations."));
+      this.name = "CannotEnumStagesMoreThanTransitions";
+    }
+
+  }
+
+  var enumerate_1 = {
+    enumerate: enumerate_2,
+    scaleModifier: scaleModifier_1,
+    validate: validate_1
+  };
+
+  var HEURISTIC_RULES = [{
+    name: "filter-then-aggregate",
+    editOps: ["FILTER", "AGGREGATE"],
+    condition: (filter, aggregate) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "added");
+    },
+    score: 1
+  }, {
+    name: "disaggregate-then-filter",
+    editOps: ["AGGREGATE", "FILTER"],
+    condition: (aggregate, filter) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "removed");
+    },
+    score: 1
+  }, {
+    name: "bin-then-aggregate",
+    editOps: ["BIN", "AGGREGATE"],
+    condition: (bin, aggregate) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "added");
+    },
+    score: 1
+  }, {
+    name: "disaggregate-then-bin",
+    editOps: ["AGGREGATE", "BIN"],
+    condition: (aggregate, bin) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "removed");
+    },
+    score: 1
+  }, {
+    name: "sort-then-aggregate",
+    editOps: ["SORT", "AGGREGATE"],
+    condition: (sort, aggregate) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "added");
+    },
+    score: 1
+  }, {
+    name: "disaggregate-then-sort",
+    editOps: ["AGGREGATE", "SORT"],
+    condition: (aggregate, sort) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "removed");
+    },
+    score: 1
+  }, {
+    name: "encoding-then-aggregate",
+    editOps: ["ENCODING", "AGGREGATE"],
+    condition: (encoding, aggregate) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "added");
+    },
+    score: 1
+  }, {
+    name: "disaggregate-then-encoding",
+    editOps: ["AGGREGATE", "ENCODING"],
+    condition: (aggregate, encoding) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "removed");
+    },
+    score: 1
+  }, {
+    name: "aggregate-then-mark",
+    editOps: ["AGGREGATE", "MARK"],
+    condition: (aggregate, mark) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "added");
+    },
+    score: 1
+  }, {
+    name: "mark-then-disaggregate",
+    editOps: ["MARK", "AGGREGATE"],
+    condition: (mark, aggregate) => {
+      return aggregate.detail && aggregate.detail.find(dt => dt.how === "removed");
+    },
+    score: 1
+  } // {
+  //   editOps: [TRANSFORM, ENCODING.REMOVE],
+  //   condition: (transform, remove) => {
+  //     return transform.detail.field === remove.detail.before.field
+  //   },
+  //   score: 1
+  // },
+  // {
+  //   editOps: [TRANSFORM, ENCODING.MODIFY],
+  //   condition: (transform, modify) => {
+  //     return transform.detail.field === modify.detail.after.field
+  //   },
+  //   score: 1
+  // },
+  // {
+  //   editOps: [TRANSFORM, ENCODING.ADD],
+  //   condition: (transform, add) => {
+  //     return transform.detail.field === add.detail.after.field
+  //   },
+  //   score: 1
+  // },
+  // {
+  //   editOps: [ENCODING.MODIFY, TRANSFORM],
+  //   condition: (transform, modify) => {
+  //     return transform.detail.field === modify.detail.before.field
+  //   },
+  //   score: 1
+  // }
+  ];
+  var evaluateRules = {
+    HEURISTIC_RULES: HEURISTIC_RULES
+  };
+
+  const RULES = evaluateRules.HEURISTIC_RULES;
+  const {
+    copy: copy$1
+  } = util;
+
+  function evaluate(editOpPartition) {
+    let satisfiedRules = findRules(editOpPartition, RULES);
+    let score = satisfiedRules.reduce((score, rule) => {
+      return score + rule.score;
+    }, 0);
+    return {
+      score,
+      satisfiedRules
+    };
+  }
+
+  var evaluate_2 = evaluate;
+
+  function findRules(editOpPartition, rules = RULES) {
+    return rules.filter(_rule => {
+      let rule = copy$1(_rule);
+
+      for (let j = 0; j < rule.editOps.length; j++) {
+        const ruleEditOp = rule.editOps[j];
+        rule[ruleEditOp] = [];
+
+        for (let i = 0; i < editOpPartition.length; i++) {
+          const editOpPart = editOpPartition[i];
+          let newFoundEditOp = findEditOp(editOpPart, ruleEditOp);
+
+          if (newFoundEditOp) {
+            rule[ruleEditOp].push({ ...newFoundEditOp,
+              position: i
+            });
+          }
+        }
+
+        if (rule[ruleEditOp].length === 0) {
+          return false; // when there is no corresponding edit op for the rule in given editOp partition.
+        }
+      }
+
+      for (let i = 0; i < rule[rule.editOps[0]].length; i++) {
+        const followed = rule[rule.editOps[0]][i];
+
+        for (let j = 0; j < rule[rule.editOps[1]].length; j++) {
+          const following = rule[rule.editOps[1]][j];
+
+          if (followed.position >= following.position) {
+            return false;
+          }
+
+          if (_rule.condition && !_rule.condition(followed, following)) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }
+
+  var findRules_1 = findRules;
+
+  function findEditOp(editOps, query) {
+    return editOps.find(eo => {
+      if (query === "TRANSFORM") {
+        return eo.type === "transform";
+      } else if (query === "ENCODING") {
+        return eo.type === "encoding";
+      } else if (query === "MARK") {
+        return eo.type === "mark";
+      }
+
+      return eo.name.indexOf(query) >= 0;
+    });
+  }
+
+  var evaluate_1 = {
+    evaluate: evaluate_2,
+    findRules: findRules_1
+  };
+
+  const {
+    copy: copy$2
+  } = util;
+  const {
+    enumerate: enumerate$1
+  } = enumerate_1;
+  const {
+    evaluate: evaluate$1
+  } = evaluate_1;
+  const getTransition = trans.transition;
+
+  async function path(sSpec, eSpec, transM = 0) {
+    validateInput(sSpec, eSpec);
+    const transition = await getTransition(copy$2(sSpec), copy$2(eSpec));
+    const editOps = [...transition.mark, ...transition.transform, ...transition.encoding];
+    let result = {};
+
+    if (transM === 0) {
+      for (let m = 1; m <= editOps.length; m++) {
+        result[m] = await enumAndEval(sSpec, eSpec, editOps, m);
+      }
+
+      return result;
+    }
+
+    return await enumAndEval(sSpec, eSpec, editOps, transM);
+  }
+
+  var path_2 = path;
+
+  async function enumAndEval(sSpec, eSpec, editOps, transM) {
+    let result = await enumerate$1(sSpec, eSpec, editOps, transM);
+    return result.map(seq => {
+      return { ...seq,
+        eval: evaluate$1(seq.editOpPartition)
+      };
+    }).sort((a, b) => {
+      return b.eval.score - a.eval.score;
+    });
+  }
+
+  function validateInput(sSpec, eSpec) {
+    //check if specs are single-view vega-lite chart
+    if (!isValidVLSpec(sSpec) || !isValidVLSpec(eSpec)) {
+      return {
+        error: "Gemini++ cannot recommend keyframes for the given Vega-Lite charts."
+      };
+    }
+  }
+
+  var validateInput_1 = validateInput;
+
+  function isValidVLSpec(spec) {
+    if (spec.layer || spec.hconcat || spec.vconcat || spec.concat || spec.spec) {
+      return false;
+    }
+
+    if (spec.$schema && spec.$schema.indexOf("https://vega.github.io/schema/vega-lite") >= 0) {
+      return true;
+    }
+
+    return false;
+  }
+
+  var isValidVLSpec_1 = isValidVLSpec;
+  var path_1 = {
+    path: path_2,
+    validateInput: validateInput_1,
+    isValidVLSpec: isValidVLSpec_1
+  };
+
   var src = {
     sequence: sequence_1.sequence,
     transition: trans.transition,
-    apply: apply_1.apply
+    apply: apply_1.apply,
+    path: path_1.path
   };
 
   return src;

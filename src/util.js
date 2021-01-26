@@ -285,6 +285,9 @@ function partition(arr, N_p) {
 exports.partition = partition;
 
 function permutate(arr) {
+  if (arr.length === 1) {
+    return [arr];
+  }
   if (arr.length === 2) {
     return [arr, [arr[1], arr[0]]];
   }

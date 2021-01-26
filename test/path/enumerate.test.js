@@ -25,9 +25,32 @@ describe("enumerate", () => {
       ...transition.encoding
     ];
 
-    let sequences = await enumerate(sSpec, eSpec, editOps, 1)
+    let sequences = await enumerate(sSpec, eSpec, editOps, 2)
 
     expect(sequences.length).to.eq(6)
+  });
+
+  it.only("Should enumerate 1 transition for give specs.", async () => {
+    const sSpec = {
+      "mark": "bar",
+      "encoding": {"x": {"field": "A", "type": "quantitative", "aggregate": "mean"}}
+    }
+    const eSpec = {
+      "mark": "point",
+      "transform": [{"filter": {"field": "A", "gt": 10}}],
+      "encoding": {"x": {"field": "A", "type": "quantitative"}}
+    }
+    const transition = await getTransition(copy(sSpec),  copy(eSpec))
+
+    const editOps = [
+      ...transition.mark,
+      ...transition.transform,
+      ...transition.encoding
+    ];
+
+    let sequences = await enumerate(sSpec, eSpec, editOps, 1)
+
+    expect(sequences.length).to.eq(1)
   });
 
 
@@ -41,7 +64,7 @@ describe("enumerate", () => {
       ...transition.encoding
     ];
 
-    let sequences = await enumerate(start, end, editOps, 1)
+    let sequences = await enumerate(start, end, editOps, 2)
     expect(sequences.length).to.eq(2)
     expect(sequences[0].sequence[1].encoding.x.scale.domain).to.deep.eq([0,100])
     expect(sequences[1].sequence[1].encoding.x.scale.domain).to.deep.eq([0,100])
@@ -57,7 +80,7 @@ describe("enumerate", () => {
       ...transition.encoding
     ];
 
-    let sequences = await enumerate(start, end, editOps, 1)
+    let sequences = await enumerate(start, end, editOps, 2)
     expect(sequences.length).to.eq(2) // applying only "SCALE" edit op should be ignored.
 
   });
@@ -106,7 +129,7 @@ describe("enumerate", () => {
     ];
 
 
-    let sequences = await enumerate(start, end, editOps, 1)
+    let sequences = await enumerate(start, end, editOps, 2)
     expect(sequences.length).to.eq(1) // applying only "SCALE" edit op should be ignored.
 
   });

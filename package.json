@@ -4,7 +4,7 @@
   "description": "Measure cognitive distances among visualizations.",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --recursive",
+    "test": "mocha --recursive --watch",
     "quick-build": "rollup -c",
     "deploy": ""
   },

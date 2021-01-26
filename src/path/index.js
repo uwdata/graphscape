@@ -2,7 +2,7 @@ const {copy} = require("../util");
 const { enumerate } = require( "./enumerate");
 const { evaluate } = require( "./evaluate");
 const getTransition = require('../transition/trans.js').transition
-async function path(sSpec, eSpec, N=0) {
+async function path(sSpec, eSpec, transM=0) {
   validateInput(sSpec, eSpec);
 
   const transition = await getTransition(copy(sSpec),  copy(eSpec))
@@ -12,19 +12,19 @@ async function path(sSpec, eSpec, N=0) {
     ...transition.encoding
   ];
   let result = {}
-  if (N === 0 ) {
-    for (let n = 1; n < editOps.length; n++) {
-      result[n] = await enumAndEval(sSpec, eSpec, editOps, n)
+  if (transM === 0 ) {
+    for (let m = 1; m <= editOps.length; m++) {
+      result[m] = await enumAndEval(sSpec, eSpec, editOps, m)
     }
     return result;
   }
 
-  return await enumAndEval(sSpec, eSpec, editOps, N)
+  return await enumAndEval(sSpec, eSpec, editOps, transM)
 }
 exports.path = path;
 
-async function enumAndEval(sSpec, eSpec, editOps, n) {
-  let result = await enumerate(sSpec, eSpec, editOps, n)
+async function enumAndEval(sSpec, eSpec, editOps, transM) {
+  let result = await enumerate(sSpec, eSpec, editOps, transM)
   return result.map((seq) => {
     return {
       ...seq,
