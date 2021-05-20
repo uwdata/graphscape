@@ -61,11 +61,17 @@ function applyTransformEditOp(targetSpec, eSpec, editOp){
     }
   } else {
     details.forEach(detail => {
-      if (resultSpec.encoding[detail.channel]) {
+      let fieldDef = resultSpec.encoding[detail.channel];
+      if (fieldDef) {
+        //Todo: cannot apply SCALE if the channel has a different type.
         if (detail.how === "removed"){
-          delete resultSpec.encoding[detail.channel][transformType]
+          delete fieldDef[transformType]
         } else {
-          resultSpec.encoding[detail.channel][transformType] = eSpec.encoding[detail.channel][transformType]
+          // console.log(fieldDef.type, detail.fieldType)
+          if (transformType === "scale" && fieldDef.type !== detail.fieldType) {
+            throw new UnapplicableEditOPError(`Cannot apply ${editOp.name} since it requires "${detail.fieldType}" field instead of "${fieldDef.type}".`)
+          }
+          fieldDef[transformType] = eSpec.encoding[detail.channel][transformType]
         }
       } else {
         throw new UnapplicableEditOPError(`Cannot apply ${editOp.name} since there is no "${detail.channel}" channel.`)
@@ -140,17 +146,31 @@ function checkSpec(spec) {
   }
   vl.compile(spec, {logger: lg})
 
+  let hasAggregate = false;
   for (const key in spec.encoding) {
     if (spec.encoding.hasOwnProperty(key)) {
       const fieldDef = spec.encoding[key];
+      if (fieldDef.aggregate) {
+        hasAggregate = true;
+      }
       if (fieldDef.field === "*" && !fieldDef.aggregate) {
         warnings.push("'*' field should innclude aggregate.")
       }
     }
   }
+  if (hasAggregate) {
+    const hasNoAggOnQField = Object.keys(spec.encoding)
+      .filter(ch => {
+      return spec.encoding[ch].type === "quantitative" && !spec.encoding[ch].aggregate
+    }).length > 0
+    if (hasNoAggOnQField) {
+      warnings.push("Aggregate should be applied on all quantitative fields.")
+    }
+  }
+
 
   if ((warnings.length > 0) || (errors.length > 0)) {
-    throw new InvalidVLSpecError(`The resulted spec is not valid Vega-Lite Spec.`)
+    throw new InvalidVLSpecError(`The resulted spec is not valid Vega-Lite Spec.`, {warnings, errors})
   }
 }
 function checkApplyingEditOps(editOps) {
@@ -170,9 +190,10 @@ class UnapplicableEditOPError extends Error {
 }
 
 class InvalidVLSpecError extends Error {
-  constructor(message) {
+  constructor(message, info) {
     super(message);
     this.name = "InvalidVLSpecError"
+    this.info = info;
   }
 }
 class UnapplicableEditOpsError extends Error {

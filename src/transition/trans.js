@@ -90,15 +90,18 @@ function markEditOps(s, d, importedMarkEditOps) {
   var editOps = [];
   var markEditOps = importedMarkEditOps || DEFAULT_EDIT_OPS["markEditOps"];
   var newEditOp;
-  if (s.mark === d.mark) {
+  const sMarkType = typeof(s.mark) === "object" ? s.mark.type : s.mark;
+  const dMarkType = typeof(d.mark) === "object" ? d.mark.type : d.mark;
+  if (!sMarkType || !dMarkType || (sMarkType === dMarkType) || sMarkType === "null" || dMarkType === "null") {
     return editOps;
-  }
-  else {
-    var editOpName = [s.mark.toUpperCase(), d.mark.toUpperCase()].sort().join("_");
+  } else {
+    var editOpName = [sMarkType.toUpperCase(), dMarkType.toUpperCase()].sort().join("_");
     if (markEditOps[editOpName]) {
       newEditOp = util.duplicate(markEditOps[editOpName]);
-      newEditOp.detail = { "before":s.mark.toUpperCase(), "after":d.mark.toUpperCase() };
+      newEditOp.detail = { "before": sMarkType, "after": dMarkType };
       editOps.push(newEditOp);
+    } else {
+      console.error(`Cannot find ${editOpName} marktype change edit op.`)
     }
   }
   return editOps;
@@ -106,12 +109,15 @@ function markEditOps(s, d, importedMarkEditOps) {
 exports.markEditOps = markEditOps;
 
 async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
+  const TRANSFORM_TYPES = ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"];
   var transformEditOps = importedTransformEditOps || DEFAULT_EDIT_OPS["transformEditOps"];
   var editOps = [];
+
   for (let i = 0; i < CHANNELS.length; i++) {
     const channel = CHANNELS[i];
 
-    ["SCALE", "SORT", "AGGREGATE", "BIN", "SETTYPE"].map(async function (transformType) {
+    for (let j = 0; j < TRANSFORM_TYPES.length; j++) {
+      const transformType = TRANSFORM_TYPES[j];
       let editOp;
 
       if (transformType === "SETTYPE" && transformEditOps[transformType]) {
@@ -121,6 +127,7 @@ async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
       } else if (transformEditOps[transformType]) {
         editOp = transformBasic(s, d, channel, transformType, transformEditOps);
       }
+
       if (editOp) {
         let found = editOps.find(eo => eo.name === editOp.name);
         if (found) {
@@ -128,10 +135,13 @@ async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
         } else {
           editOp.detail = [editOp.detail];
           editOps.push(editOp);
+
         }
       }
-    });
+    };
+
   };
+
   var importedFilterEditOps = {
     "MODIFY_FILTER": transformEditOps["MODIFY_FILTER"],
     "ADD_FILTER": transformEditOps["ADD_FILTER"],
@@ -139,6 +149,7 @@ async function transformEditOps(s, d, importedTransformEditOps, transOptions) {
   };
 
   editOps = editOps.concat(filterEditOps(s, d, importedFilterEditOps));
+
   return editOps;
 }
 exports.transformEditOps = transformEditOps;
@@ -158,17 +169,17 @@ function transformBasic(s, d, channel, transform, transformEditOps) {
 
   if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "modified", "channel": channel };
+    editOp.detail = { how: "modified", channel: channel };
     return editOp;
   }
   else if (sHas && !dHas) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "removed", "channel": channel };
+    editOp.detail = { how: "removed", channel: channel };
     return editOp;
   }
   else if (!sHas && dHas) {
     editOp = util.duplicate(transformEditOps[transform]);
-    editOp.detail = { "how": "added", "channel": channel };
+    editOp.detail = { how: "added", channel: channel };
     return editOp;
   }
 }
@@ -177,53 +188,63 @@ exports.transformBasic = transformBasic;
 async function scaleEditOps(s, d, channel, scaleTransformEditOps, transOptions) {
   var sHas = false, sOnlyHasDomainRelated = false;
   var dHas = false, dOnlyHasDomainRelated = false;
-  var editOp;
-  var sEditOp, dEditOp;
+  var editOp, sScaleDef, dScaleDef;
+
   if (s.encoding[channel] && s.encoding[channel].scale) {
     sHas = true;
-    sEditOp = {...s.encoding[channel].scale};
-    if (!Object.keys(sEditOp).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
+    sScaleDef = {...s.encoding[channel].scale};
+    if (!Object.keys(sScaleDef).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
       sOnlyHasDomainRelated = true;
     }
   }
   if (d.encoding[channel] && d.encoding[channel].scale) {
     dHas = true;
-    dEditOp = {...d.encoding[channel].scale};
-    if (!Object.keys(dEditOp).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
+    dScaleDef = {...d.encoding[channel].scale};
+    if (!Object.keys(dScaleDef).find(key => ["domain", "zero"].indexOf(key) < 0) ) {
       dOnlyHasDomainRelated = true;
     }
   }
   if (transOptions && transOptions.omitIncludeRawDomain) {
-    if (sEditOp && sEditOp.domain && dEditOp.domain === "unaggregated") {
-      delete sEditOp.domain;
-      if (Object.keys(sEditOp).length === 0) {
+    if (sScaleDef && sScaleDef.domain && dScaleDef.domain === "unaggregated") {
+      delete sScaleDef.domain;
+      if (Object.keys(sScaleDef).length === 0) {
         sOnlyHasDomainRelated = false;
         sHas = false;
       }
     }
 
-    if (dEditOp && dEditOp.domain && (dEditOp.domain === "unaggregated")) {
-      delete dEditOp.domain;
-      if (Object.keys(dEditOp).length === 0) {
+    if (dScaleDef && dScaleDef.domain && (dScaleDef.domain === "unaggregated")) {
+      delete dScaleDef.domain;
+      if (Object.keys(dScaleDef).length === 0) {
         dOnlyHasDomainRelated = false;
         dHas = false;
       }
     }
   }
-  if (sHas && dHas && (!util.rawEqual(sEditOp, dEditOp))) {
+
+  if (sHas && dHas && (!util.rawEqual(sScaleDef, dScaleDef))) {
     if (sOnlyHasDomainRelated && dOnlyHasDomainRelated && await sameDomain(s,d, channel)) {
       return;
     }
     editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "modified", "channel": channel };
+    editOp.detail = {
+      how: "modified",
+      channel: channel,
+      fieldType: {
+        from: s.encoding[channel].type,
+        to: d.encoding[channel].type
+      }
+    };
     return editOp;
   }
   else if (sHas && !dHas) {
+
     if (sOnlyHasDomainRelated && await sameDomain(s,d, channel)) {
       return;
     }
+
     editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "removed", "channel": channel };
+    editOp.detail = { how: "removed", channel: channel, fieldType: s.encoding[channel].type };
     return editOp;
   }
   else if (!sHas && dHas) {
@@ -231,25 +252,35 @@ async function scaleEditOps(s, d, channel, scaleTransformEditOps, transOptions) 
       return;
     }
     editOp = util.duplicate(scaleTransformEditOps);
-    editOp.detail = { "how": "added", "channel": channel };
+    editOp.detail = { how: "added", channel: channel, fieldType: d.encoding[channel].type };
     return editOp;
   }
 }
 exports.scaleEditOps = scaleEditOps;
 async function sameDomain(s, d, channel) {
-  const dView = await new vega.View(vega.parse(vl.compile(util.duplicate(d)).spec), {
-    renderer: "svg"
-  }).runAsync();
 
-  const sView = await new vega.View(vega.parse(vl.compile(util.duplicate(s)).spec), {
-    renderer: "svg"
-  }).runAsync();
+  let dView, sView;
+  try {
+    dView = await new vega.View(vega.parse(vl.compile(util.duplicate(d)).spec), {
+      renderer: "svg"
+    }).runAsync();
+
+    sView = await new vega.View(vega.parse(vl.compile(util.duplicate(s)).spec), {
+      renderer: "svg"
+    }).runAsync();
+  } catch (e) {
+    return false;
+  }
+
 
   const sScale = sView._runtime.scales[channel].value;
   const dScale = dView._runtime.scales[channel].value;
 
+
   return util.deepEqual(sScale.domain(), dScale.domain())
 }
+exports.sameDomain = sameDomain;
+
 function filterEditOps(s, d, importedFilterEditOps) {
 
   var sFilters = [], dFilters = [];
@@ -437,7 +468,7 @@ function transformSettype(s, d, channel, transformEditOps) {
     editOp.detail = {
       "before": s.encoding[channel]["type"],
       "after": d.encoding[channel]["type"],
-      "channel": channel
+      channel: channel
     };
     return editOp;
   }

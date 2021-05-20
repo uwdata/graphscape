@@ -42,10 +42,9 @@ describe('transition.apply', function () {
   });
 
   describe('applyTransformEditOp', function () {
-    it('should apply SCALE and AGGREGATE edit operations correctly.', function () {
-      const scaleEditOp = trans.transformBasic(startVL, destinationVL, "y", "SCALE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
+    it('should apply SCALE and AGGREGATE edit operations correctly.', async function () {
+      const scaleEditOp = await trans.scaleEditOps(startVL, destinationVL, "y", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"].SCALE);
       const aggEditOp = trans.transformBasic(startVL, destinationVL, "y", "AGGREGATE", editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]);
-
 
       let iSpec = applyTransformEditOp(startVL, destinationVL, scaleEditOp)
       expect(iSpec.encoding.y.scale).to.eq(destinationVL.encoding.y.scale);
@@ -96,6 +95,32 @@ describe('transition.apply', function () {
 
       expect(iSpec.transform.find(trsfm=> trsfm.filter.not).filter.not.oneOf[1]).to.eq(22);
 
+
+    });
+
+    it('should apply SORT edit operations correctly.', function () {
+      const sortEditOp = {
+        "SORT": editOpSet.DEFAULT_EDIT_OPS["transformEditOps"]["SORT"]
+      };
+      let _startVL = {
+        "encoding": {
+          "x": {"field": "A", "type": "Q"},
+          "y": {"field": "B", "type": "N", "sort": {"field": "A", "order": "ascending"}}
+        }
+      }
+      let _endVL = {
+        "encoding": {
+          "x": {"field": "A", "type": "Q"},
+          "y": {"field": "B", "type": "N"}
+        }
+      }
+      const editOp = trans.transformBasic(_startVL, _endVL, "y", "SORT", sortEditOp);
+
+      expect(editOp.name).to.eq("SORT");
+      expect(editOp.detail).to.deep.eq({how: "removed", channel: "y"});
+
+      let iSpec = applyTransformEditOp(_startVL, _endVL, editOp)
+      expect(iSpec.encoding.y).to.deep.eq(_endVL.encoding.y);
 
     });
   });

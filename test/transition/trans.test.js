@@ -406,4 +406,53 @@ describe('transition.trans', function () {
       expect(result.encoding.length).to.eq(2);
     });
   });
+  describe('sameDomain', async function() {
+
+    it('should determine if the two domains are the same or not.', async () => {
+      const s = {
+        "data": {"values":[{"A": 1}, {"A": 2}]},
+        "mark": "area",
+        "encoding": {
+          "y": { "type": "quantitative", "field": "A" }
+        }
+      };
+      const d = {
+        "data": {"values":[{"A": 1}, {"A": 20}]},
+        "mark": "area",
+        "encoding": {
+          "y": { "type": "quantitative", "field": "A" }
+        }
+      };
+      let result = await trans.sameDomain(s,d, "y");
+      console.log("!");
+      expect(result).to.eq(false)
+    })
+
+    it('should determine if the two domains are the same or not.', async () => {
+      const s = {
+        "data": {"url": "test/data/sample_kc_house_data.json"},
+        "mark": "point",
+        "transform": [
+          {"calculate": "datum.price/datum.sqft_living", "as": "price_per_sqft"}
+        ],
+        "encoding": {
+          "x": {"field": "price", "type": "quantitative", "scale": {"zero": false}}
+        }
+      };
+      const d = {
+        "data": {"url": "test/data/sample_kc_house_data.json"},
+        "mark": "bar",
+        "transform": [
+          {"calculate": "datum.price/datum.sqft_living", "as": "price_per_sqft"}
+        ],
+        "encoding": {
+          "x": {"field": "bedrooms", "type": "nominal"}
+        }
+      };
+      let result = await trans.sameDomain(s,d, "x");
+
+      expect(result).to.eq(false)
+    })
+  })
 });
+
