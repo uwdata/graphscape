@@ -20,7 +20,7 @@ describe("partition", () => {
   })
 })
 describe("permute", () => {
-  it.only("Should enumerate all possible permutations properly", () => {
+  it("Should enumerate all possible permutations properly", () => {
     let permutations = permutate([0,1]);
 
 

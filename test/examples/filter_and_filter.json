@@ -1,0 +1,147 @@
+
+{
+  "title": "[COVID] Filter & Filter",
+  "sequence": [{
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {"url": "test/data/covid-us-states.json"},
+    "mark": "area",
+    "transform": [
+      {"filter": {"field": "deaths_delta", "gt": 0}},
+      {"calculate": "datum.state=='New York' ? 'New York' : 'Others'", "as": "isNY"},
+      {
+        "aggregate": [
+          {"op": "sum", "field": "cases_delta", "as": "_cases_delta"},
+          {"op": "sum", "field": "deaths_delta", "as": "_deaths_delta"}
+        ],
+        "groupby": ["date", "isNY"]
+      },
+      {
+        "window": [
+          {"op": "mean", "field": "_cases_delta", "as": "cases_7dayAvg"},
+          {"op": "mean", "field": "_deaths_delta", "as": "deaths_7dayAvg"}
+        ],
+        "sort": [{"field": "date", "order": "ascending"}],
+        "groupby": ["isNY"],
+        "frame": [-3, 3]
+      },
+      {"filter": {"field": "isNY", "equal": "New York"}},
+      {
+        "filter": {
+          "field": "date",
+          "range": [
+            {"year": 2020, "month": "Mar"},
+            {"year": 2020, "month": "jul"}
+          ]
+        }
+      }
+    ],
+    "encoding": {
+      "x": {"field": "date", "type": "temporal", "title": "Date"},
+      "y": {
+        "field": "deaths_7dayAvg",
+        "type": "quantitative",
+        "stack": true,
+        "axis": {"labelFlush": true, "title": "Daily Deaths (7-day Avg.)"}
+      },
+      "color": {
+        "field": "isNY",
+        "type": "nominal",
+        "scale": {"domain": ["New York", "Others"]},
+        "legend": {"title": "Region", "direction": "horizontal", "orient": "top"}
+      },
+      "order": {"field": "isNY"}
+    },
+    "height": 150,
+    "width": 450
+  },
+  {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {"url": "test/data/covid-us-states.json"},
+    "mark": "area",
+    "transform": [
+      {"filter": {"field": "deaths_delta", "gt": 0}},
+      {"calculate": "datum.state=='New York' ? 'New York' : 'Others'", "as": "isNY"},
+      {
+        "aggregate": [
+          {"op": "sum", "field": "cases_delta", "as": "_cases_delta"},
+          {"op": "sum", "field": "deaths_delta", "as": "_deaths_delta"}
+        ],
+        "groupby": ["date", "isNY"]
+      },
+      {
+        "window": [
+          {"op": "mean", "field": "_cases_delta", "as": "cases_7dayAvg"},
+          {"op": "mean", "field": "_deaths_delta", "as": "deaths_7dayAvg"}
+        ],
+        "sort": [{"field": "date", "order": "ascending"}],
+        "groupby": ["isNY"],
+        "frame": [-3, 3]
+      },
+      {
+        "filter": {
+          "field": "date",
+          "range": [
+            {"year": 2020, "month": "mar"},
+            {"year": 2021, "month": "jul"}
+          ]
+        }
+      }
+    ],
+    "encoding": {
+      "x": {"field": "date", "type": "temporal", "title": "Date"},
+      "y": {
+        "field": "deaths_7dayAvg",
+        "type": "quantitative",
+        "stack": true,
+        "axis": {"labelFlush": true, "title": "Daily Deaths (7-day Avg.)"}
+      },
+      "color": {
+        "field": "isNY",
+        "type": "nominal",
+        "scale": {"domain": ["New York", "Others"]},
+        "legend": {"title": "Region", "direction": "horizontal", "orient": "top"}
+      },
+      "order": {"field": "isNY"}
+    },
+    "height": 150,
+    "width": 450
+  }
+  ],
+  "opt": {
+    "totalDuration": 4000,
+    "marks": {
+      "marks": {"change": {"data": ["isNY"]}}
+    },
+    "axes": {
+      "x": {"change": { "scale": {"domainDimension": "same"} }},
+      "y": {"change": { "scale": {"domainDimension": "same"} }}
+    },
+    "scales": {"x": {"domainDimension": "same"}, "y": {"domainDimension": "same"}}
+  },
+  "gemSpecs": [
+    {
+      "timeline": {
+        "sync": [
+          {
+            "component": {"axis": "x"},
+            "change": {"scale": {"domainDimension": "same"}},
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": {"axis": "y"},
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": "view",
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": {"mark": "marks"},
+            "change": {"data": ["name"]},
+            "timing": {"duration": 4000}
+          }
+        ]
+      }
+    }
+  ]
+}

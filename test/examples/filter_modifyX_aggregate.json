@@ -1,0 +1,78 @@
+
+{
+  "sequence": [
+    {
+      "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+      "data": {"url": "test/data/sample_kc_house_data.json"},
+      "mark": "point",
+      "transform": [
+        {"calculate": "datum.price/datum.sqft_living", "as": "price_per_sqft"}
+      ],
+      "encoding": {
+        "x": {"field": "price", "type": "quantitative", "scale": {"zero": false}},
+        "y": {
+          "field": "sqft_living",
+          "type": "quantitative",
+          "scale": {"zero": false},
+          "axis": {"labelFlush": true}
+        },
+        "color": {"field": "bedrooms", "type": "nominal"}
+      }
+    },
+    {
+      "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+      "data": {"url": "test/data/sample_kc_house_data.json"},
+      "mark": "bar",
+      "transform": [
+        {"calculate": "datum.price/datum.sqft_living", "as": "price_per_sqft"}
+      ],
+      "encoding": {
+        "x": {"field": "bedrooms", "type": "nominal", "scale": {"zero": false}},
+        "y": {
+          "field": "sqft_living",
+          "type": "quantitative",
+          "scale": {"zero": false},
+          "aggregate": "mean"
+        },
+        "color": {"field": "bedrooms", "type": "nominal"}
+      }
+    }
+  ],
+  "opt": {
+    "totalDuration": 4000,
+    "marks": {
+      "marks": {"change": {"data": ["name"]}}
+    },
+    "axes": {
+      "x": {"change": { "scale": {"domainDimension": "same"} }},
+      "y": {"change": { "scale": {"domainDimension": "same"} }}
+    },
+    "scales": {"x": {"domainDimension": "same"}, "y": {"domainDimension": "same"}}
+  },
+  "gemSpecs": [
+    {
+      "timeline": {
+        "sync": [
+          {
+            "component": {"axis": "x"},
+            "change": {"scale": {"domainDimension": "same"}},
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": {"axis": "y"},
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": "view",
+            "timing": {"duration": 4000}
+          },
+          {
+            "component": {"mark": "marks"},
+            "change": {"data": ["name"]},
+            "timing": {"duration": 4000}
+          }
+        ]
+      }
+    }
+  ]
+}

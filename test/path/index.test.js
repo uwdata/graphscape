@@ -24,4 +24,12 @@ describe("path", () => {
 
   })
 
+  it("should return specs with not merged scale when there are sort edit operations. ", async () => {
+
+    const {start, end} = EXAMPLES.filter_sort;
+    let sequences = await path(start, end);
+    let scale = sequences['2'][0].sequence[1].encoding.x.scale;
+    expect(sequences['2'].length).to.eq(2);
+    expect(scale).to.eq(undefined);
+  })
 })

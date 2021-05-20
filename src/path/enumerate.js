@@ -3,9 +3,10 @@
 const vl = require("vega-lite");
 const vega = require("vega");
 const { copy, deepEqual, partition, permutate, union, intersection} = require("../util");
-const apply = require("../transition/apply").apply
+const apply = require("../transition/apply").apply;
+
 // Take two vega-lite specs and enumerate paths [{sequence, editOpPartition (aka transition)}]:
-async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
+async function enumerate(sVLSpec, eVLSpec, editOps, transM, withExcluded = false) {
   if (editOps.length < transM) {
     throw new CannotEnumStagesMoreThanTransitions(editOps.length, transM)
   }
@@ -16,10 +17,11 @@ async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
     return ordered.concat(permutate(pt));
   }, [])
   const sequences = [];
-  const mergedScaleDomain = await scaleModifier(sVLSpec, eVLSpec);
+
+  let excludedPaths = [];
 
   for (const editOpPartition of orderedEditOpPartitions) {
-    const sequence = [copy(sVLSpec)];
+    let sequence = [copy(sVLSpec)];
     let currSpec = copy(sVLSpec);
     let valid = true;
     for (let i = 0; i < editOpPartition.length; i++) {
@@ -31,26 +33,12 @@ async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
 
       try {
         currSpec = apply(copy(currSpec), eVLSpec, editOps);
-
-        for (const channel in mergedScaleDomain) {
-          if (mergedScaleDomain.hasOwnProperty(channel)) {
-            if (currSpec.encoding[channel]) {
-              if (!currSpec.encoding[channel].scale) {
-                currSpec.encoding[channel].scale = {};
-              }
-              currSpec.encoding[channel].scale.domain = mergedScaleDomain[channel];
-              if (currSpec.encoding[channel].scale.zero !== undefined) {
-
-                delete currSpec.encoding[channel].scale.zero
-              }
-            }
-          }
-        }
       } catch(e) {
         if (["UnapplicableEditOPError", "InvalidVLSpecError", "UnapplicableEditOpsError"].indexOf(e.name) < 0) {
           throw e;
         } else {
           valid = false;
+          excludedPaths.push({info: e, editOpPartition, invalidSpec: currSpec})
           break;
         }
       }
@@ -58,65 +46,124 @@ async function enumerate(sVLSpec, eVLSpec, editOps, transM) {
       sequence.push(copy(currSpec));
     }
 
+    const mergedScaleDomain = await getMergedScale(sequence);
+
+    sequence = sequence.map((currSpec, i) => {
+      if (i===0 || i===sequence.length-1) {
+        return currSpec
+      }
+      return applyMergedScale(currSpec, mergedScaleDomain, editOpPartition[i-1])
+    })
+
     if (valid && validate(sequence)) {
       sequences.push({sequence, editOpPartition});
     }
+  }
+  if (withExcluded) {
+    return {sequences, excludedPaths}
   }
 
   return sequences
 }
 exports.enumerate = enumerate;
 
-async function scaleModifier(sVLSpec, eVLSpec) {
-  // Todo: get the scales including all data points while doing transitions.
-  const eView = await new vega.View(vega.parse(vl.compile(eVLSpec).spec), {
-    renderer: "svg"
-  }).runAsync();
 
-  const sView = await new vega.View(vega.parse(vl.compile(sVLSpec).spec), {
-    renderer: "svg"
-  }).runAsync();
+function applyMergedScale(vlSpec, mergedScaleDomain, currEditOps) {
+  let currSpec = copy(vlSpec);
+  let sortEditOp = currEditOps.find(eo => eo.name === "SORT");
 
-  let scales = {
-    initial: sView._runtime.scales,
-    final: eView._runtime.scales
-  }
+  for (const channel in mergedScaleDomain) {
+    // When sort editOps are applied, do not change the corresponding scale domain.
+    if (sortEditOp && sortEditOp.detail.find(dt => dt.channel === channel)) {
+      continue;
+    };
 
-  return intersection(Object.keys(scales.initial), Object.keys(scales.final))
-    .reduce((newScaleDomain, scaleName) => {
-    let vlField_i = sVLSpec.encoding[scaleName],
-      vlField_f = eVLSpec.encoding[scaleName];
-    let scale_i = scales.initial[scaleName].value;
-    let scale_f = scales.final[scaleName].value;
+    if (mergedScaleDomain.hasOwnProperty(channel)) {
 
+      if (currSpec.encoding[channel]) {
+        if (!currSpec.encoding[channel].scale) {
+          currSpec.encoding[channel].scale = {};
+        }
+        currSpec.encoding[channel].scale.domain = mergedScaleDomain[channel];
+        if (currSpec.encoding[channel].scale.zero !== undefined) {
 
-    if (vlField_i && vlField_f &&
-      (vlField_i.field === vlField_f.field) &&
-      (vlField_i.type === vlField_f.type) &&
-      (scale_i.type === scale_f.type)
-    ){
-
-      let vlType = vlField_i.type, vgType = scale_i.type
-
-      if (vlType === "quantitative") {
-        newScaleDomain[scaleName] = [
-          Math.min(scale_i.domain()[0], scale_f.domain()[0]),
-          Math.max(scale_i.domain()[1], scale_f.domain()[1])
-        ]
-
-      } else if (vlType === "nominal" || vlType === "ordinal") {
-        newScaleDomain[scaleName] = union(scale_i.domain(), scale_f.domain())
-      } else if (vlType==="temporal" && vgType === "time") {
-        newScaleDomain[scaleName] = [
-          Math.min(scale_i.domain()[0], scale_f.domain()[0]),
-          Math.max(scale_i.domain()[1], scale_f.domain()[1])
-        ]
+          delete currSpec.encoding[channel].scale.zero
+        }
       }
     }
-    return newScaleDomain;
+  }
+  return currSpec
+}
+
+// Get the scales including all data points while doing transitions.
+async function getMergedScale(sequence) {
+
+  const views = await Promise.all(sequence.map(vlSpec => {
+    return new vega.View(vega.parse(vl.compile(vlSpec).spec), {renderer: "svg"}).runAsync()
+  }))
+
+  let commonEncoding = sequence.reduce((commonEncoding, vlSpec, i) => {
+    let encoding = Object.keys(vlSpec.encoding).map(channel => {
+      return {
+        channel,
+        ...vlSpec.encoding[channel],
+        runtimeScale: views[i]._runtime.scales[channel]
+      };
+    });
+    if (i===0){
+      return encoding;
+    }
+    return intersection(encoding, commonEncoding, ch => {
+      return [ch.channel, ch.field||"", ch.type||"", ch.runtimeScale ? ch.runtimeScale.type : ""].join("_");
+    })
+  }, []).map(encoding => {
+    return {
+      ...encoding,
+      domains: views.map(view => {
+        return view._runtime.scales[encoding.channel] ? view._runtime.scales[encoding.channel].value.domain() : undefined
+      })
+    }
+  })
+
+  commonEncoding = commonEncoding.filter(encoding => {
+    //if all the domains are the same, then don't need to merge
+    return !encoding.domains
+      .filter(d => d)
+      .reduce((accDomain, domain) => {
+      if (deepEqual(domain, accDomain)) {
+        return domain;
+      }
+      return undefined;
+    }, encoding.domains[0])
+  })
+
+  return commonEncoding.reduce((mergedScaleDomains, encoding) => {
+    if (!encoding.runtimeScale) {
+      return mergedScaleDomains;
+    }
+    const vlType = encoding.type,
+      domains = encoding.domains;
+
+    if (vlType === "quantitative") {
+      mergedScaleDomains[encoding.channel] = [
+        Math.min(...domains.map(domain => domain[0])),
+        Math.max(...domains.map(domain => domain[1]))
+      ]
+    } else if (vlType === "nominal" || vlType === "ordinal") {
+      mergedScaleDomains[encoding.channel] = domains.reduce((merged, domain) => {
+        return union(merged, domain)
+      }, [])
+    } else if (vlType==="temporal") {
+      mergedScaleDomains[encoding.channel] = [
+        Math.min(...domains.map(domain => domain[0])),
+        Math.max(...domains.map(domain => domain[1]))
+      ]
+    }
+
+    return mergedScaleDomains;
   }, {})
 }
-exports.scaleModifier = scaleModifier
+exports.getMergedScale = getMergedScale
 
 
 function validate(sequence) {

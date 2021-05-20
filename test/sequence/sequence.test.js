@@ -9,7 +9,7 @@ describe('sequence.sequence check', function () {
   it('Case 6',async function () {
     var charts = [
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -68,7 +68,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -127,7 +127,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -186,7 +186,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -245,7 +245,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -304,7 +304,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
             {
               "filter": {
@@ -377,7 +377,7 @@ describe('sequence.sequence check', function () {
   it('Case 5',async function () {
     var charts = [
       {
-        "data": {"url": "data/movies.json","formatType": "json"},
+        "data": {"url": "test/data/movies.json",},
         "transform": [
           {
             "filter": {
@@ -422,7 +422,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-          "data": {"url": "data/movies.json","formatType": "json"},
+          "data": {"url": "test/data/movies.json",},
           "transform": [
               {"filter": {
                 "field": "Major_Genre",
@@ -465,7 +465,7 @@ describe('sequence.sequence check', function () {
           }
       },
       {
-          "data": {"url": "data/movies.json","formatType": "json"},
+          "data": {"url": "test/data/movies.json",},
           "transform": [
               {"filter": {
                 "field": "Major_Genre",
@@ -508,7 +508,7 @@ describe('sequence.sequence check', function () {
           }
       },
       {
-          "data": {"url": "data/movies.json","formatType": "json"},
+          "data": {"url": "test/data/movies.json",},
           "transform": [
               {"filter": {
                 "field": "Major_Genre",
@@ -551,7 +551,7 @@ describe('sequence.sequence check', function () {
           }
       },
       {
-          "data": {"url": "data/movies.json","formatType": "json"},
+          "data": {"url": "test/data/movies.json",},
           "transform": [
               {"filter": {
                 "field": "Major_Genre",
@@ -594,7 +594,7 @@ describe('sequence.sequence check', function () {
           }
       },
       {
-          "data": {"url": "data/movies.json","formatType": "json"},
+          "data": {"url": "test/data/movies.json",},
           "transform": [
               {"filter": {
                 "field": "Major_Genre",
@@ -652,7 +652,7 @@ describe('sequence.sequence check', function () {
     var charts = [
       {
         "description": "IT Companies Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": { "url": "test/data/stocks.csv"},
         "mark": "area",
         "encoding": {
           "x": {
@@ -672,7 +672,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Apple Inc. Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": { "url": "test/data/stocks.csv"},
         "mark": "area",
         "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
@@ -693,7 +693,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Apple Inc. Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": {"url": "test/data/stocks.csv"},
         "mark": "point",
         "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
@@ -713,7 +713,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Apple Inc. Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": {"url": "test/data/stocks.csv"},
         "mark": "line",
         "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
@@ -733,7 +733,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Apple Inc. Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": {"url": "test/data/stocks.csv"},
         "mark": "point",
         "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
@@ -753,7 +753,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Apple Inc. Stock Price",
-        "data": {"formatType": "csv","url": "data/stocks.csv"},
+        "data": {"url": "test/data/stocks.csv"},
         "mark": "line",
         "transform": [{"filter":"datum.symbol=='AAPL'"}],
         "encoding": {
@@ -776,9 +776,10 @@ describe('sequence.sequence check', function () {
     var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
-    expect(result[0].sumOfTransitionCosts).to.eq(11.17);
+
+    expect(result[0].sumOfTransitionCosts).to.eq(11.77);
     expect(result[0].globalWeightingTerm).to.eq( 1-0.3333333333333333);
-    expect(result[0].sequenceCost).to.eq(7.446666666666667);
+    expect(result[0].sequenceCost).closeTo(7.84666, 0.00001);
 
 
   });
@@ -787,7 +788,7 @@ describe('sequence.sequence check', function () {
     var charts = [
       {
         "description": "Cars in 1973",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [
           { "filter": { "field":"Year", "equal": "1973-01-01"} }
         ],
@@ -817,7 +818,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Cars in 1978",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [{
           "filter": { "field":"Year", "equal": "1978-01-01"}}
         ],
@@ -847,7 +848,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Cars in 1982",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [{
           "filter": { "field":"Year", "equal": "1982-01-01"}}
         ],
@@ -877,7 +878,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "USA Cars in 1978",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [
             {"filter": { "field":"Year", "equal": "1978-01-01"}},
             {"filter":{ "field":"Origin", "equal": "USA"}}
@@ -908,7 +909,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Japan Cars in 1978",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [
           {"filter": { "field":"Year", "equal": "1978-01-01"}},
           {"filter":{ "field":"Origin", "equal": "Japan"}}
@@ -939,7 +940,7 @@ describe('sequence.sequence check', function () {
       },
       {
         "description": "Europe Cars in 1978",
-        "data": {"url": "data/cars.json", "formatType": "json"},
+        "data": {"url": "test/data/cars.json", },
         "transform": [
           {"filter": { "field":"Year", "equal": "1978-01-01"}},
           {"filter":{ "field":"Origin", "equal": "Europe"}}
@@ -973,16 +974,16 @@ describe('sequence.sequence check', function () {
     var result = await sq(charts, {"fixFirst":false}, editOpSet.DEFAULT_EDIT_OPS);
 
     expect(result.length).to.eq(720);
-    expect(result[0].sumOfTransitionCosts).to.eq(18.19);
-    expect(result[0].globalWeightingTerm).to.eq( 1 - 0.3333333333333333);
-    expect(result[0].sequenceCost).to.eq(12.126993464052289);
+    expect(result[0].sumOfTransitionCosts).to.eq(18.79);
+    expect(result[0].globalWeightingTerm).closeTo( 1 - 0.333, 0.001);
+    expect(result[0].sequenceCost).closeTo(12.526, 0.001);
 
   });
 
   it('Case 2',async function () {
     var charts = [
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "bar",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1003,7 +1004,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "bar",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1024,7 +1025,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "bar",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1041,7 +1042,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "point",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1060,7 +1061,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "point",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1076,7 +1077,7 @@ describe('sequence.sequence check', function () {
         }
       },
       {
-        "data": {"url": "data/cameras.json"},
+        "data": {"url": "test/data/cameras.json"},
         "mark": "point",
         "transform": [{
           "filter": "datum.Storage_included <= 64 && datum.Zoom_wide>0"
@@ -1111,8 +1112,8 @@ describe('sequence.sequence check', function () {
     var charts = [
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {
@@ -1129,8 +1130,8 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {
@@ -1148,8 +1149,8 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {
@@ -1166,8 +1167,8 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {
@@ -1185,8 +1186,8 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {
@@ -1207,8 +1208,8 @@ describe('sequence.sequence check', function () {
       },
       {
         "data": {
-          "url": "data/cars.json",
-          "formatType": "json"
+          "url": "test/data/cars.json",
+
         },
         "mark": "point",
         "encoding": {

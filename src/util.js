@@ -306,10 +306,16 @@ function permutate(arr) {
 exports.permutate = permutate;
 
 function intersection(arr1, arr2, accessor = (d) => d) {
-  return arr2.filter(x => arr1.find(y => accessor(x) === accessor(y)))
+  return arr2.filter(x => arr1.filter(y => accessor(x) === accessor(y)).length > 0)
 }
 exports.intersection = intersection
 
-
-
+function unique(arr, accessor = (d) =>  d) {
+  let maps = arr.map(accessor).reduce((acc, curr) => {
+    acc[curr] = true;
+    return acc;
+  }, {});
+  return Object.keys(maps)
+}
+exports.unique = unique;
 //# sourceMappingURL=util.js.map
