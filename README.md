@@ -5,6 +5,10 @@
 GraphScape([paper](http://idl.cs.washington.edu/papers/graphscape/)) is a directed graph model of the visualization design space that supports automated reasoning about visualization similarity and sequencing. It uses the [Vega-Lite](https://vega.github.io/vega-lite) language to model individual charts. This repository contains source code for building GraphScape models and automatically recommending sequences of charts.
 
 - [APIs](#apis)
+  - [`.sequence`](#sequence)
+  - [`.transition`](#transition)
+  - [`.apply`](#apply)
+  - [`.path`](#path)
 - [Sequence Recommender Web Application](#sequence-recommender-web-application)
 - [Development Instructions](#development-instructions)
 - [Cite Us!](#cite-us)
