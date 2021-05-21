@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha ./test --recursive --watch",
-    "quick-build": "rollup -c",
-    "deploy": ""
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",

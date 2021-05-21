@@ -240,8 +240,17 @@ describe('transition.apply', function () {
         apply(startVL, endVL, editOps.transform);
       }).to.throw();
 
-      let iSpec = apply(startVL, endVL, editOps.encoding.concat(editOps.transform))
-      expect(iSpec).to.deep.equal(endVL)
+      let iSpec = apply(startVL, endVL, editOps.encoding)
+      expect(iSpec).to.deep.equal({
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+        "data": {"url": "data/penguins.json"},
+        "mark": "point",
+        "encoding": {"y": {"field": "A", "type": "quantitative"}}
+      })
+
+
+      expect(apply(startVL, endVL, editOps.encoding.concat(editOps.transform)))
+        .to.deep.equal(endVL)
 
     });
 

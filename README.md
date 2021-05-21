@@ -1,13 +1,15 @@
 # GraphScape
 
+(Last Update: 2021-05-20)
+
 GraphScape([paper](http://idl.cs.washington.edu/papers/graphscape/)) is a directed graph model of the visualization design space that supports automated reasoning about visualization similarity and sequencing. It uses the [Vega-Lite](https://vega.github.io/vega-lite) language to model individual charts. This repository contains source code for building GraphScape models and automatically recommending sequences of charts.
 
-- [Sequence Recommender API](#sequence-recommender-api)
+- [APIs](#apis)
 - [Sequence Recommender Web Application](#sequence-recommender-web-application)
 - [Development Instructions](#development-instructions)
 - [Cite Us!](#cite-us)
 
-## Sequence Recommender API
+## APIs
 
 <a name="sequence" href="#sequence">#</a>
 graphscape.<b>sequence</b>(<i>charts</i>, <i>options</i>[, <i>editOpSet</i>, <i>callback</i>])
@@ -45,8 +47,8 @@ The output is a ranked array of objects, each containing a sequence ordering and
 ### Sample Code (node.js)
 
 ```js
-var gs = require('./graphscape.js')
-var charts = []; // an array of Vega-Lite charts
+const gs = require('./graphscape.js')
+const charts = []; // an array of Vega-Lite charts
 charts.push({
   "data": {"url": "data/cars.json"},
   "mark": "point",
@@ -62,7 +64,7 @@ charts.push({
     "y": {"field": "Miles_per_Gallon","type": "quantitative"}
   }
 });
-var options = { "fixFirst": false };
+const options = { "fixFirst": false };
 console.log(gs.sequence(charts, options));
 ```
 
@@ -95,15 +97,15 @@ The output is a ranked array of objects, each containing a sequence ordering and
 ### Sample Code (node.js)
 
 ```js
-var gs = require('./graphscape.js')
-var source = {
+const gs = require('./graphscape.js')
+const source = {
   "data": {"url": "data/cars.json"},
   "mark": "point",
   "encoding": {
     "x": {"field": "Horsepower","type": "quantitative"},
   }
 };
-var target = {
+const target = {
   "data": {"url": "data/cars.json"},
   "mark": "point",
   "encoding": {
@@ -114,6 +116,114 @@ var target = {
 
 console.log(gs.transition(source, target));
 ```
+
+<a name="apply" href="#apply">#</a>
+graphscape.<b>apply</b>(<i>startChart</i>, <i>endChart</i>, <i>editOps</i>)
+[<>](https://github.com/uwdata/graphscape/blob/master/src/transition/apply.js "Source")
+
+Applies edit operations on the start chart to synthesize the intermeidate chart between the start and end. The edit operations should be provided with the corresponding end chart.
+
+### Input
+
+| Parameter  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| startChart | Vega-Lite Spec | The start chart that the edit operations are applied to. |
+| editOps | Array | Edit operations between the start and end charts. Users can get these by `.transition`.|
+| endChart | Vega-Lite Spec | The end chart. The given edit operations should be extracted from the transition between the start and end. |
+
+
+### Output
+
+A Vega-Lite Spec.
+
+### Sample Code (node.js)
+
+```js
+const gs = require('./graphscape.js')
+const startVL = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {"url": "data/penguins.json"},
+  "mark": "point",
+  "encoding": {"x": {"field": "A", "type": "nominal"}}
+};
+const endVL = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {"url": "data/penguins.json"},
+  "mark": "point",
+  "encoding": {
+    "y": {"field": "A", "type": "quantitative", "aggregate": "mean" }
+  }
+};
+const transition = await gs.transition(startVL, endVL);
+const chart = gs.apply(startVL, endVL, transition.encoding)
+console.log(chart);
+/*
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {"url": "data/penguins.json"},
+  "mark": "point",
+  "encoding": {"y": {"field": "A", "type": "quantitative"}}
+}
+*/
+```
+
+<a name="path" href="#path">#</a>
+graphscape.<b>path</b>(<i>startChart</i>, <i>endChart</i>, M)
+[<>](https://github.com/uwdata/graphscape/blob/master/src/path/ "Source")
+
+Recommends paths (chart sequences) from the start to the end with M transitions. Each path will have M+1 charts. Unlike `.sequence`, it generates intermediate charts for given two ends.
+
+### Input
+
+| Parameter  | Type          | Description    |
+| :-------- |:-------------:| :------------- |
+| startChart | Vega-Lite Spec | The start chart for paths. |
+| endChart | Vega-Lite Spec | The end chart for paths. |
+| M | Inteager | The number of transitions for the paths. If M is undefined, it returns all possible paths. |
+
+
+### Output
+
+If M is specified, it returns a path array (`Array<Path>`). If not, it returns object having possible Ms and corresponding paths as keys and values(`{ "1": Array<Path>, "2": ..., ...}`)
+
+Each path has these properties:
+```js
+{
+  "sequence": [startChart, ..., endChart ],
+  // The partition of the edit operations from the start and the end.
+  "editOpPartition": [editOpArray1, ..., editOpArrayM],
+
+  "eval": {
+    // GraphScape's heuristic evaluation score for this path. Higher means better.
+    "score": 1, //Number
+    "satisfiedRules": ... // The reasons for the scores.
+  }
+}
+```
+
+### Sample Code (node.js)
+
+```js
+const gs = require('./graphscape.js')
+const startVL = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {"url": "data/penguins.json"},
+  "mark": "point",
+  "encoding": {"x": {"field": "A", "type": "nominal"}}
+};
+const endVL = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {"url": "data/penguins.json"},
+  "mark": "point",
+  "encoding": {
+    "y": {"field": "A", "type": "quantitative", "aggregate": "mean" }
+  }
+};
+const paths = await gs.path(startVL, endVL);
+console.log(paths)
+```
+
+*More details of the implementation will be available in here(TBD).
 
 ## Sequence Recommender Web Application
 

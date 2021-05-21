@@ -4888,13 +4888,13 @@
   } = evaluate_1;
   const getTransition = trans.transition;
 
-  async function path(sSpec, eSpec, transM = 0) {
+  async function path(sSpec, eSpec, transM) {
     validateInput(sSpec, eSpec);
     const transition = await getTransition(copy$2(sSpec), copy$2(eSpec));
     const editOps = [...transition.mark, ...transition.transform, ...transition.encoding];
     let result = {};
 
-    if (transM === 0) {
+    if (transM === undefined) {
       for (let m = 1; m <= editOps.length; m++) {
         result[m] = await enumAndEval(sSpec, eSpec, editOps, m);
       }
