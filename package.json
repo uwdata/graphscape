@@ -33,7 +33,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "chai": "~3.5.0",
-    "mocha": "^8.2.1",
+    "mocha": "^10.1.0",
     "rollup": "^2.38.5",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-sourcemaps": "^0.6.3",
